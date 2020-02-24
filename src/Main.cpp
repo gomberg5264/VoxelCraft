@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-
+#include <glm/common.hpp>
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application
@@ -15,7 +15,7 @@ int main()
 {
     // Request a 24-bits depth buffer when creating the window
     sf::ContextSettings contextSettings;
-    contextSettings.depthBits = 24;
+    contextSettings.depthBits = glm::abs(-24);
 
     // Create the main window
     sf::Window window(sf::VideoMode(640, 480), "SFML window with OpenGL", sf::Style::Default, contextSettings);
