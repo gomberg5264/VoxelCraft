@@ -47,7 +47,6 @@ constexpr GLfloat cube[] =
      0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
 };
 
-
 constexpr GLfloat face[] =
 {
     -0.5,-0.5,0, 1,0,0,1,
@@ -102,7 +101,9 @@ int main()
     // Create a clock for measuring the time elapsed
     sf::Clock clock;
     shad.Use();
-    glBindVertexArray(vao);
+    auto project = glm::perspective(glm::radians(45.f), (float)window.getSize().x / (float)window.getSize().y, 0.1f, 100.f);
+    project = project * glm::translate(glm::mat4(1),glm::vec3(0.f, 0.f, -5.f));
+    shad.SetMatrix("aMVP",glm::value_ptr(project));
 
     // Start the game loop
     while (window.isOpen())

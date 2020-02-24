@@ -11,6 +11,8 @@
 // deps
 #include <glad/glad.h>
 #include <glm/common.hpp>
+#include <glm/matrix.hpp>
+#include <glm/ext.hpp>
 
 #include <SFML/Window.hpp>
 
