@@ -80,6 +80,7 @@ int main()
     // Configure the viewport (the same size as the window)
     glViewport(0, 0, window.getSize().x, window.getSize().y);
     glClearColor(0.2f, 0.f, 0.2f, 1.f);
+    glEnable(GL_DEPTH_TEST);
 
     // Create vao
     Shader shad("res/shaders/default.vs","res/shaders/default.fs");
@@ -101,9 +102,9 @@ int main()
     // Create a clock for measuring the time elapsed
     sf::Clock clock;
     shad.Use();
-    auto project = glm::perspective(glm::radians(45.f), (float)window.getSize().x / (float)window.getSize().y, 0.1f, 100.f);
-    project = project * glm::translate(glm::mat4(1),glm::vec3(0.f, 0.f, -5.f));
-    shad.SetMatrix("aMVP",glm::value_ptr(project));
+    const auto project = glm::perspective(glm::radians(45.f), (float)window.getSize().x / (float)window.getSize().y, 0.1f, 100.f);
+    const auto view = glm::translate(glm::mat4(1),glm::vec3(0.f, 0.f, -5.f));
+    //shad.SetMatrix("aMVP",glm::value_ptr(project));
 
     // Start the game loop
     while (window.isOpen())
@@ -129,14 +130,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Apply some transformations to rotate the cube
-        //glMatrixMode(GL_MODELVIEW);
-        //glLoadIdentity();
-        //glTranslatef(0.f, 0.f, -200.f);
-        //glRotatef(clock.getElapsedTime().asSeconds() * 50, 1.f, 0.f, 0.f);
-        //glRotatef(clock.getElapsedTime().asSeconds() * 30, 0.f, 1.f, 0.f);
-        //glRotatef(clock.getElapsedTime().asSeconds() * 90, 0.f, 0.f, 1.f);
+        auto model = glm::rotate(glm::mat4(1), glm::radians(clock.getElapsedTime().asSeconds() * 50), { 1.f, 0.f, 0.f });
+        model =      glm::rotate(model,        glm::radians(clock.getElapsedTime().asSeconds() * 30), {0.f, 1.f, 0.f});
+        model =      glm::rotate(model,        glm::radians(clock.getElapsedTime().asSeconds() * 90), {0.f, 0.f, 1.f});
 
         // Draw the cube
+        shad.SetMatrix("aMVP", glm::value_ptr(project * view * model));
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Finally, display the rendered frame on screen
