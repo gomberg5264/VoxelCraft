@@ -95,6 +95,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\utils\Shader.cpp" />
     <ClCompile Include="src\vcpch.cpp">
@@ -107,6 +108,7 @@
     <None Include="res\shaders\default.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\utils\Shader.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
