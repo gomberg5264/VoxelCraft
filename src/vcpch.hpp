@@ -17,5 +17,7 @@
 #include <SFML/Window.hpp>
 
 // proj
-#include "engine/Engine.hpp"
 #include "utils/Shader.hpp"
+#include "graphics/Renderable.hpp"
+#include "graphics/Renderer.hpp"
+#include "engine/Engine.hpp"

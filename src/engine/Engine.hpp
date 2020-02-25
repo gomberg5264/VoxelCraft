@@ -7,10 +7,7 @@ public:
 
     struct Config
     {
-        float x{ 1280 };
-        float y{ 720 };
-    
-        std::string title{ "VoxelCraft" };
+        Renderer::Config graphics;
     };
     
     Engine(Config config = {});
@@ -22,8 +19,8 @@ protected:
 
 private:
     virtual void OnUpdate(Time time) {}
-    virtual void OnRender() {}
+    virtual void OnRender(Renderer& renderer) {}
 
+    Renderer m_renderer;
     sf::Clock m_clock;
-    sf::Window m_window;
 };
