@@ -9,6 +9,8 @@ void Engine::Run()
 {
     m_clock.restart();
 
+    OnInit();
+
     while(m_renderer.GetWindow().isOpen())
     {
         // Process events

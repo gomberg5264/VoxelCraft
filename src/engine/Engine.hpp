@@ -18,6 +18,7 @@ protected:
     sf::Vector2u GetWindowSize() const;
 
 private:
+    virtual void OnInit() {};
     virtual void OnUpdate(Time time) {}
     virtual void OnRender(Renderer& renderer) {}
 

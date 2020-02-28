@@ -1,5 +1,23 @@
 #pragma once
 
+class Renderer;
+
+class Renderable
+{
+public:
+    void Render(Renderer& renderer) const;
+
+    // Gets called when rendering with bound buffer. Should call glDrawArrays
+    virtual void OnRender() const = 0;
+
+    virtual glm::mat4 GetToWorld() const = 0;
+};
+
+class CubeRender : public Renderable
+{
+    virtual void OnRender() const override final;
+};
+
 class Renderer
 {
 public:
@@ -9,14 +27,6 @@ public:
         float y{ 720 };
 
         std::string title{ "VoxelCraft" };
-    };
-
-    enum Primitive
-    {
-        Cube,
-        Face,
-
-        Count
     };
 
     Renderer(Config config);
@@ -39,9 +49,9 @@ public:
     sf::Window& GetWindow();
 
 private:
-    std::vector<const Renderable*> m_renderables;
-    std::array<GLuint, Primitive::Count> m_renderModes;
+    std::vector<std::reference_wrapper<const Renderable>> m_renderables;
 
+    glm::mat4 m_vp;
     sf::Window m_window;
-    Shader m_shad;
+    std::unique_ptr<Shader> m_shad;
 };
