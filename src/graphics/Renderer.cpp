@@ -26,48 +26,47 @@ Renderer::Renderer(Config config)
     // Upload data to gpu
     static constexpr GLfloat cube[] =
     {
-        // positions    // colors (r, g, b, a)
-        -0.5f, -0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f, -0.5f,  0.5f,  0, 0, 1, 1,
-        -0.5f, -0.5f,  0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 0, 1, 1,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-         0.5f, -0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  0, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f,  0.5f,  0, 1, 0, 1,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-        -0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
-        -0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-        -0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-        -0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
-        -0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     m_shad = std::make_unique<Shader>("res/shaders/default.vs", "res/shaders/default.fs");
@@ -84,9 +83,9 @@ Renderer::Renderer(Config config)
         glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     }
 }
 

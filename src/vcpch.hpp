@@ -11,6 +11,10 @@
 
 // deps
 #include <glad/glad.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <glm/common.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtx/rotate_vector.hpp>

@@ -34,8 +34,6 @@ void FreelookCamera::Update(float dt)
 
     // Movement
     {
-        std::printf("%.2f %.2f\n", m_euler.x, m_euler.y);
-
         glm::fvec3 movement(0,0,0);
         glm::fvec3 right = glm::cross(forward, glm::fvec3(0, 1, 0));
         

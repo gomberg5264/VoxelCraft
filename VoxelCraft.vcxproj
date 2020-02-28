@@ -110,6 +110,7 @@
     <None Include="res\shaders\default.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deps\stb_image\stb_image.h" />
     <ClInclude Include="src\graphics\Camera.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />
