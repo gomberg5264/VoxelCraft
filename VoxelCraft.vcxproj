@@ -95,6 +95,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -109,6 +110,7 @@
     <None Include="res\shaders\default.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\graphics\Camera.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />
     <ClInclude Include="src\utils\Shader.hpp" />

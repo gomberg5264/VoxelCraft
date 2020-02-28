@@ -32,8 +32,13 @@ public:
 class Game : public Engine
 {
 private:
-    virtual void OnInit()
+    virtual void OnInit(Renderer& renderer) override final
     {
+        m_camera = std::make_unique<Camera>(renderer.GetWindow());
+        m_camera->m_eye = glm::vec3(0,0,-6);
+        m_camera->m_target = glm::vec3(0,0,0);
+        m_camera->m_speed = 0.1f;
+
         constexpr int size = 2;
 
         for (float x = -size; x < size; x++)
@@ -43,7 +48,7 @@ private:
                 for (float z = -size; z < size; z++)
                 {
                     m_cubes.emplace_back();
-                    m_cubes.back().m_offset = glm::fvec3(x*2 + 0.5f, y*2 + 0.5f, (z + size) * 2);
+                    m_cubes.back().m_offset = glm::fvec3(x*2 + 0.5f, y*2 + 0.5f, z * 2 + 0.5f);
                     m_cubes.back().m_scale = 1.f / (size * size * size);
                 }
             }
@@ -52,6 +57,8 @@ private:
 
     virtual void OnUpdate(Time dt) override final
     {
+        m_camera->Update(dt);
+
         // Calculate models
         for (auto& cube : m_cubes)
         {
@@ -61,9 +68,11 @@ private:
 
     virtual void OnRender(Renderer &renderer) override final
     {
-        const auto project = glm::perspective(glm::radians(45.f), (float)GetWindowSize().x / (float)GetWindowSize().y, 0.1f, 100.f);
-        const auto view = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -5.f));
-        renderer.SetVP(project * view);
+        auto vp = m_camera->GetProjection() * m_camera->GetView();
+        renderer.SetVP(vp);
+        
+        
+        //renderer.SetVP(glm::mat4(1));
 
         for (const auto& cube : m_cubes)
             cube.Render(renderer);
@@ -74,7 +83,7 @@ private:
 
     std::vector<Cube> m_cubes;
 
-    glm::mat4 m_vp;
+    std::unique_ptr<Camera> m_camera;
 };
 
 int main()

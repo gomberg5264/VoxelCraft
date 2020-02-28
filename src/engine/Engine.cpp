@@ -9,7 +9,7 @@ void Engine::Run()
 {
     m_clock.restart();
 
-    OnInit();
+    OnInit(m_renderer);
 
     while(m_renderer.GetWindow().isOpen())
     {
