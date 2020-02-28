@@ -15,3 +15,6 @@ I would also like to add modding support to the game, but I don't want to do too
 ### Build instructions
 The project contains Visual Studio 2019 solution files, since I will only be programming in Visual Studio for the foreseeable future. `To build it, simply use MSVC or open the solution file and build it in whatever configuration you desire`.  
 I have no plans for using other build systems as that is not the focus of the project, but I may refactor the project to use CMake once Visual Studio supports CMake 3.16 (precompiled headers support, as of the time of writing, my version is 3.15).
+
+### Credits
+* Textures taken from [here](https://soartex.net/downloads/)
