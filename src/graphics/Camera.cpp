@@ -5,74 +5,56 @@ Camera::Camera(sf::Window& window)
 {
 }
 
-void Camera::Update(float dt)
+FreelookCamera::FreelookCamera(sf::Window& window)
+    : Camera(window)
+    , m_oldPos(sf::Mouse::getPosition(window))
+{
+}
+
+void FreelookCamera::Update(float dt)
 {
     if (!m_window.hasFocus())
         return;
 
-    glm::vec3 movement = glm::vec3();
+    // Rotation
+    glm::fvec3 forward(0, 0, -1);
+    {
+        const auto pos = sf::Mouse::getPosition(m_window);
+        auto delta = pos - m_oldPos;
+
+        m_euler.x += (float)delta.y * m_sensitivity;
+        m_euler.y += (float)delta.x * m_sensitivity;
+
+        //forward.x = cos(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
+        //forward.y = sin(glm::radians(m_euler.x));
+        //forward.z = sin(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
+        m_oldPos = pos;
+    }
 
     // Movement
     {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) movement.y += 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) movement.y -= 1;
+        std::printf("%.2f %.2f %.2f\n", m_eye.x, m_eye.y, m_eye.z);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) movement.z += 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) movement.x -= 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) movement.z -= 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) movement.x += 1;
+        glm::fvec3 movement(0,0,0);
+        glm::fvec3 right = glm::cross(forward, glm::fvec3(0, 1, 0));
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) movement.y += 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) movement.y -= 1;
 
-        movement *= m_speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) movement += forward;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) movement -= right;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) movement -= forward;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) movement += right;
+
+        movement *= (m_speed * dt);
+        m_eye = m_eye + movement;
+        m_target = m_eye + forward;
     }
-
-    m_eye += movement;
-
-    // Rotation
-    /*
-    {
-        static double px = -1;
-        static double py = -1;
-        double x, y;
-        glfwGetCursorPos(window, &x, &y);
-        if (px == -1)
-        {
-            px = x;
-            py = y;
-        }
-
-        double dX = x - px;
-        double dY = y - py;
-        px = x;
-        py = y;
-
-        float rotX = 0.f;
-        float rotY = 0.f;
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
-        {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-            rotX = dX * 0.3f * 0.025f;
-            rotY = dY * 0.2f * 0.025f;
-        }
-        else
-        {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
-    
-
-        if (rotX != 0 || rotY != 0 || dot(movement, movement) != 0.f)
-        {
-            renderer.OnMove();
-        }
-
-        camera = camera * mat4::RotateX(rotY) * mat4::RotateY(rotX) * mat4::Translate(movement * speed * clamp(dt, 0.f, 1.f));
-    }
-    */
 }
 
 glm::mat4 Camera::GetProjection() const
 {
-    return glm::perspective<float>(glm::radians(45.f), m_window.getSize().x / m_window.getSize().y, 0.1f, 100.f);
+    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 100.f);
 }
 
 glm::mat4 Camera::GetView() const

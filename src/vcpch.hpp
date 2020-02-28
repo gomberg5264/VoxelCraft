@@ -13,6 +13,8 @@
 #include <glad/glad.h>
 #include <glm/common.hpp>
 #include <glm/matrix.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/ext.hpp>
 
 #include <SFML/Window.hpp>

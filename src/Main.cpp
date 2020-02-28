@@ -34,11 +34,13 @@ class Game : public Engine
 private:
     virtual void OnInit(Renderer& renderer) override final
     {
-        m_camera = std::make_unique<Camera>(renderer.GetWindow());
-        m_camera->m_eye = glm::vec3(0,0,-6);
+        m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
+        m_camera->m_eye = glm::vec3(0,0,6);
         m_camera->m_target = glm::vec3(0,0,0);
-        m_camera->m_speed = 0.1f;
 
+        static_cast<FreelookCamera*>(m_camera.get())->m_speed = 20.f;
+        static_cast<FreelookCamera*>(m_camera.get())->m_sensitivity = 0.2f;
+        
         constexpr int size = 2;
 
         for (float x = -size; x < size; x++)
