@@ -1,67 +1,32 @@
 #pragma once
 
+class Renderer;
+
 class Renderable
 {
+    friend Renderer;
 public:
-    virtual void Render() const = 0;
-};
 
-class Face : public Renderable
-{
-    static constexpr GLfloat face[] =
-    {
-        -0.5,-0.5,0, 1,0,0,1,
-         0.5,-0.5,0, 0,1,0,1,
-         0,0.5,0,    0,0,1,1
-    };
+    const glm::mat4& GetToWorld() const;
+
+protected:
+    glm::mat4 m_toWorld;
+
+private:
+
+    /**
+     * Receives a bound buffer. 
+     */
+    virtual void LoadVBO() = 0;
+    
+    /**
+     * Used for the draw call
+     */
+    virtual unsigned VertexCount() const = 0;
 };
 
 class Cube : public Renderable
 {
-    // Define a 3D cube (6 facesmade of 2 triangles composed by 3 vertices)
-    static constexpr GLfloat cube[] =
-    {
-        // positions    // colors (r, g, b, a)
-        -0.5f, -0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f, -0.5f,  0.5f,  0, 0, 1, 1,
-        -0.5f, -0.5f,  0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  0, 0, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 0, 1, 1,
-
-         0.5f, -0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  0, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 0, 1,
-         0.5f,  0.5f,  0.5f,  0, 1, 0, 1,
-
-        -0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-        -0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
-        -0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 0, 0, 1,
-
-        -0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
-        -0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f, -0.5f,  0, 1, 1, 1,
-         0.5f,  0.5f,  0.5f,  0, 1, 1, 1,
-
-        -0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
-        -0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f, -0.5f, -0.5f,  1, 0, 1, 1,
-         0.5f,  0.5f, -0.5f,  1, 0, 1, 1,
-
-        -0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-        -0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
-        -0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f, -0.5f,  0.5f,  1, 1, 0, 1,
-         0.5f,  0.5f,  0.5f,  1, 1, 0, 1,
-    };
+    virtual void LoadVBO() override final;
+    virtual unsigned VertexCount() const override final;
 };

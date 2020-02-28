@@ -11,15 +11,17 @@ public:
         std::string title{ "VoxelCraft" };
     };
 
-    enum class Primitive
+    enum Primitive
     {
+        Cube,
         Face,
-        Cube
+
+        Count
     };
 
     Renderer(Config config);
 
-    void SetMVP(const glm::mat4& mvp);
+    void SetVP(const glm::mat4& vp);
 
     /**
      * Make sure that the renderable is still alive
@@ -38,6 +40,7 @@ public:
 
 private:
     std::vector<const Renderable*> m_renderables;
+    std::array<GLuint, Primitive::Count> m_renderModes;
 
     sf::Window m_window;
     Shader m_shad;
