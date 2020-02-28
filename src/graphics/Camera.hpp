@@ -27,6 +27,6 @@ public:
 
 private:
 
-    glm::vec2 m_euler{ 0.f };
+    glm::vec2 m_euler{ 0.f,-90.f };
     sf::Vector2i m_oldPos;
 };

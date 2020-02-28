@@ -20,26 +20,27 @@ void FreelookCamera::Update(float dt)
     glm::fvec3 forward(0, 0, -1);
     {
         const auto pos = sf::Mouse::getPosition(m_window);
-        auto delta = pos - m_oldPos;
+        sf::Vector2f delta = static_cast<sf::Vector2f>(pos - m_oldPos) * m_sensitivity;
+        delta.y = -delta.y;
 
-        m_euler.x += (float)delta.y * m_sensitivity;
-        m_euler.y += (float)delta.x * m_sensitivity;
+        m_euler.x = glm::clamp(m_euler.x + delta.y, -89.5f, 89.5f);
+        m_euler.y = m_euler.y + delta.x;
 
-        //forward.x = cos(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
-        //forward.y = sin(glm::radians(m_euler.x));
-        //forward.z = sin(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
+        forward.x = cos(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
+        forward.y = sin(glm::radians(m_euler.x));
+        forward.z = sin(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
         m_oldPos = pos;
     }
 
     // Movement
     {
-        std::printf("%.2f %.2f %.2f\n", m_eye.x, m_eye.y, m_eye.z);
+        std::printf("%.2f %.2f\n", m_euler.x, m_euler.y);
 
         glm::fvec3 movement(0,0,0);
         glm::fvec3 right = glm::cross(forward, glm::fvec3(0, 1, 0));
         
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) movement.y += 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) movement.y -= 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) movement.y += 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) movement.y -= 1;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) movement += forward;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) movement -= right;
