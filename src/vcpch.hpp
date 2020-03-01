@@ -23,7 +23,7 @@
 #include <SFML/Window.hpp>
 
 // proj
-#include "utils/Shader.hpp"
+#include "graphics/Shader.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Renderer.hpp"
 #include "engine/Engine.hpp"
