@@ -3,11 +3,16 @@
 // stl 
 #include <iostream>
 #include <string>
+
 #include <sstream>
 #include <fstream>
+
 #include <memory>
+#include <utility>
+
 #include <array>
 #include <vector>
+#include <unordered_map>
 
 // deps
 #include <glad/glad.h>
@@ -23,7 +28,11 @@
 #include <SFML/Window.hpp>
 
 // proj
+#include "client/Block.hpp"
+
+#include "graphics/TextureAtlas.hpp"
 #include "graphics/Shader.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Renderer.hpp"
+
 #include "engine/Engine.hpp"

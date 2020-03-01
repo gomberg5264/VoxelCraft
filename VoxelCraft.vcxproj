@@ -102,8 +102,9 @@
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
+    <ClCompile Include="src\graphics\TextureAtlas.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\utils\Shader.cpp" />
+    <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -115,10 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
+    <ClInclude Include="src\client\Block.hpp" />
     <ClInclude Include="src\graphics\Camera.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />
-    <ClInclude Include="src\utils\Shader.hpp" />
+    <ClInclude Include="src\graphics\Shader.hpp" />
+    <ClInclude Include="src\graphics\TextureAtlas.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
