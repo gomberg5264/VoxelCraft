@@ -23,6 +23,7 @@ class Game : public Engine
 private:
     virtual void OnInit(Renderer& renderer) override final
     {
+        // Setup camera
         m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
         m_camera->m_eye = glm::vec3(0,0,6);
         m_camera->m_target = glm::vec3(0,0,0);
@@ -30,8 +31,11 @@ private:
         cast->m_speed = 5.f;
         cast->m_sensitivity = 0.2f;
         
-        constexpr int size = 4;
+        // Initialize block data
 
+
+        // Generate some voxels
+        constexpr int size = 4;
         for (int x = -size; x < size; x++)
         {
             for (int y = -size; y < size; y++)

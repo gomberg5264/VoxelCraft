@@ -6,7 +6,7 @@ TextureAtlas::TextureAtlas(unsigned width, unsigned height)
 {
 }
 
-void TextureAtlas::AddTexture(Block::Type type, const Texture<unsigned>& texture)
+void TextureAtlas::AddTexture(BlockMeta meta, const Texture<unsigned>& texture)
 {
     // Convert to uv
     Texture<float> uv;
@@ -16,10 +16,10 @@ void TextureAtlas::AddTexture(Block::Type type, const Texture<unsigned>& texture
         uv.uv[i].second = static_cast<float>(texture.uv[i].second) / m_height;
     }
 
-    m_textures[type] = uv;
+    m_textures[meta] = uv;
 }
 
-const Texture<float>& TextureAtlas::GetTexture(Block::Type type) const
+const Texture<float>& TextureAtlas::GetTexture(BlockType type) const
 {
     return m_textures.at(type);
 }

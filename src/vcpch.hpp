@@ -28,6 +28,7 @@
 #include <SFML/Window.hpp>
 
 // proj
+#include "graphics/Texture.hpp"
 #include "client/Block.hpp"
 
 #include "graphics/TextureAtlas.hpp"

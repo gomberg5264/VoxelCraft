@@ -42,6 +42,8 @@ public:
     // handled correctly, but for now I just pass the window
     sf::Window& GetWindow();
 
+    TextureAtlas m_textureAtlas;
+
 private:
     std::vector<std::reference_wrapper<const Renderable>> m_renderables;
 
