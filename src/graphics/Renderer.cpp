@@ -69,7 +69,7 @@ Renderer::Renderer(Config config)
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    m_shad = std::make_unique<Shader>("res/shaders/default.vs", "res/shaders/default.fs");
+    m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
     m_shad->Use();
     m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
 
@@ -94,25 +94,36 @@ Renderer::Renderer(Config config)
     }
     stbi_image_free(data);
 
-    unsigned vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    glGenVertexArrays(1, &m_buffer.vao);
+    glBindVertexArray(m_buffer.vao);
+    // Setup mesh attrib
     {
-        unsigned vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glGenBuffers(1, &m_buffer.model);
+        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.model);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
-        glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(0);
+        glVertexAttribDivisor(0, 0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribDivisor(1, 0);
+    }
+        
+    // Setup pos attrib
+    {
+        glGenBuffers(1, &m_buffer.pos);
+        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
+
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+        glEnableVertexAttribArray(2);
+        glVertexAttribDivisor(2, 1);
     }
 }
 
 void Renderer::SetVP(const glm::mat4& vp)
 {
-    m_vp = vp;
+    m_shad->SetMatrix("aVP", glm::value_ptr(vp));
 }
 
 void Renderer::Render(const Renderable& renderable)
@@ -124,16 +135,21 @@ void Renderer::Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
+    // Fill pos data
+    std::vector<GLfloat> pos;
+
     for (const auto& obj : m_renderables)
     {
-        m_shad->SetMatrix("aMVP", glm::value_ptr(m_vp * obj.get().GetToWorld()));
-
-        // Assumes only cubes
-        obj.get().OnRender();
+        pos.insert(
+            std::end(pos),
+            std::begin(obj.get().GetDrawData()),
+            std::end(obj.get().GetDrawData()));
     }
     
+    glBufferData(GL_ARRAY_BUFFER, pos.size() * sizeof(GLfloat), pos.data(), GL_DYNAMIC_DRAW);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, pos.size());
+    
     m_renderables.clear();
-
     m_window.display();
 }
 
@@ -145,14 +161,4 @@ sf::Vector2u Renderer::GetSize() const
 sf::Window& Renderer::GetWindow()
 {
     return m_window;
-}
-
-void Renderable::Render(Renderer& renderer) const
-{
-    renderer.Render(*this);
-}
-
-void CubeRender::OnRender() const
-{
-    glDrawArrays(GL_TRIANGLES, 0, 36);
 }

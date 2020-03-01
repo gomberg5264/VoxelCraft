@@ -5,17 +5,11 @@ class Renderer;
 class Renderable
 {
 public:
-    void Render(Renderer& renderer) const;
+    virtual glm::mat4 ToWorld() const { return glm::mat4(1); };
 
-    // Gets called when rendering with bound buffer. Should call glDrawArrays
-    virtual void OnRender() const = 0;
-
-    virtual glm::mat4 GetToWorld() const = 0;
-};
-
-class CubeRender : public Renderable
-{
-    virtual void OnRender() const override final;
+    // This data is used by the renderer
+    // The format is dependent on the renderer implementation
+    virtual const std::vector<GLfloat>& GetDrawData() const = 0;
 };
 
 class Renderer
@@ -51,7 +45,14 @@ public:
 private:
     std::vector<std::reference_wrapper<const Renderable>> m_renderables;
 
-    glm::mat4 m_vp;
+    struct Buffers
+    {
+        unsigned vao;
+        unsigned model;
+        unsigned pos;
+    };
+    Buffers m_buffer;
+
     sf::Window m_window;
     std::unique_ptr<Shader> m_shad;
 };

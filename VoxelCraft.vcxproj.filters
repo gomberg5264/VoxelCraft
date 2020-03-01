@@ -41,8 +41,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\default.vs" />
-    <None Include="res\shaders\default.fs" />
+    <None Include="res\shaders\default.frag" />
+    <None Include="res\shaders\default.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vcpch.hpp">

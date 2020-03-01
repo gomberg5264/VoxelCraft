@@ -1,32 +1,21 @@
 #include "vcpch.hpp"
 
-class Cube : public CubeRender
+class Cube : public Renderable
 {
 public:
-    virtual glm::mat4 GetToWorld() const
+    Cube(const glm::fvec3& pos)
     {
-        return m_toWorld;
+        m_drawData.push_back(pos.x);
+        m_drawData.push_back(pos.y);
+        m_drawData.push_back(pos.z);
     }
 
-    void Update(float dt)
+    virtual const std::vector<GLfloat>& GetDrawData() const override final
     {
-        m_dt += dt;
-
-        auto rot = glm::mat4(1);
-        rot = glm::rotate(rot, glm::radians(m_dt * 50), { 1.f, 0.f, 0.f });
-        rot = glm::rotate(rot, glm::radians(m_dt * 30), { 0.f, 1.f, 0.f });
-        rot = glm::rotate(rot, glm::radians(m_dt * 90), { 0.f, 0.f, 1.f });
-    
-        m_toWorld = glm::scale(glm::mat4(1), glm::vec3(m_scale));
-        m_toWorld = rot * m_toWorld;
-        m_toWorld = glm::translate(glm::mat4(1), m_offset * m_scale) * m_toWorld;
+        return m_drawData;
     }
 
-
-    float m_dt{ 0 };
-    float m_scale;
-    glm::vec3 m_offset;
-    glm::mat4 m_toWorld{ 1 };
+    std::vector<GLfloat> m_drawData;
 };
 
 class Game : public Engine
@@ -37,21 +26,20 @@ private:
         m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
         m_camera->m_eye = glm::vec3(0,0,6);
         m_camera->m_target = glm::vec3(0,0,0);
-
-        static_cast<FreelookCamera*>(m_camera.get())->m_speed = 20.f;
-        static_cast<FreelookCamera*>(m_camera.get())->m_sensitivity = 0.2f;
+        auto* cast = static_cast<FreelookCamera*>(m_camera.get());
+        cast->m_speed = 5.f;
+        cast->m_sensitivity = 0.2f;
         
-        constexpr int size = 2;
+        constexpr int size = 4;
 
-        for (float x = -size; x < size; x++)
+        for (int x = -size; x < size; x++)
         {
-            for (float y = -size; y < size; y++)
+            for (int y = -size; y < size; y++)
             {
-                for (float z = -size; z < size; z++)
+                for (int z = -size; z < size; z++)
                 {
-                    m_cubes.emplace_back();
-                    m_cubes.back().m_offset = glm::fvec3(x*2 + 0.5f, y*2 + 0.5f, z * 2 + 0.5f);
-                    m_cubes.back().m_scale = 1.f / (size * size * size);
+                    glm::fvec3 o(x, y, z);
+                    m_cubes.emplace_back(glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f));
                 }
             }
         }
@@ -61,26 +49,14 @@ private:
     {
         m_camera->Update(dt);
 
-        // Calculate models
-        for (auto& cube : m_cubes)
-        {
-            cube.Update(dt);
-        }
     }
 
     virtual void OnRender(Renderer &renderer) override final
     {
-        auto vp = m_camera->GetProjection() * m_camera->GetView();
-        renderer.SetVP(vp);
-        
-        
-        //renderer.SetVP(glm::mat4(1));
+        renderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
 
         for (const auto& cube : m_cubes)
-            cube.Render(renderer);
-
-        // Render MVP
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
+            renderer.Render(cube);
     }
 
     std::vector<Cube> m_cubes;
