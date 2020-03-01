@@ -9,7 +9,8 @@ public:
 
     // This data is used by the renderer
     // The format is dependent on the renderer implementation
-    virtual const std::vector<GLfloat>& GetDrawData() const = 0;
+    virtual const std::vector<GLfloat>& GetPosData() const = 0;
+    virtual const std::vector<GLfloat>& GetTextureData() const = 0;
 };
 
 class Renderer
@@ -51,6 +52,7 @@ private:
     {
         unsigned vao;
         unsigned model;
+        unsigned tex;
         unsigned pos;
     };
     Buffers m_buffer;

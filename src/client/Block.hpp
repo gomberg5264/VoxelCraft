@@ -18,7 +18,7 @@ class BlockMetaFactory
 {
 public:
 
-    void AddBlockMeta(BlockMeta block)
+    void AddBlockMeta(const BlockMeta &block)
     {
         assert(m_blocks.count(block.type) == 0);
         m_blocks[block.type] = block;
@@ -32,6 +32,11 @@ public:
     BlockMeta CreateBlockMeta(BlockType type) const
     {
         return m_blocks.at(type);
+    }
+
+    const std::unordered_map<BlockType, BlockMeta>& GetData() const
+    {
+        return m_blocks;
     }
 
 private:

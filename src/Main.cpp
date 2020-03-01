@@ -1,21 +1,36 @@
 #include "vcpch.hpp"
 
+TextureAtlas* atlas = nullptr;
+
 class Cube : public Renderable
 {
 public:
-    Cube(const glm::fvec3& pos)
+    Cube(const glm::fvec3& pos, const BlockMeta& meta)
     {
-        m_drawData.push_back(pos.x);
-        m_drawData.push_back(pos.y);
-        m_drawData.push_back(pos.z);
+        m_pos.push_back(pos.x);
+        m_pos.push_back(pos.y);
+        m_pos.push_back(pos.z);
+
+        for (int i = 0; i < 6; i++)
+        {
+            m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].first);
+            m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].second);
+        }
     }
 
-    virtual const std::vector<GLfloat>& GetDrawData() const override final
+    virtual const std::vector<GLfloat>& GetPosData() const override final
     {
-        return m_drawData;
+        return m_pos;
     }
 
-    std::vector<GLfloat> m_drawData;
+    virtual const std::vector<GLfloat>& GetTextureData() const override final
+    {
+        return m_texture;
+    }
+private:
+
+    std::vector<GLfloat> m_pos;
+    std::vector<GLfloat> m_texture;
 };
 
 class Game : public Engine
@@ -31,8 +46,27 @@ private:
         cast->m_speed = 5.f;
         cast->m_sensitivity = 0.2f;
         
-        // Initialize block data
+        // Register block types
+        BlockMetaFactory meta;
+        // Grass
+        {
+            BlockMeta block;
+            block.type = BlockType::Grass;
+            block.texture.uv[TextureFace::Top] = { 0,0 };
+            block.texture.uv[TextureFace::Bottom] = { 0,1 };
+            block.texture.SetSide({ 1,1 });
+            meta.AddBlockMeta(block);
+        }
+        // Stone
+        {
+            BlockMeta block;
+            block.type = BlockType::Stone;
+            block.texture.SetBlock({ 1,0 });
+            meta.AddBlockMeta(block);
+        }
 
+        renderer.m_textureAtlas.Initialize(meta);
+        atlas = &renderer.m_textureAtlas;
 
         // Generate some voxels
         constexpr int size = 4;
@@ -43,7 +77,16 @@ private:
                 for (int z = -size; z < size; z++)
                 {
                     glm::fvec3 o(x, y, z);
-                    m_cubes.emplace_back(glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f));
+                    
+                    BlockMeta bmeta;
+                    if (y < 0)
+                        bmeta = meta.GetBlockMeta(BlockType::Grass);
+                    else
+                        bmeta = meta.GetBlockMeta(BlockType::Stone);
+
+                    m_cubes.emplace_back(
+                        glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
+                        bmeta);
                 }
             }
         }
