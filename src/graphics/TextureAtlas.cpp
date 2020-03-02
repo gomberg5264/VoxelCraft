@@ -31,3 +31,8 @@ const Texture<float>& TextureAtlas::GetTexture(BlockType type) const
 {
     return m_textures.at(type);
 }
+
+std::pair<unsigned, unsigned> TextureAtlas::GetSize() const
+{
+    return std::pair<unsigned, unsigned>(m_width,m_height);
+}

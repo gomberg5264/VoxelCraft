@@ -11,6 +11,7 @@ public:
     void Use() const;
     void SetInt(const char* name, int val) const;
     void SetFloat(const char* name, float val) const;
+    void SetVec2(const char* name, float* val) const;
     void SetBool(const char* name, bool val) const;
     void SetMatrix(const char* name, const float* val) const;
 

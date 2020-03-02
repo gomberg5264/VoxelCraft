@@ -10,6 +10,8 @@ public:
     void AddTexture(BlockType type, const Texture<unsigned>& texture);
     const Texture<float>& GetTexture(BlockType type) const;
 
+    std::pair<unsigned, unsigned> GetSize() const;
+
 private:
     std::unordered_map<BlockType, Texture<float>> m_textures;
     const float m_width;
