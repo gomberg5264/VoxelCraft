@@ -13,8 +13,14 @@ public:
 
         for (int i = 0; i < 6; i++)
         {
-            m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].first);
-            m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].second);
+            // This way, every vertex has the uv specified
+            // This means that we are wasting 6* as much space but I don't know
+            // how to tell the vertex shader to only continue 
+            for (int j = 0; j < 6; j++)
+            {
+                m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].first);
+                m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].second);
+            }
         }
     }
 
@@ -54,6 +60,7 @@ private:
             block.texture.uv[TextureFace::Top] = { 0,0 };
             block.texture.uv[TextureFace::Bottom] = { 0,1 };
             block.texture.SetSide({ 1,1 });
+
             meta.AddBlockMeta(block);
         }
         // Stone
@@ -61,6 +68,8 @@ private:
             BlockMeta block;
             block.type = BlockType::Stone;
             block.texture.SetBlock({ 1,0 });
+
+
             meta.AddBlockMeta(block);
         }
 
@@ -68,7 +77,10 @@ private:
         atlas = &renderer.m_textureAtlas;
 
         // Generate some voxels
-        constexpr int size = 4;
+        m_cubes.emplace_back(glm::fvec3(0), meta.GetBlockMeta(BlockType::Grass));
+        return;
+
+        constexpr int size = 1;
         for (int x = -size; x < size; x++)
         {
             for (int y = -size; y < size; y++)

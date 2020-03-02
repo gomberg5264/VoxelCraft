@@ -21,7 +21,7 @@ void TextureAtlas::AddTexture(BlockType type, const Texture<unsigned>& texture)
     for (int i = 0; i < 6; i++)
     {
         uv.uv[i].first = static_cast<float>(texture.uv[i].first) / m_width;
-        uv.uv[i].second = 1.f - static_cast<float>(texture.uv[i].second) / m_height;
+        uv.uv[i].second = (static_cast<float>((m_height - 1) - texture.uv[i].second)) / m_height;
     }
 
     m_textures[type] = uv;
