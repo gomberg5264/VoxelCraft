@@ -16,6 +16,8 @@ void TextureAtlas::Initialize(const BlockMetaFactory& factory)
 
 void TextureAtlas::AddTexture(BlockType type, const Texture<unsigned>& texture)
 {
+    assert(m_textures.count(type) == 0 && "Type already exists");
+
     // Convert to uv
     Texture<float> uv;
     for (int i = 0; i < 6; i++)

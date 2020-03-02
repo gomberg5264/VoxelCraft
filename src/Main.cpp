@@ -11,15 +11,18 @@ public:
         m_pos.push_back(pos.y);
         m_pos.push_back(pos.z);
 
+        const auto& tex = (*atlas).GetTexture(meta.type).uv;
         for (int i = 0; i < 6; i++)
         {
             // This way, every vertex has the uv specified
             // This means that we are wasting 6* as much space but I don't know
             // how to tell the vertex shader to only continue 
-            for (int j = 0; j < 6; j++)
+
+            // We kinda fake instance it
+            //for (int j = 0; j < 6; j++)
             {
-                m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].first);
-                m_texture.push_back((*atlas).GetTexture(meta.type).uv[i].second);
+                m_texture.push_back(tex[i].first);
+                m_texture.push_back(tex[i].second);
             }
         }
     }
@@ -69,18 +72,43 @@ private:
             block.type = BlockType::Stone;
             block.texture.SetBlock({ 1,0 });
 
-
             meta.AddBlockMeta(block);
         }
 
         renderer.m_textureAtlas.Initialize(meta);
         atlas = &renderer.m_textureAtlas;
 
+
+        //m_cubes.emplace_back(
+        //    glm::fvec3(0.5f, 0.5f, 0.5f),
+        //    meta.GetBlockMeta(BlockType::Stone));
+
+        //return;
+
         // Generate some voxels
-        m_cubes.emplace_back(glm::fvec3(0), meta.GetBlockMeta(BlockType::Grass));
+        constexpr int size = 2; // Actually radius
+
+        for (int y = -size; y < size; y++)
+        {
+            glm::fvec3 o(0, y, 0);
+
+            BlockMeta bmeta;
+            if (y >= 0)
+            {
+                bmeta = meta.GetBlockMeta(BlockType::Grass);
+            }
+            else
+            {
+                bmeta = meta.GetBlockMeta(BlockType::Stone);
+            }
+
+            m_cubes.emplace_back(
+                glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
+                bmeta);
+        }
+
         return;
 
-        constexpr int size = 1;
         for (int x = -size; x < size; x++)
         {
             for (int y = -size; y < size; y++)
@@ -90,7 +118,7 @@ private:
                     glm::fvec3 o(x, y, z);
                     
                     BlockMeta bmeta;
-                    if (y > 0)
+                    if (y >= 0)
                     {
                         bmeta = meta.GetBlockMeta(BlockType::Stone);
                     }
@@ -98,8 +126,6 @@ private:
                     {
                         bmeta = meta.GetBlockMeta(BlockType::Grass);
                     }
-
-                    bmeta = meta.GetBlockMeta(BlockType::Grass);
 
                     m_cubes.emplace_back(
                         glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),

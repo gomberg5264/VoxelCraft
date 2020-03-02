@@ -27,53 +27,55 @@ Renderer::Renderer(Config config)
     // Upload data to gpu
     static constexpr GLfloat cube[] =
     {
+        // Normal, Pos, UV
+
         // Back
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.f,  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
         // Front
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         1.f, -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         1.f,  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         1.f,  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         1.f,  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         1.f, -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+         1.f, -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
         // Left
-        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         2.f, -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         2.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         2.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         2.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         2.f, -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         2.f, -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
          
         // Right
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         3.f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         3.f, 0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         3.f, 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         3.f, 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         3.f, 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         3.f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
 
         // Bottom
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         4.f, -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         4.f,  0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         4.f,  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         4.f,  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         4.f, -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         4.f, -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
         // Top
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+         5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         5.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         5.f,  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         5.f,  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         5.f, -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+         5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
@@ -85,9 +87,11 @@ Renderer::Renderer(Config config)
     unsigned tex;
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+    // Atm you can see other texture edges so disabled for now
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     // Load and generate the texture
@@ -112,24 +116,18 @@ Renderer::Renderer(Config config)
         glGenBuffers(1, &m_buffer.model);
         glBindBuffer(GL_ARRAY_BUFFER, m_buffer.model);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+        
+        glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
         glEnableVertexAttribArray(0);
         glVertexAttribDivisor(0, 0);
 
-        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(3);
-        glVertexAttribDivisor(3, 0);
-    }
-
-    // Setup mesh tex
-    {
-        glGenBuffers(1, &m_buffer.tex);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(1 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
         glVertexAttribDivisor(1, 0);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribDivisor(2, 0);
     }
 
     // Setup pos attrib
@@ -137,9 +135,26 @@ Renderer::Renderer(Config config)
         glGenBuffers(1, &m_buffer.pos);
         glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
 
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-        glEnableVertexAttribArray(2);
-        glVertexAttribDivisor(2, 1);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+        glEnableVertexAttribArray(3);
+        glVertexAttribDivisor(3, 1);
+    }
+
+    // Setup mesh tex
+    {
+        glGenBuffers(1, &m_buffer.tex);
+        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
+
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(8 * sizeof(GLfloat)));
+
+        glEnableVertexAttribArray(4);
+        glEnableVertexAttribArray(5);
+        glEnableVertexAttribArray(6);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);
+        glVertexAttribDivisor(6, 1);
     }
 }
 
@@ -163,15 +178,22 @@ void Renderer::Display()
 
     for (const auto& obj : m_renderables)
     {
-        pos.insert(
-            std::end(pos),
-            std::begin(obj.get().GetPosData()),
-            std::end(obj.get().GetPosData()));
+        // Keep the buff for debug purposes
+        const auto& posBuff = obj.get().GetPosData();
+        {
+            pos.insert(
+                std::end(pos),
+                std::begin(posBuff),
+                std::end(posBuff));
+        }
 
-        tex.insert(
-            std::end(tex),
-            std::begin(obj.get().GetTextureData()),
-            std::end(obj.get().GetTextureData()));
+        const auto& texBuff = obj.get().GetTextureData();
+        {
+            tex.insert(
+                std::end(tex),
+                std::begin(texBuff),
+                std::end(texBuff));
+        }
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
