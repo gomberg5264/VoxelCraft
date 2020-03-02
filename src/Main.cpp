@@ -48,7 +48,6 @@ private:
         
         // Register block types
         BlockMetaFactory meta;
-        // Grass
         {
             BlockMeta block;
             block.type = BlockType::Grass;
@@ -79,10 +78,16 @@ private:
                     glm::fvec3 o(x, y, z);
                     
                     BlockMeta bmeta;
-                    if (y < 0)
-                        bmeta = meta.GetBlockMeta(BlockType::Grass);
-                    else
+                    if (y > 0)
+                    {
                         bmeta = meta.GetBlockMeta(BlockType::Stone);
+                    }
+                    else
+                    {
+                        bmeta = meta.GetBlockMeta(BlockType::Grass);
+                    }
+
+                    bmeta = meta.GetBlockMeta(BlockType::Grass);
 
                     m_cubes.emplace_back(
                         glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
