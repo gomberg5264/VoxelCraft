@@ -78,37 +78,8 @@ private:
         renderer.m_textureAtlas.Initialize(meta);
         atlas = &renderer.m_textureAtlas;
 
-
-        //m_cubes.emplace_back(
-        //    glm::fvec3(0.5f, 0.5f, 0.5f),
-        //    meta.GetBlockMeta(BlockType::Stone));
-
-        //return;
-
         // Generate some voxels
         constexpr int size = 2; // Actually radius
-
-        //for (int y = -size; y < size; y++)
-        //{
-        //    glm::fvec3 o(0, y, 0);
-
-        //    BlockMeta bmeta;
-        //    if (y >= 0)
-        //    {
-        //        bmeta = meta.GetBlockMeta(BlockType::Grass);
-        //    }
-        //    else
-        //    {
-        //        bmeta = meta.GetBlockMeta(BlockType::Stone);
-        //    }
-
-        //    m_cubes.emplace_back(
-        //        glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
-        //        bmeta);
-        //}
-
-        //return;
-
         for (int x = -size; x < size; x++)
         {
             for (int y = -size; y < size; y++)

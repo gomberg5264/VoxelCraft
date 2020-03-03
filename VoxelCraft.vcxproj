@@ -99,6 +99,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\client\Chunk.cpp" />
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
@@ -118,6 +119,7 @@
   <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
     <ClInclude Include="src\client\Block.hpp" />
+    <ClInclude Include="src\client\Chunk.hpp" />
     <ClInclude Include="src\graphics\Camera.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />

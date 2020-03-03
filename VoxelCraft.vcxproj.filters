@@ -45,6 +45,9 @@
     <ClCompile Include="src\graphics\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\client\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\default.frag" />
@@ -76,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\Texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\Chunk.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
