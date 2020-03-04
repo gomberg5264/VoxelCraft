@@ -174,9 +174,12 @@ void Renderer::Display()
     // Fill pos data
     std::vector<GLfloat> pos;
     std::vector<GLfloat> tex;
+    unsigned drawCount = 0;
 
     for (const auto& obj : m_renderables)
     {
+        drawCount += obj.get().GetCount();
+
         // Keep the buff for debug purposes
         const auto& posBuff = obj.get().GetPosData();
         {
@@ -201,7 +204,7 @@ void Renderer::Display()
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
     glBufferData(GL_ARRAY_BUFFER, tex.size() * sizeof(GLfloat), tex.data(), GL_DYNAMIC_DRAW);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, m_renderables.size());
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, drawCount);
     
     m_renderables.clear();
     m_window.display();

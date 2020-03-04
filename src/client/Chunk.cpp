@@ -5,9 +5,9 @@ Chunk::Chunk(glm::fvec3 pos) noexcept
 {
 }
 
+static int i = 0;
 void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
 {
-    static int i = 0;
     // Generate chunk
     const auto& data = i++ % 2 == 1 ? meta.GetBlockData(BlockType::Grass) : meta.GetBlockData(BlockType::Stone);
 

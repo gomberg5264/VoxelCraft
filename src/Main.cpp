@@ -38,11 +38,12 @@ private:
         atlas.Initialize(meta);
 
         //Generate some voxels
-        for (int i = 0; i < 3; i++)
+        for (int i = -1; i < 2; i++)
         {
-            m_chunks.push_back(Chunk());
+            m_chunks.push_back(std::make_unique<Chunk>());
             auto& chunk = m_chunks.back();
-
+            chunk->SetPos({ i * 40, 0, 0 });
+            chunk->Generate(meta,atlas);
         }
 
         //constexpr int size = 2; // Actually radius
@@ -90,10 +91,10 @@ private:
         renderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
 
         for (const auto& chunk : m_chunks)
-            renderer.Render(chunk);
+            renderer.Render(*chunk);
     }
 
-    std::vector<Chunk> m_chunks;
+    std::vector<std::unique_ptr<Chunk>> m_chunks;
 
     std::unique_ptr<Camera> m_camera;
 };

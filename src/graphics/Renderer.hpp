@@ -9,8 +9,9 @@ public:
 
     // This data is used by the renderer
     // The format is dependent on the renderer implementation
-    virtual const std::vector<GLfloat>& GetPosData() const = 0;
-    virtual const std::vector<GLfloat>& GetTextureData() const = 0;
+    virtual const std::vector<GLfloat>& GetPosData() const noexcept = 0;
+    virtual const std::vector<GLfloat>& GetTextureData() const noexcept = 0;
+    virtual const unsigned GetCount() const noexcept { return 1; }
 };
 
 class Renderer
