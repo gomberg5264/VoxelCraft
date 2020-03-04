@@ -84,5 +84,8 @@
     <ClInclude Include="src\client\BlockData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\Renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,14 +19,14 @@ public:
         }
     }
 
-    virtual const std::vector<GLfloat>& GetPosData() const noexcept override final
+    virtual const BufferData GetPosData() const noexcept override final
     {
-        return m_pos;
+        return { m_pos.data(), m_pos.size() };
     }
 
-    virtual const std::vector<GLfloat>& GetTextureData() const noexcept override final
+    virtual const BufferData GetTextureData() const noexcept override final
     {
-        return m_texture;
+        return { m_texture.data(), m_texture.size() };
     }
 private:
 

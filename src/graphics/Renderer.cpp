@@ -1,7 +1,16 @@
 #include "vcpch.hpp"
 
 Renderer::Renderer(Config config)
+    : m_posBuf(new GLfloat[config.maxChunkInstances * chunkSize * 3u])
+    , m_texBuf(new GLfloat[config.maxChunkInstances * chunkSize * 12u])
 {
+    printf("Constructing renderer...\n");
+    // Fill buffer with zeros
+    printf("Verify render buffers...\n");
+    memset(m_posBuf, 0, config.maxChunkInstances * chunkSize * 3 * sizeof(GLfloat));
+    memset(m_texBuf, 0, config.maxChunkInstances * chunkSize * 12 * sizeof(GLfloat));
+    printf("Verify render buffers DONE\n");
+
     // Create the main window
     sf::ContextSettings contextSettings;
     contextSettings.depthBits = 24;
@@ -80,7 +89,7 @@ Renderer::Renderer(Config config)
     m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
     m_shad->Use();
     m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
-    float atlasSize[2] = { 2,2 };
+    float atlasSize[2] = { config.atlasX,config.atlasY };
     m_shad->SetVec2("aAtlasSize", atlasSize);
 
     unsigned tex;
@@ -155,6 +164,8 @@ Renderer::Renderer(Config config)
         glVertexAttribDivisor(5, 1);
         glVertexAttribDivisor(6, 1);
     }
+
+    printf("Constructing renderer DONE\n");
 }
 
 void Renderer::SetVP(const glm::mat4& vp)
@@ -171,38 +182,35 @@ void Renderer::Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-    // Fill pos data
-    std::vector<GLfloat> pos;
-    std::vector<GLfloat> tex;
     unsigned drawCount = 0;
+    for (const auto& obj : m_renderables)
+    {
+        drawCount += obj.get().GetDrawCount();
+    }
+
+    // Fill pos data
+    const unsigned posSize = drawCount * 3;
+    const unsigned texSize = drawCount * 12;
+    size_t posI = 0;
+    size_t texI = 0;
 
     for (const auto& obj : m_renderables)
     {
-        drawCount += obj.get().GetCount();
+        const auto& posData = obj.get().GetPosData();
+        const auto& texData = obj.get().GetTextureData();
 
-        // Keep the buff for debug purposes
-        const auto& posBuff = obj.get().GetPosData();
-        {
-            pos.insert(
-                std::end(pos),
-                std::begin(posBuff),
-                std::end(posBuff));
-        }
-
-        const auto& texBuff = obj.get().GetTextureData();
-        {
-            tex.insert(
-                std::end(tex),
-                std::begin(texBuff),
-                std::end(texBuff));
-        }
+        memcpy(&m_posBuf[posI], posData.buffer, posData.size * sizeof(GLfloat));
+        memcpy(&m_texBuf[texI], texData.buffer, texData.size * sizeof(GLfloat));
+    
+        posI += posData.size;
+        texI += texData.size;
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
-    glBufferData(GL_ARRAY_BUFFER, pos.size() * sizeof(GLfloat), pos.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, posSize * sizeof(GLfloat), m_posBuf, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
-    glBufferData(GL_ARRAY_BUFFER, tex.size() * sizeof(GLfloat), tex.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texSize * sizeof(GLfloat), m_texBuf, GL_DYNAMIC_DRAW);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, drawCount);
     

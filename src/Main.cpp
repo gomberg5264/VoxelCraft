@@ -3,9 +3,15 @@
 
 class Game : public Engine
 {
+public:
+    Game(Config config = {})
+        : Engine(config) {}
+
 private:
     virtual void OnInit(Renderer& renderer) override final
     {
+        sf::Clock time;
+
         // Setup camera
         m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
         m_camera->m_eye = glm::vec3(0,0,6);
@@ -15,6 +21,7 @@ private:
         cast->m_sensitivity = 0.2f;
         
         // Register block types
+        // Grass
         BlockDataFactory meta;
         {
             BlockData block;
@@ -22,6 +29,15 @@ private:
             block.texture.uv[TextureFace::Top] = { 0,0 };
             block.texture.uv[TextureFace::Bottom] = { 0,1 };
             block.texture.SetSide({ 1,1 });
+
+            meta.AddBlockData(block);
+        }
+        {
+            BlockData block;
+            block.type = BlockType::Dirt;
+            //block.texture.uv[TextureFace::Top] = { 0,0 };
+            //block.texture.uv[TextureFace::Bottom] = { 0,1 };
+            block.texture.SetBlock({ 1,1 });
 
             meta.AddBlockData(block);
         }
@@ -46,38 +62,7 @@ private:
             chunk->Generate(meta,atlas);
         }
 
-        //constexpr int size = 2; // Actually radius
-        //for (int x = -size; x < size; x++)
-        //{
-        //    for (int y = -size; y < size; y++)
-        //    {
-        //        for (int z = -size; z < size; z++)
-        //        {
-        //            glm::fvec3 o(x, y, z);
-        //            
-        //            BlockData bmeta;
-        //            if (y >= 0)
-        //            {
-        //                bmeta = meta.GetBlockData(BlockType::Grass);
-        //            }
-        //            else
-        //            {
-        //                bmeta = meta.GetBlockData(BlockType::Stone);
-        //            }
-
-        //            //m_cubes.push_back(Block(
-        //            //    glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
-        //            //    bmeta, atlas));
-
-        //            m_cubes.emplace_back(Block());
-        //            
-        //            m_cubes.back().Init(
-        //                glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f), 
-        //                bmeta,
-        //                atlas);
-        //        }
-        //    }
-        //}
+        std::printf("Init time: %.2f", time.getElapsedTime().asSeconds());
     }
 
     virtual void OnUpdate(Time dt) override final
@@ -101,7 +86,12 @@ private:
 
 int main()
 {
-    Game game;
+    Game::Config config;
+    config.graphics.atlasX = 2;
+    config.graphics.atlasY = 2;
+    config.graphics.title = "VoxelCraft";
+    
+    Game game(config);
     game.Run();
 
     return EXIT_SUCCESS;

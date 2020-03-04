@@ -32,9 +32,8 @@ void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
 
 void Chunk::UpdateChunkRenderData()
 {
-    m_posData.clear();
-    m_texData.clear();
-
+    unsigned posI = 0;
+    unsigned texI = 0;
     for (unsigned x = 0; x < chunkDimension.x; x++)
     {
         for (unsigned y = 0; y < chunkDimension.y; y++)
@@ -45,8 +44,11 @@ void Chunk::UpdateChunkRenderData()
                 const auto& posBuf = block.GetPosData();
                 const auto& texBuf = block.GetTextureData();
 
-                m_posData.insert(std::begin(m_posData),std::begin(posBuf),std::end(posBuf));
-                m_texData.insert(std::begin(m_texData),std::begin(texBuf),std::end(texBuf));
+                memcpy(&m_posData.data()[posI], posBuf.buffer, posBuf.size * sizeof(GLfloat));
+                memcpy(&m_texData.data()[texI], texBuf.buffer, texBuf.size * sizeof(GLfloat));
+            
+                posI += posBuf.size;
+                texI += texBuf.size;
             }
         }
     }
@@ -62,12 +64,12 @@ glm::fvec3 Chunk::GetPos() const noexcept
     return m_pos;
 }
 
-const std::vector<GLfloat>& Chunk::GetPosData() const noexcept
+const Renderable::BufferData Chunk::GetPosData() const noexcept
 {
-    return m_posData;
+    return { m_posData.data(),m_posData.size() };
 }
 
-const std::vector<GLfloat>& Chunk::GetTextureData() const noexcept
+const Renderable::BufferData Chunk::GetTextureData() const noexcept
 {
-    return m_texData;
+    return { m_texData.data(),m_texData.size() };
 }

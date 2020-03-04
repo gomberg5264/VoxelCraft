@@ -1,19 +1,5 @@
 #pragma once
 
-class Renderer;
-
-class Renderable
-{
-public:
-    virtual glm::mat4 ToWorld() const { return glm::mat4(1); };
-
-    // This data is used by the renderer
-    // The format is dependent on the renderer implementation
-    virtual const std::vector<GLfloat>& GetPosData() const noexcept = 0;
-    virtual const std::vector<GLfloat>& GetTextureData() const noexcept = 0;
-    virtual const unsigned GetCount() const noexcept { return 1; }
-};
-
 class Renderer
 {
 public:
@@ -21,6 +7,11 @@ public:
     {
         float x{ 1280 };
         float y{ 720 };
+
+        unsigned atlasX{ 2 };
+        unsigned atlasY{ 2 };
+
+        unsigned maxChunkInstances{ 32 };
 
         std::string title{ "VoxelCraft" };
     };
@@ -55,6 +46,9 @@ private:
         unsigned pos;
     };
     Buffers m_buffer;
+
+    GLfloat* m_posBuf;
+    GLfloat* m_texBuf;
 
     sf::Window m_window;
     std::unique_ptr<Shader> m_shad;

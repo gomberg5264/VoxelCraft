@@ -29,14 +29,18 @@
 
 // proj
 #include "graphics/Texture.hpp"
+
 #include "client/BlockData.hpp"
 
 #include "graphics/TextureAtlas.hpp" // Atlas need blockData
 #include "graphics/Shader.hpp"
 #include "graphics/Camera.hpp"
-#include "graphics/Renderer.hpp"
+#include "graphics/Renderable.h"
 
 #include "client/Block.hpp"
-#include "client/Chunk.hpp"
+#include "client/Chunk.hpp" // Chunk needs Block
+
+#include "graphics/Renderer.hpp" // Renderer needs to know about chunksize
+
 
 #include "engine/Engine.hpp"
