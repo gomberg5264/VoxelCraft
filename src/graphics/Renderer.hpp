@@ -47,8 +47,8 @@ private:
     };
     Buffers m_buffer;
 
-    GLfloat* m_posBuf;
-    GLfloat* m_texBuf;
+    PosBuffer m_posBuf;
+    TexBuffer m_texBuf;
 
     sf::Window m_window;
     std::unique_ptr<Shader> m_shad;

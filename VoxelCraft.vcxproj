@@ -120,9 +120,10 @@
     <ClInclude Include="src\client\Block.hpp" />
     <ClInclude Include="src\client\BlockData.hpp" />
     <ClInclude Include="src\client\Chunk.hpp" />
+    <ClInclude Include="src\graphics\Buffer.hpp" />
     <ClInclude Include="src\graphics\Camera.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
-    <ClInclude Include="src\graphics\Renderable.h" />
+    <ClInclude Include="src\graphics\Renderable.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />
     <ClInclude Include="src\graphics\Shader.hpp" />
     <ClInclude Include="src\graphics\TextureAtlas.hpp" />

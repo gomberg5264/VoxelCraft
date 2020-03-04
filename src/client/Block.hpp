@@ -3,33 +3,35 @@
 class Block : public Renderable
 {
 public:
-    //Block(const glm::fvec3& pos, const BlockMeta& meta, const TextureAtlas& atlas)
+    Block() : m_pos(1), m_texture(1) {}
 
     void Init(const glm::fvec3& pos, const BlockData& meta, const TextureAtlas& atlas)
     {
-        m_pos.push_back(pos.x);
-        m_pos.push_back(pos.y);
-        m_pos.push_back(pos.z);
+        m_pos.CopyFrom(glm::value_ptr(pos), 0, 3);
+        //m_pos.push_back(pos.x);
+        //m_pos.push_back(pos.y);
+        //m_pos.push_back(pos.z);
 
         const auto& tex = atlas.GetTexture(meta.type).uv;
+        int j = 0;
         for (int i = 0; i < 6; i++)
         {
-            m_texture.push_back(tex[i].first);
-            m_texture.push_back(tex[i].second);
+            m_texture.Data()[j++] = (tex[i].first);
+            m_texture.Data()[j++] = (tex[i].second);
         }
     }
 
-    virtual const BufferData GetPosData() const noexcept override final
+    virtual const Buffer& GetPosData() const noexcept override final
     {
-        return { m_pos.data(), m_pos.size() };
+        return m_pos;
     }
 
-    virtual const BufferData GetTextureData() const noexcept override final
+    virtual const Buffer& GetTextureData() const noexcept override final
     {
-        return { m_texture.data(), m_texture.size() };
+        return m_texture;
     }
 private:
 
-    std::vector<GLfloat> m_pos;
-    std::vector<GLfloat> m_texture;
+    PosBuffer m_pos;
+    TexBuffer m_texture;
 };

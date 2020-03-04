@@ -14,14 +14,14 @@ public:
     void SetPos(const glm::fvec3& centerPos) noexcept;
     glm::fvec3 GetPos() const noexcept;
 
-    virtual const BufferData GetPosData() const noexcept override final;
-    virtual const BufferData GetTextureData() const noexcept override final;
+    virtual const Buffer& GetPosData() const noexcept override final;
+    virtual const Buffer& GetTextureData() const noexcept override final;
     virtual const unsigned GetDrawCount() const noexcept override final { return chunkSize; }
 
 private:
     glm::fvec3 m_pos;
-    std::array<GLfloat, chunkSize * 3> m_posData;
-    std::array<GLfloat, chunkSize * 6 * 2> m_texData;
+    PosBuffer m_posBuf;
+    TexBuffer m_texBuf;
 
     using BlockArray = std::array<std::array<std::array<Block, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
 

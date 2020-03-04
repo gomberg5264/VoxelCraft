@@ -1,40 +1,39 @@
 #include "vcpch.hpp"
 
 Renderer::Renderer(Config config)
-    : m_posBuf(new GLfloat[config.maxChunkInstances * chunkSize * 3u])
-    , m_texBuf(new GLfloat[config.maxChunkInstances * chunkSize * 12u])
+    : m_posBuf(config.maxChunkInstances * chunkSize)
+    , m_texBuf(config.maxChunkInstances * chunkSize)
 {
     printf("Constructing renderer...\n");
-    // Fill buffer with zeros
-    printf("Verify render buffers...\n");
-    memset(m_posBuf, 0, config.maxChunkInstances * chunkSize * 3 * sizeof(GLfloat));
-    memset(m_texBuf, 0, config.maxChunkInstances * chunkSize * 12 * sizeof(GLfloat));
-    printf("Verify render buffers DONE\n");
 
+    // ---
     // Create the main window
-    sf::ContextSettings contextSettings;
-    contextSettings.depthBits = 24;
-    contextSettings.majorVersion = 3;
-    contextSettings.minorVersion = 3;
+    {
+        sf::ContextSettings contextSettings;
+        contextSettings.depthBits = 24;
+        contextSettings.majorVersion = 3;
+        contextSettings.minorVersion = 3;
 
-    m_window.create(sf::VideoMode(config.x, config.y), config.title.c_str(), sf::Style::Default, contextSettings);
-    m_window.setActive();
+        m_window.create(sf::VideoMode(config.x, config.y), config.title.c_str(), sf::Style::Default, contextSettings);
+        m_window.setActive();
 
-    // Load OpenGL functions
-    if (!gladLoadGL()) {
-        throw "Glad couldn't be loaded!";
+        // Load OpenGL functions
+        if (!gladLoadGL()) {
+            throw "Glad couldn't be loaded!";
+        }
+        printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+
+        // Configure OpenGL
+        glViewport(0, 0, m_window.getSize().x, m_window.getSize().y);
+        glClearColor(0.2f, 0.f, 0.2f, 1.f);
+        glEnable(GL_DEPTH_TEST);
     }
-    printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
-
-    // Configure OpenGL
-    glViewport(0, 0, m_window.getSize().x, m_window.getSize().y);
-    glClearColor(0.2f, 0.f, 0.2f, 1.f);
-    glEnable(GL_DEPTH_TEST);
 
     // ---
     // Upload data to gpu
-    static constexpr GLfloat cube[] =
     {
+        static constexpr GLfloat cube[] =
+        {
         // Normal, Pos, UV
 
         // Back
@@ -86,83 +85,84 @@ Renderer::Renderer(Config config)
          5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
-    m_shad->Use();
-    m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
-    float atlasSize[2] = { config.atlasX,config.atlasY };
-    m_shad->SetVec2("aAtlasSize", atlasSize);
+        m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
+        m_shad->Use();
+        m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
+        float atlasSize[2] = { config.atlasX,config.atlasY };
+        m_shad->SetVec2("aAtlasSize", atlasSize);
 
-    unsigned tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        unsigned tex;
+        glGenTextures(1, &tex);
+        glBindTexture(GL_TEXTURE_2D, tex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    // Atm you can see other texture edges so disabled for now
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    // Load and generate the texture
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glGenVertexArrays(1, &m_buffer.vao);
-    glBindVertexArray(m_buffer.vao);
-    // Setup mesh attrib
-    {
-        glGenBuffers(1, &m_buffer.model);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.model);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
+        // Atm you can see other texture edges so disabled for now
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         
-        glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(0);
-        glVertexAttribDivisor(0, 0);
+        // Load and generate the texture
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            std::cout << "Failed to load texture" << std::endl;
+        }
+        stbi_image_free(data);
 
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(1 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-        glVertexAttribDivisor(1, 0);
+        glGenVertexArrays(1, &m_buffer.vao);
+        glBindVertexArray(m_buffer.vao);
+        // Setup mesh attrib
+        {
+            glGenBuffers(1, &m_buffer.model);
+            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.model);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
+            
+            glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(0);
+            glVertexAttribDivisor(0, 0);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribDivisor(2, 0);
-    }
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(1 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(1);
+            glVertexAttribDivisor(1, 0);
 
-    // Setup pos attrib
-    {
-        glGenBuffers(1, &m_buffer.pos);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribDivisor(2, 0);
+        }
 
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-        glEnableVertexAttribArray(3);
-        glVertexAttribDivisor(3, 1);
-    }
+        // Setup pos attrib
+        {
+            glGenBuffers(1, &m_buffer.pos);
+            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
 
-    // Setup mesh tex
-    {
-        glGenBuffers(1, &m_buffer.tex);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+            glEnableVertexAttribArray(3);
+            glVertexAttribDivisor(3, 1);
+        }
 
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(8 * sizeof(GLfloat)));
+        // Setup mesh tex
+        {
+            glGenBuffers(1, &m_buffer.tex);
+            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
 
-        glEnableVertexAttribArray(4);
-        glEnableVertexAttribArray(5);
-        glEnableVertexAttribArray(6);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
+            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
+            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
+            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(8 * sizeof(GLfloat)));
+
+            glEnableVertexAttribArray(4);
+            glEnableVertexAttribArray(5);
+            glEnableVertexAttribArray(6);
+            glVertexAttribDivisor(4, 1);
+            glVertexAttribDivisor(5, 1);
+            glVertexAttribDivisor(6, 1);
+        }
     }
 
     printf("Constructing renderer DONE\n");
@@ -189,8 +189,8 @@ void Renderer::Display()
     }
 
     // Fill pos data
-    const unsigned posSize = drawCount * 3;
-    const unsigned texSize = drawCount * 12;
+    const unsigned posSize = drawCount * m_posBuf.attribSize;
+    const unsigned texSize = drawCount * m_texBuf.attribSize;
     size_t posI = 0;
     size_t texI = 0;
 
@@ -199,18 +199,18 @@ void Renderer::Display()
         const auto& posData = obj.get().GetPosData();
         const auto& texData = obj.get().GetTextureData();
 
-        memcpy(&m_posBuf[posI], posData.buffer, posData.size * sizeof(GLfloat));
-        memcpy(&m_texBuf[texI], texData.buffer, texData.size * sizeof(GLfloat));
-    
+        m_posBuf.CopyFrom(posData, posI);
+        m_texBuf.CopyFrom(texData, texI);
+
         posI += posData.size;
         texI += texData.size;
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
-    glBufferData(GL_ARRAY_BUFFER, posSize * sizeof(GLfloat), m_posBuf, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, posSize * sizeof(GLfloat), m_posBuf.Data(), GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
-    glBufferData(GL_ARRAY_BUFFER, texSize * sizeof(GLfloat), m_texBuf, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texSize * sizeof(GLfloat), m_texBuf.Data(), GL_DYNAMIC_DRAW);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, drawCount);
     
