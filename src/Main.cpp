@@ -1,46 +1,5 @@
 #include "vcpch.hpp"
 
-TextureAtlas* atlas = nullptr;
-
-class Cube : public Renderable
-{
-public:
-    Cube(const glm::fvec3& pos, const BlockMeta& meta)
-    {
-        m_pos.push_back(pos.x);
-        m_pos.push_back(pos.y);
-        m_pos.push_back(pos.z);
-
-        const auto& tex = (*atlas).GetTexture(meta.type).uv;
-        for (int i = 0; i < 6; i++)
-        {
-            // This way, every vertex has the uv specified
-            // This means that we are wasting 6* as much space but I don't know
-            // how to tell the vertex shader to only continue 
-
-            // We kinda fake instance it
-            //for (int j = 0; j < 6; j++)
-            {
-                m_texture.push_back(tex[i].first);
-                m_texture.push_back(tex[i].second);
-            }
-        }
-    }
-
-    virtual const std::vector<GLfloat>& GetPosData() const override final
-    {
-        return m_pos;
-    }
-
-    virtual const std::vector<GLfloat>& GetTextureData() const override final
-    {
-        return m_texture;
-    }
-private:
-
-    std::vector<GLfloat> m_pos;
-    std::vector<GLfloat> m_texture;
-};
 
 class Game : public Engine
 {
@@ -56,54 +15,68 @@ private:
         cast->m_sensitivity = 0.2f;
         
         // Register block types
-        BlockMetaFactory meta;
+        BlockDataFactory meta;
         {
-            BlockMeta block;
+            BlockData block;
             block.type = BlockType::Grass;
             block.texture.uv[TextureFace::Top] = { 0,0 };
             block.texture.uv[TextureFace::Bottom] = { 0,1 };
             block.texture.SetSide({ 1,1 });
 
-            meta.AddBlockMeta(block);
+            meta.AddBlockData(block);
         }
         // Stone
         {
-            BlockMeta block;
+            BlockData block;
             block.type = BlockType::Stone;
             block.texture.SetBlock({ 1,0 });
 
-            meta.AddBlockMeta(block);
+            meta.AddBlockData(block);
         }
 
-        renderer.m_textureAtlas.Initialize(meta);
-        atlas = &renderer.m_textureAtlas;
+        TextureAtlas atlas(2,2);
+        atlas.Initialize(meta);
 
-        // Generate some voxels
-        constexpr int size = 2; // Actually radius
-        for (int x = -size; x < size; x++)
+        //Generate some voxels
+        for (int i = 0; i < 3; i++)
         {
-            for (int y = -size; y < size; y++)
-            {
-                for (int z = -size; z < size; z++)
-                {
-                    glm::fvec3 o(x, y, z);
-                    
-                    BlockMeta bmeta;
-                    if (y >= 0)
-                    {
-                        bmeta = meta.GetBlockMeta(BlockType::Grass);
-                    }
-                    else
-                    {
-                        bmeta = meta.GetBlockMeta(BlockType::Stone);
-                    }
+            m_chunks.push_back(Chunk());
+            auto& chunk = m_chunks.back();
 
-                    m_cubes.emplace_back(
-                        glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
-                        bmeta);
-                }
-            }
         }
+
+        //constexpr int size = 2; // Actually radius
+        //for (int x = -size; x < size; x++)
+        //{
+        //    for (int y = -size; y < size; y++)
+        //    {
+        //        for (int z = -size; z < size; z++)
+        //        {
+        //            glm::fvec3 o(x, y, z);
+        //            
+        //            BlockData bmeta;
+        //            if (y >= 0)
+        //            {
+        //                bmeta = meta.GetBlockData(BlockType::Grass);
+        //            }
+        //            else
+        //            {
+        //                bmeta = meta.GetBlockData(BlockType::Stone);
+        //            }
+
+        //            //m_cubes.push_back(Block(
+        //            //    glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f),
+        //            //    bmeta, atlas));
+
+        //            m_cubes.emplace_back(Block());
+        //            
+        //            m_cubes.back().Init(
+        //                glm::fvec3(o.x + 0.5f, o.y + 0.5f, o.z + 0.5f), 
+        //                bmeta,
+        //                atlas);
+        //        }
+        //    }
+        //}
     }
 
     virtual void OnUpdate(Time dt) override final
@@ -116,11 +89,11 @@ private:
     {
         renderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
 
-        for (const auto& cube : m_cubes)
-            renderer.Render(cube);
+        for (const auto& chunk : m_chunks)
+            renderer.Render(chunk);
     }
 
-    std::vector<Cube> m_cubes;
+    std::vector<Chunk> m_chunks;
 
     std::unique_ptr<Camera> m_camera;
 };

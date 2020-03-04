@@ -1,7 +1,6 @@
 #include "vcpch.hpp"
 
 Renderer::Renderer(Config config)
-    : m_textureAtlas(2,2)
 {
     // Create the main window
     sf::ContextSettings contextSettings;
@@ -81,7 +80,7 @@ Renderer::Renderer(Config config)
     m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
     m_shad->Use();
     m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
-    float atlasSize[2] = { m_textureAtlas.GetSize().first, m_textureAtlas.GetSize().second };
+    float atlasSize[2] = { 2,2 };
     m_shad->SetVec2("aAtlasSize", atlasSize);
 
     unsigned tex;

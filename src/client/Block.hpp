@@ -1,44 +1,35 @@
 #pragma once
 
-enum BlockType
-{
-    Grass,
-    Stone,
-
-    Count
-};
-
-struct BlockMeta
-{
-    BlockType type;
-    Texture<unsigned> texture;
-};
-
-class BlockMetaFactory
+class Block : public Renderable
 {
 public:
+    //Block(const glm::fvec3& pos, const BlockMeta& meta, const TextureAtlas& atlas)
 
-    void AddBlockMeta(const BlockMeta &block)
+    void Init(const glm::fvec3& pos, const BlockData& meta, const TextureAtlas& atlas)
     {
-        assert(m_blocks.count(block.type) == 0);
-        m_blocks[block.type] = block;
+        m_pos.push_back(pos.x);
+        m_pos.push_back(pos.y);
+        m_pos.push_back(pos.z);
+
+        const auto& tex = atlas.GetTexture(meta.type).uv;
+        for (int i = 0; i < 6; i++)
+        {
+            m_texture.push_back(tex[i].first);
+            m_texture.push_back(tex[i].second);
+        }
     }
 
-    const BlockMeta& GetBlockMeta(BlockType type) const
+    virtual const std::vector<GLfloat>& GetPosData() const override final
     {
-        return m_blocks.at(type);
+        return m_pos;
     }
 
-    BlockMeta CreateBlockMeta(BlockType type) const
+    virtual const std::vector<GLfloat>& GetTextureData() const override final
     {
-        return m_blocks.at(type);
+        return m_texture;
     }
-
-    const std::unordered_map<BlockType, BlockMeta>& GetData() const
-    {
-        return m_blocks;
-    }
-
 private:
-    std::unordered_map<BlockType, BlockMeta> m_blocks;
+
+    std::vector<GLfloat> m_pos;
+    std::vector<GLfloat> m_texture;
 };

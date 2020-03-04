@@ -6,7 +6,7 @@ TextureAtlas::TextureAtlas(unsigned width, unsigned height)
 {
 }
 
-void TextureAtlas::Initialize(const BlockMetaFactory& factory)
+void TextureAtlas::Initialize(const BlockDataFactory& factory)
 {
     for (const auto& block : factory.GetData())
     {

@@ -5,7 +5,7 @@ class TextureAtlas
 public:
     TextureAtlas(unsigned width, unsigned heigth);
     
-    void Initialize(const BlockMetaFactory& factory);
+    void Initialize(const BlockDataFactory& factory);
     
     void AddTexture(BlockType type, const Texture<unsigned>& texture);
     const Texture<float>& GetTexture(BlockType type) const;

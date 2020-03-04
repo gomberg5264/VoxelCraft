@@ -29,11 +29,14 @@
 
 // proj
 #include "graphics/Texture.hpp"
-#include "client/Block.hpp"
+#include "client/BlockData.hpp"
 
-#include "graphics/TextureAtlas.hpp"
+#include "graphics/TextureAtlas.hpp" // Atlas need blockData
 #include "graphics/Shader.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Renderer.hpp"
+
+#include "client/Block.hpp"
+#include "client/Chunk.hpp"
 
 #include "engine/Engine.hpp"
