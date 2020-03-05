@@ -199,11 +199,11 @@ void Renderer::Display()
         const auto& posData = obj.get().GetPosData();
         const auto& texData = obj.get().GetTextureData();
 
-        m_posBuf.CopyFrom(posData, posI);
-        m_texBuf.CopyFrom(texData, texI);
+        m_posBuf.CopyFrom(posData, posI,obj.get().GetDrawCount());
+        m_texBuf.CopyFrom(texData, texI,obj.get().GetDrawCount());
 
-        posI += posData.size;
-        texI += texData.size;
+        posI += obj.get().GetDrawCount() * posData.attribSize;
+        texI += obj.get().GetDrawCount() * texData.attribSize;
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);

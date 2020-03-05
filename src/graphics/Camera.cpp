@@ -45,6 +45,9 @@ void FreelookCamera::Update(float dt)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) movement -= forward;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) movement += right;
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) movement *= 20.f;
+
+
         movement *= (m_speed * dt);
         m_eye = m_eye + movement;
         m_target = m_eye + forward;
@@ -53,7 +56,7 @@ void FreelookCamera::Update(float dt)
 
 glm::mat4 Camera::GetProjection() const
 {
-    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 100.f);
+    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 1000.f);
 }
 
 glm::mat4 Camera::GetView() const

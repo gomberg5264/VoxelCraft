@@ -2,6 +2,7 @@
 
 enum BlockType
 {
+    Air,
     Grass,
     Dirt,
     Stone,
@@ -13,6 +14,8 @@ struct BlockData
 {
     BlockType type;
     Texture<unsigned> texture;
+
+    bool isSolid{ true };
 };
 
 class BlockDataFactory

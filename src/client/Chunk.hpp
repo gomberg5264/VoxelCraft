@@ -16,7 +16,7 @@ public:
 
     virtual const Buffer& GetPosData() const noexcept override final;
     virtual const Buffer& GetTextureData() const noexcept override final;
-    virtual const unsigned GetDrawCount() const noexcept override final { return chunkSize; }
+    virtual const unsigned GetDrawCount() const noexcept override final;
 
 private:
     glm::fvec3 m_pos;
@@ -25,5 +25,6 @@ private:
 
     using BlockArray = std::array<std::array<std::array<Block, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
 
+    unsigned m_drawCount;
     BlockArray m_blocks;
 };

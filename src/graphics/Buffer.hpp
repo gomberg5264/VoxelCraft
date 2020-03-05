@@ -31,6 +31,7 @@ public:
      */
     inline void CopyFrom(const void* src, size_t at, size_t size) { memcpy(&Data()[at], src, size * sizeof(GLfloat)); }
     inline void CopyFrom(const Buffer& src, size_t at) { memcpy(&Data()[at], src.Data(), src.size * sizeof(GLfloat)); }
+    inline void CopyFrom(const Buffer& src, size_t at, size_t size) { memcpy(&Data()[at], src.Data(), size * src.attribSize * sizeof(GLfloat)); }
 
     inline GLfloat* Data() { return buffer.get(); }
     inline const GLfloat* Data() const { return buffer.get(); }

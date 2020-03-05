@@ -21,8 +21,14 @@ private:
         cast->m_sensitivity = 0.2f;
         
         // Register block types
-        // Grass
+
         BlockDataFactory meta;
+        {
+            BlockData block;
+            block.type = BlockType::Air;
+            block.isSolid = false;
+            meta.AddBlockData(block);
+        }
         {
             BlockData block;
             block.type = BlockType::Grass;
@@ -37,7 +43,7 @@ private:
             block.type = BlockType::Dirt;
             //block.texture.uv[TextureFace::Top] = { 0,0 };
             //block.texture.uv[TextureFace::Bottom] = { 0,1 };
-            block.texture.SetBlock({ 1,1 });
+            block.texture.SetBlock({ 0,1 });
 
             meta.AddBlockData(block);
         }
@@ -58,7 +64,7 @@ private:
         {
             m_chunks.push_back(std::make_unique<Chunk>());
             auto& chunk = m_chunks.back();
-            chunk->SetPos({ i * 40, 0, 0 });
+            chunk->SetPos({ i * chunkDimension.x, -float(chunkDimension.y) * 0.5f, -float(chunkDimension.z) * 2 });
             chunk->Generate(meta,atlas);
         }
 

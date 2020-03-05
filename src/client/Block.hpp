@@ -30,8 +30,15 @@ public:
     {
         return m_texture;
     }
+
+    const BlockData& GetData() const noexcept
+    {
+        return m_data;
+    }
+
 private:
 
+    BlockData m_data;
     PosBuffer m_pos;
     TexBuffer m_texture;
 };
