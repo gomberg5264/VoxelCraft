@@ -64,7 +64,7 @@ private:
         {
             m_chunks.push_back(std::make_unique<Chunk>());
             auto& chunk = m_chunks.back();
-            chunk->SetPos({ i * chunkDimension.x, -float(chunkDimension.y) * 0.5f, -float(chunkDimension.z) * 2 });
+            chunk->SetPos({ i * float(chunkDimension.x), -float(chunkDimension.y) * 0.5f, -float(chunkDimension.z) * 2 });
             chunk->Generate(meta,atlas);
         }
 

@@ -7,6 +7,8 @@ public:
 
     void Init(const glm::fvec3& pos, const BlockData& meta, const TextureAtlas& atlas)
     {
+        m_data = meta;
+
         m_pos.CopyFrom(glm::value_ptr(pos), 0, 3);
         //m_pos.push_back(pos.x);
         //m_pos.push_back(pos.y);
