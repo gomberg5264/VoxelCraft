@@ -12,6 +12,7 @@ static int i = 0;
 void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
 {
     // Generate chunk
+    constexpr float flatFactor = 0.10f;
 
     for (unsigned x = 0; x < chunkDimension.x; x++)
     {
@@ -20,7 +21,7 @@ void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
             for (unsigned z = 0; z < chunkDimension.z; z++)
             {
                 // Execute generation criteria
-                const float perlin = glm::perlin(glm::fvec2(float(x) / chunkDimension.x, float(z)/chunkDimension.y));
+                const float perlin = glm::perlin(glm::fvec2(float(x + m_pos.x) / chunkDimension.x, float(z + m_pos.z)/chunkDimension.z) * flatFactor);
                 // perlin [0,1]
                 const int height = ((perlin + 1.f) / 2.f) * (chunkDimension.y * 0.5f) + (chunkDimension.y * 0.5f);
                 glm::fvec3 pos{ x,y,z };

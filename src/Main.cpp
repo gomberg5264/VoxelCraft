@@ -60,12 +60,16 @@ private:
         atlas.Initialize(meta);
 
         //Generate some voxels
-        for (int i = -1; i < 2; i++)
+        for (int x = 0; x < 8; x++)
         {
-            m_chunks.push_back(std::make_unique<Chunk>());
-            auto& chunk = m_chunks.back();
-            chunk->SetPos({ i * float(chunkDimension.x), -float(chunkDimension.y) * 0.5f, -float(chunkDimension.z) * 2 });
-            chunk->Generate(meta,atlas);
+            for (int z = 0; z < 8; z++)
+            {
+                m_chunks.push_back(std::make_unique<Chunk>());
+                auto& chunk = m_chunks.back();
+                chunk->SetPos({ x * float(chunkDimension.x), -float(chunkDimension.y) * 0.5f, z * -float(chunkDimension.z)});
+                chunk->Generate(meta,atlas);
+            }
+            std::cout << (x + 1) * 8 << '/' << 8 * 8 << '\n';
         }
 
         std::printf("Init time: %.2f", time.getElapsedTime().asSeconds());
@@ -96,7 +100,8 @@ int main()
     config.graphics.atlasX = 2;
     config.graphics.atlasY = 2;
     config.graphics.title = "VoxelCraft";
-    
+    config.graphics.maxChunkInstances = 64;
+
     Game game(config);
     game.Run();
 

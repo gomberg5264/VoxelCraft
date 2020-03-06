@@ -194,8 +194,9 @@ void Renderer::Display()
     size_t posI = 0;
     size_t texI = 0;
 
-    for (const auto& obj : m_renderables)
+    for (int i = 0; i < m_renderables.size(); i++)
     {
+        const auto& obj = m_renderables[i];
         const auto& posData = obj.get().GetPosData();
         const auto& texData = obj.get().GetTextureData();
 
