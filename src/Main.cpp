@@ -60,9 +60,10 @@ private:
         atlas.Initialize(meta);
 
         //Generate some voxels
-        for (int x = 0; x < 8; x++)
+        constexpr int size = 2;
+        for (int x = 0; x < size; x++)
         {
-            for (int z = 0; z < 8; z++)
+            for (int z = 0; z < size; z++)
             {
                 m_chunks.push_back(std::make_unique<Chunk>());
                 auto& chunk = m_chunks.back();
