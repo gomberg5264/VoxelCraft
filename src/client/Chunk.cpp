@@ -12,6 +12,7 @@ static int i = 0;
 void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
 {
     // Generate chunk
+    // The lower the more flat
     constexpr float flatFactor = 0.10f;
 
     for (unsigned x = 0; x < chunkDimension.x; x++)
@@ -59,6 +60,27 @@ void Chunk::Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept
     UpdateChunkRenderData();
 }
 
+bool IsVisible(int x, int y, int z, const Chunk::BlockArray& blocks)
+{
+    // Block is only culled if it is surrounded on all sides
+
+    // If it is on the edge of a chunk, we will just render it
+    if (x < 1 || x >= chunkDimension.x - 1 ||
+        y < 1 || y >= chunkDimension.y - 1 ||
+        z < 1 || z >= chunkDimension.z - 1) return true;
+
+    // If visible from any side we should just render
+    if (!blocks[x + 1][y][z].GetData().isSolid) return true;
+    if (!blocks[x - 1][y][z].GetData().isSolid) return true;
+    if (!blocks[x][y + 1][z].GetData().isSolid) return true;
+    if (!blocks[x][y - 1][z].GetData().isSolid) return true;
+    if (!blocks[x][y][z + 1].GetData().isSolid) return true;
+    if (!blocks[x][y][z - 1].GetData().isSolid) return true;
+
+    // This means fully encapsulated
+    return false;
+}
+
 void Chunk::UpdateChunkRenderData()
 {
     unsigned posI = 0;
@@ -69,7 +91,7 @@ void Chunk::UpdateChunkRenderData()
             for (unsigned z = 0; z < chunkDimension.z; z++)
             {
                 const auto& block = m_blocks[x][y][z];
-                if (block.GetData().isSolid)
+                if (block.GetData().isSolid && IsVisible(x,y,z,m_blocks))
                 {
                     const auto& posBuf = block.GetPosData();
                     const auto& texBuf = block.GetTextureData();
