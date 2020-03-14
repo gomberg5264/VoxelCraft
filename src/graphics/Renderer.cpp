@@ -15,8 +15,8 @@ Renderer::Renderer(Config config)
         contextSettings.minorVersion = 3;
 
         m_window.create(sf::VideoMode(config.x, config.y), config.title.c_str(), sf::Style::Default, contextSettings);
-        m_window.setActive();
-
+        //m_window.setActive();
+        
         // Load OpenGL functions
         if (!gladLoadGL()) {
             throw "Glad couldn't be loaded!";
@@ -93,13 +93,11 @@ Renderer::Renderer(Config config)
 
         unsigned tex;
         glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
+        glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+        
         // Atm you can see other texture edges so disabled for now
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         
         // Load and generate the texture
         int width, height, nrChannels;
@@ -107,8 +105,35 @@ Renderer::Renderer(Config config)
         unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, 0);
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            // Create the storage
+            glTexImage3D(
+                GL_TEXTURE_2D_ARRAY, 
+                0, 
+                GL_RGB, 
+                width, 
+                height,
+                4, 
+                0, 
+                GL_RGBA, 
+                GL_UNSIGNED_BYTE, 
+                NULL);
+            
+            glTexImage3D(
+                GL_TEXTURE_2D_ARRAY,
+                0, 
+                GL_RGB, 
+                width, 
+                height,
+                4, 
+                0, 
+                GL_RGBA, 
+                GL_UNSIGNED_BYTE, 
+                data);
+           
+            auto en=glGetError();
+            assert(en == GL_NO_ERROR);
+
+            glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
         }
         else
         {
