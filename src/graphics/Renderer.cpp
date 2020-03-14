@@ -145,9 +145,7 @@ Renderer::Renderer(Config config)
         m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
         m_shad->Use();
         m_shad->SetMatrix("aMVP", glm::value_ptr(glm::mat4(1)));
-        float atlasSize[2] = { config.atlasX,config.atlasY };
-        m_shad->SetVec2("aAtlasSize", atlasSize);
-
+        
         unsigned tex;
         glGenTextures(1, &tex);
         glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
@@ -162,33 +160,30 @@ Renderer::Renderer(Config config)
         unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, 0);
         if (data)
         {
+            const auto size = config.atlasX * config.atlasY;
+            const unsigned texSize = width / config.atlasX;
             // Create the storage
-            glTexImage3D(
-                GL_TEXTURE_2D_ARRAY, 
-                0, 
-                GL_RGB, 
-                width, 
-                height,
-                4, 
-                0, 
-                GL_RGBA, 
-                GL_UNSIGNED_BYTE, 
-                NULL);
+            glTexStorage3D(GL_TEXTURE_2D_ARRAY, size, GL_RGBA8, texSize, texSize, size);
             
-            glTexImage3D(
-                GL_TEXTURE_2D_ARRAY,
-                0, 
-                GL_RGB, 
-                width, 
-                height,
-                4, 
-                0, 
-                GL_RGBA, 
-                GL_UNSIGNED_BYTE, 
-                data);
-           
-            auto en=glGetError();
-            assert(en == GL_NO_ERROR);
+            // Load the textures in 
+            for (int x = 0; x < config.atlasX; x++)
+            {
+                for (int y = 0; y < config.atlasY; y++)
+                {
+                    glTexSubImage3D(
+                        GL_TEXTURE_2D_ARRAY, 
+                        0, 
+                        1,
+                        0,//y * texSize,
+                        x + y * config.atlasX, 
+                        texSize, 
+                        texSize, 
+                        1,
+                        GL_RGBA,
+                        GL_UNSIGNED_BYTE, 
+                        data);
+                }
+            }
 
             glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
         }

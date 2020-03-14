@@ -35,6 +35,6 @@ void main()
        uvOffset[column][row],
        uvOffset[column][row + 1]);
 
-    uv = uvIndex + (aVertexUV / aAtlasSize);
+    uv = aVertexUV;//uvIndex + (aVertexUV / aAtlasSize);
     gl_Position = aVP * vec4(aVertexPos + aPosOffset ,1.0f);
 }
