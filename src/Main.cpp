@@ -56,7 +56,7 @@ private:
         }
 
         //Generate voxels
-        constexpr int size = 2;
+        constexpr int size = 8;
         for (int x = 0; x < size; x++)
         {
             for (int z = 0; z < size; z++)
