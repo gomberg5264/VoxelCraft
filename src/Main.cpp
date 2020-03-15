@@ -23,7 +23,7 @@ private:
         // Register block types
         auto T = [](unsigned x, unsigned y)
         {
-            return x + y * 2;
+            return x + y * 2; // TODO make sure that the 2 is acutally the atlas size.x
         };
         BlockDataFactory bData;
         {

@@ -52,7 +52,7 @@ struct BlockData
         texture[BlockFace::Bottom] = bottom;
     }
 
-    VBO CreateVBO(glm::vec3 pos) const
+    VBO CreateVBO(const glm::vec3& pos) const
     {
         VBO vbo{ 1 };
         VBO::Vertex ver;

@@ -55,7 +55,7 @@ public:
     inline const Vertex* Data() const { return &m_data.get()[0]; }
 
     inline Vertex& operator[] (size_t index) 
-    { assert(index > 0 && index < m_size && "Out of bounds"); return m_data.get()[index]; }
+    { assert(index >= 0 && index < m_size && "Out of bounds"); return m_data.get()[index]; }
     inline const Vertex& operator[] (size_t index) const { return (*this)[index]; }
 private:
     std::unique_ptr<Vertex[]> m_data;

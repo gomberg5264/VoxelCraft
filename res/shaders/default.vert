@@ -17,21 +17,31 @@ layout (location = 4) in vec3 aTex1;
 layout (location = 5) in vec3 aTex2;
 
 out vec2 uv;
-out int texIndex; 
+out flat int texIndex; 
+
+out vec3 tex;
 
 uniform mat4 aVP;
 
 void main()
 {
-    int tex[6];
-    tex[0] = int(aTex1.x);
-    tex[1] = int(aTex1.y);
-    tex[2] = int(aTex1.z);
-    tex[3] = int(aTex2.x);
-    tex[4] = int(aTex2.y);
-    tex[5] = int(aTex2.z);
+    const int intDir = int(aDir);
+    //if(intDir < 3)
+    //    texIndex = int(aTex1[intDir]);
+    //else   
+    //    texIndex = int(aTex2[intDir - 3]);
+    texIndex = 
+        intDir == 0 ? int(aTex1[0]) :
+        intDir == 1 ? int(aTex1[1]) :
+        intDir == 2 ? int(aTex1[2]) :
+        intDir == 3 ? int(aTex2[0]) :
+        intDir == 4 ? int(aTex2[1]) :
+        intDir == 5 ? int(aTex2[2]) : 0; // TODO add error texture
+
+    //texIndex = int(aTex1.x);
+    //texIndex = intDir;
+    tex = aTex1;
 
     uv = aUV;
-    texIndex = tex[aDir];
     gl_Position = aVP * vec4(aPos + aPosOffset ,1.0f);
 }
