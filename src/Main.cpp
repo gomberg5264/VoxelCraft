@@ -21,56 +21,49 @@ private:
         cast->m_sensitivity = 0.2f;
         
         // Register block types
-
-        BlockDataFactory meta;
+        auto T = [](unsigned x, unsigned y)
+        {
+            return x + y * 2;
+        };
+        BlockDataFactory bData;
         {
             BlockData block;
-            block.type = BlockType::Air;
             block.isSolid = false;
-            meta.AddBlockData(block);
+            bData.AddBlockData(BlockType::Air,block);
         }
         {
             BlockData block;
-            block.type = BlockType::Grass;
-            block.texture.uv[TextureFace::Top] = { 0,0 };
-            block.texture.uv[TextureFace::Bottom] = { 0,1 };
-            block.texture.SetSide({ 1,1 });
+            block.SetSideUpBottomTexture(
+                T(1, 1),
+                T(0, 0), 
+                T(0, 1));
 
-            meta.AddBlockData(block);
+            bData.AddBlockData(BlockType::Grass,block);
         }
         {
             BlockData block;
-            block.type = BlockType::Dirt;
-            //block.texture.uv[TextureFace::Top] = { 0,0 };
-            //block.texture.uv[TextureFace::Bottom] = { 0,1 };
-            block.texture.SetBlock({ 0,1 });
+            block.SetTexture(T(0,1));
 
-            meta.AddBlockData(block);
+            bData.AddBlockData(BlockType::Dirt, block);
         }
-        // Stone
         {
-            BlockData block;
-            block.type = BlockType::Stone;
-            block.texture.SetBlock({ 1,0 });
+            BlockData block;            
+            block.SetTexture(T(1, 0));
 
-            meta.AddBlockData(block);
+            bData.AddBlockData(BlockType::Stone, block);
         }
 
-        TextureAtlas atlas(2,2);
-        atlas.Initialize(meta);
-
-        //Generate some voxels
+        //Generate voxels
         constexpr int size = 2;
         for (int x = 0; x < size; x++)
         {
             for (int z = 0; z < size; z++)
             {
-                m_chunks.push_back(std::make_unique<Chunk>());
+                m_chunks.push_back(std::make_unique<Chunk>(bData, glm::fvec3{ x * chunkDimension.x,0,z * chunkDimension.z }));
                 auto& chunk = m_chunks.back();
-                chunk->SetPos({ x * float(chunkDimension.x), -float(chunkDimension.y) * 0.5f, z * -float(chunkDimension.z)});
-                chunk->Generate(meta,atlas);
+                chunk->Generate();
             }
-            std::cout << (x + 1) * 8 << '/' << 8 * 8 << '\n';
+            std::cout << (x + 1) * size << '/' << size * size << '\n';
         }
 
         std::printf("Init time: %.2f", time.getElapsedTime().asSeconds());

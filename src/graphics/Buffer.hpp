@@ -3,65 +3,62 @@
 /**
  * Wraps some data for the buffers
  */
-struct Buffer
+class VBO
 {
 public:
-    Buffer(unsigned attribSize, unsigned count)
-        : attribSize(attribSize)
-        , size(attribSize * count)
-        , count(count)
-        , buffer(std::make_unique<GLfloat[]>(attribSize * count))
+    struct Vertex
     {
+        float pos[3];
+        int texIndex[6];
+    };
+
+    VBO(size_t size) 
+        : m_data(std::make_unique<Vertex[]>(size))
+        , m_size(size)
+        , m_activeSize(0)
+    {}
+
+    VBO(VBO&& vbo) noexcept
+        : m_size(vbo.m_size)
+        , m_activeSize(vbo.m_activeSize)
+    {
+        m_data.swap(vbo.m_data);
     }
 
-    /**
-     * Copy memory from this buffer into another buffer/pointer
-     * 
-     * @param size the amount of elements in the src buffer
-     * @param at where you want to copy the data to in the target buffer
-     */
-    inline void CopyTo(void* dst) const { memcpy(dst, buffer.get(), size * sizeof(GLfloat)); }
-    inline void CopyTo(Buffer& dst, size_t at) const { memcpy(&dst.Data()[at], Data(), size * sizeof(GLfloat)); }
-    
-    /**
-     * Copy memory from another pointer/buffer into this buffer
-     *
-     * @param size the amount of elements in the src buffer
-     * @param at where you want to put the data in this buffer
-     */
-    inline void CopyFrom(const void* src, size_t at, size_t size) { memcpy(&Data()[at], src, size * sizeof(GLfloat)); }
-    inline void CopyFrom(const Buffer& src, size_t at) { memcpy(&Data()[at], src.Data(), src.size * sizeof(GLfloat)); }
-    inline void CopyFrom(const Buffer& src, size_t at, size_t size) { memcpy(&Data()[at], src.Data(), size * src.attribSize * sizeof(GLfloat)); }
+    VBO& operator=(VBO && vbo) noexcept
+    {
+        m_size = vbo.m_size;
+        m_activeSize = vbo.m_activeSize;
+        m_data.swap(vbo.m_data);
+    }
 
-    inline GLfloat* Data() { return buffer.get(); }
-    inline const GLfloat* Data() const { return buffer.get(); }
+    inline void Resize(size_t size)
+    {
+        auto temp = std::make_unique<Vertex[]>(size);
+        memcpy(&temp.get()[0], Data(), size * sizeof(Vertex));
 
-    /**
-     * Total allocated amount of elements in the buffer
-     */
-    const unsigned size;
+        m_data.swap(temp);
+        m_size = size;
+    }
 
-    /**
-     * Allocated amount of elements that make up one vertex attrib (3 for pos for example)
-     * May refactor to template struct in the future as that may be easier to work with
-     */
-    const unsigned attribSize;
-    
-    /**
-     * Total allocated amount of vertex attributes in buffer
-     */
-    const unsigned count;
+    inline void WriteBack(const Vertex& vertex)
+    {
+        (*this)[m_activeSize++] = vertex;
+    }
 
+    // The amount of elements that actually contain data
+    inline void SetActiveSize(size_t size) noexcept { m_activeSize = size; }
+    inline size_t GetActiveSize() const noexcept { return m_activeSize; }
+    inline size_t GetSize() const noexcept { return m_size; }
+
+    inline Vertex* Data() { return &m_data.get()[0]; }
+    inline const Vertex* Data() const { return &m_data.get()[0]; }
+
+    inline Vertex& operator[] (size_t index) 
+    { assert(index > 0 && index < m_size && "Out of bounds"); return m_data.get()[index]; }
+    inline const Vertex& operator[] (size_t index) const { return (*this)[index]; }
 private:
-    std::unique_ptr<GLfloat[]> buffer;
-};
-
-struct PosBuffer : public Buffer
-{
-    PosBuffer(unsigned count) : Buffer(3, count) {}
-};
-
-struct TexBuffer : public Buffer
-{
-    TexBuffer(unsigned count) : Buffer(12, count) {}
+    std::unique_ptr<Vertex[]> m_data;
+    unsigned m_size; 
+    unsigned m_activeSize;
 };

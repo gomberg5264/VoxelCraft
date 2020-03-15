@@ -42,13 +42,11 @@ private:
     {
         unsigned vao;
         unsigned model;
-        unsigned tex;
-        unsigned pos;
+        unsigned instance;
     };
     Buffers m_buffer;
 
-    PosBuffer m_posBuf;
-    TexBuffer m_texBuf;
+    VBO m_instanceBuffer;
 
     sf::Window m_window;
     std::unique_ptr<Shader> m_shad;

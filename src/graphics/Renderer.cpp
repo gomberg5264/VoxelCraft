@@ -48,8 +48,7 @@ void APIENTRY glDebugOutput(GLenum source,
 }
 
 Renderer::Renderer(Config config)
-    : m_posBuf(config.maxChunkInstances * chunkSize)
-    , m_texBuf(config.maxChunkInstances * chunkSize)
+    : m_instanceBuffer(config.maxChunkInstances * chunkSize)
 {
     printf("Constructing renderer...\n");
 
@@ -235,44 +234,40 @@ Renderer::Renderer(Config config)
             glBindBuffer(GL_ARRAY_BUFFER, m_buffer.model);
             glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
             
+            // Normal
             glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
             glEnableVertexAttribArray(0);
             glVertexAttribDivisor(0, 0);
 
+            // Pos
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(1 * sizeof(GLfloat)));
             glEnableVertexAttribArray(1);
             glVertexAttribDivisor(1, 0);
 
+            // UV
             glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
             glEnableVertexAttribArray(2);
             glVertexAttribDivisor(2, 0);
         }
 
-        // Setup pos attrib
+        // Setup instancing attrib
         {
-            glGenBuffers(1, &m_buffer.pos);
-            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
+            glGenBuffers(1, &m_buffer.instance);
+            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.instance);
 
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+            // PosOffset
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
             glEnableVertexAttribArray(3);
-            glVertexAttribDivisor(3, 1);
-        }
-
-        // Setup mesh tex
-        {
-            glGenBuffers(1, &m_buffer.tex);
-            glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
-
-            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));
-            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
-            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (void*)(8 * sizeof(GLfloat)));
-
+            glVertexAttribDivisor(3, 1);// These ones are prob redundant
+            
+            // TexIndices
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
             glEnableVertexAttribArray(4);
-            glEnableVertexAttribArray(5);
-            glEnableVertexAttribArray(6);
             glVertexAttribDivisor(4, 1);
-            glVertexAttribDivisor(5, 1);
-            glVertexAttribDivisor(6, 1);
+            
+            glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(5);
+            glVertexAttribDivisor(5, 1); 
         }
     }
 
@@ -293,38 +288,33 @@ void Renderer::Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-    unsigned drawCount = 0;
-    for (const auto& obj : m_renderables)
-    {
-        drawCount += obj.get().GetDrawCount();
-    }
+    //unsigned drawCount = 0;
+    //for (const auto& obj : m_renderables)
+    //{
+    //    drawCount += obj.get().GetDrawCount();
+    //}
 
-    // Fill pos data
-    const unsigned posSize = drawCount * m_posBuf.attribSize;
-    const unsigned texSize = drawCount * m_texBuf.attribSize;
-    size_t posI = 0;
-    size_t texI = 0;
-
+    // Fill Instance data
+    m_instanceBuffer.SetActiveSize(0);
     for (int i = 0; i < m_renderables.size(); i++)
     {
         const auto& obj = m_renderables[i];
-        const auto& posData = obj.get().GetPosData();
-        const auto& texData = obj.get().GetTextureData();
-
-        m_posBuf.CopyFrom(posData, posI,obj.get().GetDrawCount());
-        m_texBuf.CopyFrom(texData, texI,obj.get().GetDrawCount());
-
-        posI += obj.get().GetDrawCount() * posData.attribSize;
-        texI += obj.get().GetDrawCount() * texData.attribSize;
+        const auto& drawData = obj.get().GetDrawData();
+        
+        memcpy(
+            &m_instanceBuffer[m_instanceBuffer.GetActiveSize()],
+            drawData.Data(), drawData.GetActiveSize() * sizeof(VBO::Vertex));
+        
+        m_instanceBuffer.SetActiveSize(m_instanceBuffer.GetActiveSize() + drawData.GetActiveSize());
     }
     
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.pos);
-    glBufferData(GL_ARRAY_BUFFER, posSize * sizeof(GLfloat), m_posBuf.Data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.instance);
+    glBufferData(GL_ARRAY_BUFFER, 
+        m_instanceBuffer.GetActiveSize() * sizeof(VBO::Vertex), 
+        m_instanceBuffer.Data(), 
+        GL_DYNAMIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.tex);
-    glBufferData(GL_ARRAY_BUFFER, texSize * sizeof(GLfloat), m_texBuf.Data(), GL_DYNAMIC_DRAW);
-
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, drawCount);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, m_instanceBuffer.GetActiveSize());
     
     m_renderables.clear();
     m_window.display();

@@ -1,42 +1,37 @@
 #version 450 core
-layout (location = 0) in float aVertexDir;
-layout (location = 1) in vec3 aVertexPos;
-layout (location = 2) in vec2 aVertexUV;
+layout (location = 0) in float aDir;
+layout (location = 1) in vec3 aPos;
+layout (location = 2) in vec2 aUV;
+
+/*
+    Back,
+    Front,
+    Left,
+    Right,
+    Bottom,
+    Top,
+*/
 
 layout (location = 3) in vec3 aPosOffset;
-layout (location = 4) in vec4 aUVOffset0;
-layout (location = 5) in vec4 aUVOffset1;
-layout (location = 6) in vec4 aUVOffset2;
+layout (location = 4) in vec3 aTex1;
+layout (location = 5) in vec3 aTex2;
 
 out vec2 uv;
-out float dir;
+out int texIndex; 
 
 uniform mat4 aVP;
-uniform vec2 aAtlasSize;
 
 void main()
 {
-    /*
-        Dir is as follows
-        0,0 - Back
-        0,2 - Front
-        1,0 - Left
-        1,2 - Right
-        2,0 - Bottom
-        2,2 - Top
-    */
-    dir = aVertexDir;
-    mat3x4 uvOffset;
-    uvOffset[0] = aUVOffset0;
-    uvOffset[1] = aUVOffset1;
-    uvOffset[2] = aUVOffset2;
+    int tex[6];
+    tex[0] = int(aTex1.x);
+    tex[1] = int(aTex1.y);
+    tex[2] = int(aTex1.z);
+    tex[3] = int(aTex2.x);
+    tex[4] = int(aTex2.y);
+    tex[5] = int(aTex2.z);
 
-    int column = int(aVertexDir) / 2; 
-    int row = (int(aVertexDir) % 2) * 2;
-    vec2 uvIndex = vec2(
-       uvOffset[column][row],
-       uvOffset[column][row + 1]);
-
-    uv = aVertexUV;//uvIndex + (aVertexUV / aAtlasSize);
-    gl_Position = aVP * vec4(aVertexPos + aPosOffset ,1.0f);
+    uv = aUV;
+    texIndex = tex[aDir];
+    gl_Position = aVP * vec4(aPos + aPosOffset ,1.0f);
 }

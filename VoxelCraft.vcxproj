@@ -103,7 +103,6 @@
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
-    <ClCompile Include="src\graphics\TextureAtlas.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\vcpch.cpp">
@@ -117,7 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
-    <ClInclude Include="src\client\Block.hpp" />
     <ClInclude Include="src\client\BlockData.hpp" />
     <ClInclude Include="src\client\Chunk.hpp" />
     <ClInclude Include="src\graphics\Buffer.hpp" />
@@ -126,9 +124,7 @@
     <ClInclude Include="src\graphics\Renderable.hpp" />
     <ClInclude Include="src\graphics\Renderer.hpp" />
     <ClInclude Include="src\graphics\Shader.hpp" />
-    <ClInclude Include="src\graphics\TextureAtlas.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
-    <ClInclude Include="src\graphics\Texture.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,25 +6,21 @@ constexpr unsigned chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimensi
 class Chunk : public Renderable
 {
 public:
-    using BlockArray = std::array<std::array<std::array<Block, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
+    using BlockArray = std::array<std::array<std::array<BlockType, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
 
-    explicit Chunk(glm::fvec3 pos = glm::fvec3(0.f)) noexcept;
+    explicit Chunk(const BlockDataFactory& factory, glm::fvec3 pos = glm::fvec3(0.f));
 
-    void Generate(BlockDataFactory& meta, TextureAtlas& atlas) noexcept;
+    void Generate() noexcept;
     void UpdateChunkRenderData();
 
-    void SetPos(const glm::fvec3& centerPos) noexcept;
     glm::fvec3 GetPos() const noexcept;
 
-    virtual const Buffer& GetPosData() const noexcept override final;
-    virtual const Buffer& GetTextureData() const noexcept override final;
-    virtual const unsigned GetDrawCount() const noexcept override final;
+    virtual const VBO& GetDrawData() const noexcept override final;
 
 private:
-    glm::fvec3 m_pos;
-    PosBuffer m_posBuf;
-    TexBuffer m_texBuf;
-
-    unsigned m_drawCount;
+    const glm::fvec3 m_pos;
+    VBO m_buffer;
+    
+    const BlockDataFactory& m_factory;
     BlockArray m_blocks;
 };
