@@ -16,6 +16,7 @@ public:
 
 protected:
     sf::Vector2u GetWindowSize() const;
+    Config m_config;
 
 private:
     virtual void OnInit(Renderer& renderer) {};

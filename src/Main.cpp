@@ -11,7 +11,7 @@ private:
     virtual void OnInit(Renderer& renderer) override final
     {
         sf::Clock time;
-
+        
         // Setup camera
         m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
         m_camera->m_eye = glm::vec3(0,0,6);
@@ -20,10 +20,12 @@ private:
         cast->m_speed = 5.f;
         cast->m_sensitivity = 0.2f;
         
+        const auto atlasX = m_config.graphics.atlasX;
+        const auto atlasY = m_config.graphics.atlasY;
         // Register block types
-        auto T = [](unsigned x, unsigned y)
+        auto T = [atlasX,atlasY](unsigned x, unsigned y)
         {
-            return x + y * 2; // TODO make sure that the 2 is acutally the atlas size.x
+            return x + (atlasY - 1 -y) * atlasX; 
         };
         BlockDataFactory bData;
         {
@@ -42,7 +44,7 @@ private:
         }
         {
             BlockData block;
-            block.SetTexture(T(0,1));
+            block.SetTexture(T(0, 1));
 
             bData.AddBlockData(BlockType::Dirt, block);
         }

@@ -1,7 +1,8 @@
 #include "vcpch.hpp"
 
 Engine::Engine(Config config)
-    : m_renderer(config.graphics)
+    : m_config(config)
+    , m_renderer(config.graphics)
 {
 }
 
