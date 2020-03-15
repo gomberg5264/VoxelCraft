@@ -181,37 +181,19 @@ Renderer::Renderer(Config config)
                         }
                     }
                 }
-                //memset(image.get(), 255, width* height* nrChannels);
+
                 const auto size = config.atlasX * config.atlasY;
                 // Create the storage
-                //glTexStorage3D(GL_TEXTURE_2D_ARRAY, size, GL_RGBA8, texSize, texSize, size);
-                glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, texSize, texSize, 4);
+                glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, texSize, texSize, size);
                 
-                //glTexSubImage3D(
-                //    GL_TEXTURE_2D_ARRAY,
-                //    0,
-                //    0,0,0,
-                //    texSize,texSize,4,
-                //    GL_RGBA,
-                //    GL_UNSIGNED_BYTE,
-                //    image.get());
-
-                // Load the textures in 
-                for (int i = 0; i < size; i++)
-                {
-                    glTexSubImage3D(
-                        GL_TEXTURE_2D_ARRAY, 
-                        0,
-                        0,
-                        0,
-                        i, 
-                        texSize, 
-                        texSize, 
-                        1,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE, 
-                        &image.get()[i * texSize * texSize * nrChannels]);
-                }
+                glTexSubImage3D(
+                    GL_TEXTURE_2D_ARRAY,
+                    0,
+                    0,0,0,
+                    texSize,texSize,size,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE,
+                    image.get());
 
                 glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
             }
