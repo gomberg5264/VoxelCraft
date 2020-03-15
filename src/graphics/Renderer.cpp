@@ -150,39 +150,68 @@ Renderer::Renderer(Config config)
         glGenTextures(1, &tex);
         glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
         
-        // Atm you can see other texture edges so disabled for now
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        
         // Load and generate the texture
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, 0);
+        
+        // Since we put our textures in a grid like pattern, we have to convert the data
+        // to be in a format that emulates all the textures in one columns
+        constexpr unsigned texSize = 64;
+        unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+
         if (data)
         {
-            const auto size = config.atlasX * config.atlasY;
-            const unsigned texSize = width / config.atlasX;
-            // Create the storage
-            glTexStorage3D(GL_TEXTURE_2D_ARRAY, size, GL_RGBA8, texSize, texSize, size);
-            
-            // Load the textures in 
-            for (int x = 0; x < config.atlasX; x++)
+            auto image{ std::make_unique<unsigned char[]>(width * height * nrChannels) };
+
+            unsigned offset = 0;
+            for (unsigned y = 0; y < height/texSize; y++)
             {
-                for (int y = 0; y < config.atlasY; y++)
+                for (unsigned x = 0; x < width/texSize; x++)
                 {
-                    glTexSubImage3D(
-                        GL_TEXTURE_2D_ARRAY, 
-                        0, 
-                        1,
-                        0,//y * texSize,
-                        x + y * config.atlasX, 
-                        texSize, 
-                        texSize, 
-                        1,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE, 
-                        data);
+                    // Read 64 rows
+                    for (unsigned row = 0; row < texSize; row++)
+                    {
+                        memcpy(
+                            &image[offset],
+                            &data
+                            [(y * width * texSize * nrChannels) + 
+                             (x * texSize * nrChannels) + 
+                              row * width * nrChannels],
+                            texSize * nrChannels);
+                        offset += texSize * nrChannels;
+                    }
                 }
+            }
+            //memset(image.get(), 255, width* height* nrChannels);
+            const auto size = config.atlasX * config.atlasY;
+            // Create the storage
+            //glTexStorage3D(GL_TEXTURE_2D_ARRAY, size, GL_RGBA8, texSize, texSize, size);
+            glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, texSize, texSize, 4);
+            
+            //glTexSubImage3D(
+            //    GL_TEXTURE_2D_ARRAY,
+            //    0,
+            //    0,0,0,
+            //    texSize,texSize,4,
+            //    GL_RGBA,
+            //    GL_UNSIGNED_BYTE,
+            //    image.get());
+
+            // Load the textures in 
+            for (int i = 0; i < size; i++)
+            {
+                glTexSubImage3D(
+                    GL_TEXTURE_2D_ARRAY, 
+                    0,
+                    0,
+                    0,
+                    i, 
+                    texSize, 
+                    texSize, 
+                    1,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE, 
+                    &image.get()[i * texSize * texSize * nrChannels]);
             }
 
             glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
@@ -192,6 +221,11 @@ Renderer::Renderer(Config config)
             std::cout << "Failed to load texture" << std::endl;
         }
         stbi_image_free(data);
+
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 
         glGenVertexArrays(1, &m_buffer.vao);
         glBindVertexArray(m_buffer.vao);

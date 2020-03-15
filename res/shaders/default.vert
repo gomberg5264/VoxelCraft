@@ -9,6 +9,7 @@ layout (location = 5) in vec4 aUVOffset1;
 layout (location = 6) in vec4 aUVOffset2;
 
 out vec2 uv;
+out float dir;
 
 uniform mat4 aVP;
 uniform vec2 aAtlasSize;
@@ -24,6 +25,7 @@ void main()
         2,0 - Bottom
         2,2 - Top
     */
+    dir = aVertexDir;
     mat3x4 uvOffset;
     uvOffset[0] = aUVOffset0;
     uvOffset[1] = aUVOffset1;

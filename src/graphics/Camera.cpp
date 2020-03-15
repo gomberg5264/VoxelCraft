@@ -56,7 +56,7 @@ void FreelookCamera::Update(float dt)
 
 glm::mat4 Camera::GetProjection() const
 {
-    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 1000.f);
+    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, chunkDimension.x * 32.f);
 }
 
 glm::mat4 Camera::GetView() const
