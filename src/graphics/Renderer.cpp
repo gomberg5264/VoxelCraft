@@ -83,6 +83,7 @@ Renderer::Renderer(Config config)
             GL_DEBUG_SEVERITY_MEDIUM, -1, "Test error message!");
 
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
     }
 
     // ---
@@ -94,11 +95,11 @@ Renderer::Renderer(Config config)
 
         // Back
          0.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
          0.f,  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
          0.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
          0.f, -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
 
         // Front
          1.f, -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
@@ -118,11 +119,11 @@ Renderer::Renderer(Config config)
          
         // Right
          3.f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         3.f, 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          3.f, 0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
          3.f, 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         3.f, 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         3.f, 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
          3.f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         3.f, 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
 
         // Bottom
          4.f, -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
@@ -134,11 +135,11 @@ Renderer::Renderer(Config config)
 
         // Top
          5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         5.f,  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
          5.f,  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
          5.f,  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         5.f,  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
          5.f, -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-         5.f, -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
         m_shad = std::make_unique<Shader>("res/shaders/default.vert", "res/shaders/default.frag");
