@@ -52,6 +52,8 @@ Renderer::Renderer(Config config)
 {
     printf("Constructing renderer...\n");
 
+    assert(config.chunkRenderRadius * config.chunkRenderRadius * 4<= config.maxChunkInstances && "Max chunk instances is too big");
+
     // ---
     // Create the main window
     {

@@ -1,11 +1,12 @@
 #include "vcpch.hpp"
-
+#include <iostream>
 
 class Game : public Engine
 {
 public:
     Game(Config config = {})
-        : Engine(config) {}
+        : Engine(config)
+    {}
 
 private:
     virtual void OnInit(Renderer& renderer) override final
@@ -56,17 +57,22 @@ private:
         }
 
         //Generate voxels
-        constexpr int size = 8;
-        for (int x = 0; x < size; x++)
-        {
-            for (int z = 0; z < size; z++)
-            {
-                m_chunks.push_back(std::make_unique<Chunk>(bData, glm::fvec3{ x * chunkDimension.x,0,z * chunkDimension.z }));
-                auto& chunk = m_chunks.back();
-                chunk->Generate();
-            }
-            std::cout << (x + 1) * size << '/' << size * size << '\n';
-        }
+        m_chunkManager = std::make_unique<ChunkManager>(bData, m_config.graphics.chunkRenderRadius);
+        
+        // TEMP
+        m_chunkManager->Update(); 
+
+        //constexpr int size = 8;
+        //for (int x = 0; x < size; x++)
+        //{
+        //    for (int z = 0; z < size; z++)
+        //    {
+        //        m_chunks.push_back(std::make_unique<Chunk>(bData, glm::fvec3{ x * chunkDimension.x,0,z * chunkDimension.z }));
+        //        auto& chunk = m_chunks.back();
+        //        chunk->Generate();
+        //    }
+        //    std::cout << (x + 1) * size << '/' << size * size << '\n';
+        //}
 
         std::printf("Init time: %.2f", time.getElapsedTime().asSeconds());
     }
@@ -74,18 +80,29 @@ private:
     virtual void OnUpdate(Time dt) override final
     {
         m_camera->Update(dt);
+        const glm::fvec3 camPos = m_camera->GetView()[3];
+        
+        //m_chunkManager.SetLoadPos(camPos);
+        //m_chunkManager->Update();
 
+        //std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
+        //    m_camera->GetView()[3].x,
+        //    m_camera->GetView()[3].y,
+        //    m_camera->GetView()[3].z);
     }
 
     virtual void OnRender(Renderer &renderer) override final
     {
         renderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
 
-        for (const auto& chunk : m_chunks)
-            renderer.Render(*chunk);
+        renderer.Render(*m_chunkManager);
+        //for (const auto& chunk : m_chunks)
+        //    renderer.Render(*chunk);
     }
 
-    std::vector<std::unique_ptr<Chunk>> m_chunks;
+
+    //std::vector<std::unique_ptr<Chunk>> m_chunks;
+    std::unique_ptr<ChunkManager> m_chunkManager;
 
     std::unique_ptr<Camera> m_camera;
 };
@@ -96,7 +113,8 @@ int main()
     config.graphics.atlasX = 2;
     config.graphics.atlasY = 2;
     config.graphics.title = "VoxelCraft";
-    config.graphics.maxChunkInstances = 64;
+    config.graphics.chunkRenderRadius = 2;
+    config.graphics.maxChunkInstances = 2 *2 *2 *2;
 
     Game game(config);
     game.Run();

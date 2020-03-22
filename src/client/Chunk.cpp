@@ -1,6 +1,6 @@
 #include "vcpch.hpp"
 
-Chunk::Chunk(const BlockDataFactory& factory, glm::fvec3 pos)
+Chunk::Chunk(const BlockDataFactory& factory, glm::ivec3 pos)
     : m_pos(pos)
     , m_buffer(chunkSize)
     , m_factory(factory)
@@ -85,7 +85,7 @@ void Chunk::UpdateChunkRenderData()
                 const auto& data = m_factory.GetBlockData(m_blocks[x][y][z]);
                 if (data.isSolid && IsVisible(x,y,z,m_blocks,m_factory))
                 {
-                    auto buffer = data.CreateVBO(m_pos + glm::fvec3{ x,y,z });
+                    auto buffer = data.CreateVBO(glm::fvec3{ x,y,z } + glm::fvec3(m_pos));
                     const auto stride = buffer.GetActiveSize() * sizeof(VBO::Vertex);
                     memcpy(
                         &m_buffer[m_buffer.GetActiveSize()],
@@ -96,7 +96,12 @@ void Chunk::UpdateChunkRenderData()
             }
 }
 
-glm::fvec3 Chunk::GetPos() const noexcept
+void Chunk::SetPos(const glm::ivec3& pos) noexcept
+{
+    m_pos = pos;
+}
+
+glm::ivec3 Chunk::GetPos() const noexcept
 {
     return m_pos;
 }
@@ -104,4 +109,96 @@ glm::fvec3 Chunk::GetPos() const noexcept
 const VBO& Chunk::GetDrawData() const noexcept
 {
     return m_buffer;
+}
+
+ChunkManager::ChunkManager(const BlockDataFactory& factory, unsigned chunkRadius)
+    : m_buffer(chunkSize* chunkRadius * 2 * chunkRadius * 2)
+    , m_factory(factory)
+{
+    m_buffer.SetActiveSize(m_buffer.GetSize());
+    m_chunks.resize(chunkRadius * 2);
+    for (auto& vertical : m_chunks)
+    {
+        vertical.reserve(chunkRadius * 2);
+        for (int i = 0; i < chunkRadius * 2; i++)
+        {
+            //chunk.resize(chunkRadius * 2, Chunk(factory));
+            vertical.emplace_back(factory);
+        }
+    }
+}
+
+void ChunkManager::SetLoadPos(glm::ivec3 pos) noexcept
+{
+    m_pos = pos;
+}
+
+void ChunkManager::Update() noexcept
+{
+    // 1. Calculate chunk pos for each chunk
+    // 2. If they differ. add it as a task to regenerate
+    // 3. ???
+    // 4. win
+    // 5. Oh, we also check if a chunk has modified itself
+
+    std::vector<std::reference_wrapper<Chunk>> toGenerate;
+
+    // Assume rhs
+    int z = m_chunks.size() / 2;
+    int x = -z;
+    
+    bool chunkHasModified = false;
+
+    // top bottom
+    for (auto& vertical : m_chunks)
+    {
+        // left right
+        for (auto& chunk : vertical)
+        {
+            // Calculate chunk pos
+            const glm::ivec3 newPos{
+                m_pos.x % chunkDimension.x + x,
+                0,
+                m_pos.z % chunkDimension.z + z};
+
+            if (chunk.GetPos() != newPos)
+            {
+                chunk.SetPos(newPos);
+                toGenerate.push_back(chunk);
+            }
+            else if(chunk.m_modified)
+            {
+                // Beautifull oop right here
+                // love changing state in some random class
+                chunk.m_modified = false;
+                chunkHasModified = true;
+            }
+
+            x++;
+        }
+        z++;
+    }
+
+    // TODO This should be MT
+    for (auto& chunk : toGenerate)
+        chunk.get().Generate();
+
+    if (!toGenerate.empty() || chunkHasModified) UpdateRenderData();
+}
+
+const VBO& ChunkManager::GetDrawData() const noexcept
+{
+    return m_buffer;
+}
+
+void ChunkManager::UpdateRenderData()
+{
+    unsigned offset = 0;
+    for (const auto& vert : m_chunks)
+        for (const auto& chunk : vert)
+        {
+            const auto& dData = chunk.GetDrawData();
+            memcpy(&m_buffer.Data()[offset], dData.Data(), dData.GetActiveSize() * sizeof(VBO::Vertex));
+            offset += dData.GetSize();
+        }
 }

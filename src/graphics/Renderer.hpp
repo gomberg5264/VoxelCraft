@@ -12,6 +12,7 @@ public:
         unsigned atlasY{ 2 };
 
         unsigned maxChunkInstances{ 32 };
+        unsigned chunkRenderRadius{ 8 };
 
         std::string title{ "VoxelCraft" };
     };

@@ -44,9 +44,10 @@ void FreelookCamera::Update(float dt)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) movement -= right;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) movement -= forward;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) movement += right;
+        
+        if (glm::length(movement) != 0) movement = glm::normalize(movement);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) movement *= 20.f;
-
 
         movement *= (m_speed * dt);
         m_eye = m_eye + movement;
