@@ -1,16 +1,31 @@
 #pragma once
 
 constexpr glm::uvec3 chunkDimension { 16,256,16 };
-constexpr unsigned chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
+constexpr unsigned long chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
 class Chunk : public Renderable
 {
 public:
+    enum class State
+    {
+        New,
+        Modified,
+        Done,
+    };
+
     using BlockArray = std::array<std::array<std::array<BlockType, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
 
     explicit Chunk(const BlockDataFactory& factory, glm::ivec3 pos = glm::ivec3(-1));
 
-    void Generate() noexcept;
+    /**
+     * Sets the block type to the correct type
+     */
+    void Generate() noexcept; 
+
+    /**
+     * Caches a new buffer using the current pos
+     * Make sure to call generate and set a pos beforehand
+     */
     void UpdateChunkRenderData();
 
     void SetPos(const glm::ivec3& pos) noexcept;
@@ -19,7 +34,7 @@ public:
     virtual const VBO& GetDrawData() const noexcept override final;
 
     // If this is true, chunkManager will rebuild draw data
-    bool m_modified = false;
+    State m_state = State::New;
 
 private:
     // Chunk manager updates if chunk pos differs.

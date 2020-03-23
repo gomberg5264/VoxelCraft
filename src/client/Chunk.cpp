@@ -13,16 +13,17 @@ void Chunk::Generate() noexcept
     // The lower the more flat
     constexpr float flatFactor = 0.10f;
 
-    for (unsigned x = 0; x < chunkDimension.x; x++)
+    for (int x = 0; x < chunkDimension.x; x++)
     {
-        for (unsigned y = 0; y < chunkDimension.y; y++)
+        for (int y = 0; y < chunkDimension.y; y++)
         {
-            for (unsigned z = 0; z < chunkDimension.z; z++)
+            for (int z = 0; z < chunkDimension.z; z++)
             {
                 // Execute generation criteria
                 const float perlin = glm::perlin(glm::fvec2(float(x + m_pos.x) / chunkDimension.x, float(z + m_pos.z)/chunkDimension.z) * flatFactor);
+                assert(perlin >= 0.f && "Why is perlin negative???");
                 // perlin [0,1]
-                const int height = ((perlin + 1.f) / 2.f) * (chunkDimension.y * 0.5f) + (chunkDimension.y * 0.5f);
+                const unsigned height = ((perlin + 1.f) / 2.f) * (chunkDimension.y * 0.5f) + (chunkDimension.y * 0.5f);
                 glm::fvec3 pos{ x,y,z };
                 BlockType type;
 
@@ -60,9 +61,9 @@ bool IsVisible(int x, int y, int z, const Chunk::BlockArray& blocks, const Block
     // Block is only culled if it is surrounded on all sides
 
     // If it is on the edge of a chunk, we will just render it
-    if (x < 1 || x >= chunkDimension.x - 1 ||
-        y < 1 || y >= chunkDimension.y - 1 ||
-        z < 1 || z >= chunkDimension.z - 1) return true;
+    if (x < 1 || x >= static_cast<int>(chunkDimension.x) - 1 ||
+        y < 1 || y >= static_cast<int>(chunkDimension.y) - 1 ||
+        z < 1 || z >= static_cast<int>(chunkDimension.z) - 1) return true;
 
     // If visible from any side we should just render
     if (!factory.GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
@@ -115,12 +116,12 @@ ChunkManager::ChunkManager(const BlockDataFactory& factory, unsigned chunkRadius
     : m_buffer(chunkSize* chunkRadius * 2 * chunkRadius * 2)
     , m_factory(factory)
 {
-    m_buffer.SetActiveSize(m_buffer.GetSize());
-    m_chunks.resize(chunkRadius * 2);
+    //m_buffer.SetActiveSize(m_buffer.GetSize());
+    m_chunks.resize(chunkRadius * 2u);
     for (auto& vertical : m_chunks)
     {
-        vertical.reserve(chunkRadius * 2);
-        for (int i = 0; i < chunkRadius * 2; i++)
+        vertical.reserve(chunkRadius * 2u);
+        for (unsigned i = 0; i < chunkRadius * 2; i++)
         {
             //chunk.resize(chunkRadius * 2, Chunk(factory));
             vertical.emplace_back(factory);
@@ -144,46 +145,51 @@ void ChunkManager::Update() noexcept
     std::vector<std::reference_wrapper<Chunk>> toGenerate;
 
     // Assume rhs
-    int z = m_chunks.size() / 2;
-    int x = -z;
+    const int radius = m_chunks.size() / 2;
+    int z = -radius;
+    int x = -radius;
+    std::cout << radius << '\n';
+    bool rebuildDrawBuffer = false;
     
-    bool chunkHasModified = false;
+    // Calculate pos on a chunk basis
+    // We divide and multiple so that the pos is a multiple of chunkDimension
+    // I think volatile makes the compiler not optimize it away
+    volatile glm::ivec3 pos = m_pos / glm::ivec3(chunkDimension) * glm::ivec3(chunkDimension);
 
-    // top bottom
+    // Left top -> bottom right
     for (auto& vertical : m_chunks)
     {
-        // left right
         for (auto& chunk : vertical)
         {
             // Calculate chunk pos
-            const glm::ivec3 newPos{
-                m_pos.x % chunkDimension.x + x,
+            glm::ivec3 newPos{
+                pos.x + x * static_cast<int>(chunkDimension.x),
                 0,
-                m_pos.z % chunkDimension.z + z};
+                pos.z + z * static_cast<int>(chunkDimension.z)};
 
             if (chunk.GetPos() != newPos)
             {
                 chunk.SetPos(newPos);
                 toGenerate.push_back(chunk);
             }
-            else if(chunk.m_modified)
+            else if(chunk.m_state != Chunk::State::Done)
             {
                 // Beautifull oop right here
                 // love changing state in some random class
-                chunk.m_modified = false;
-                chunkHasModified = true;
+                chunk.m_state = Chunk::State::Done;
+                rebuildDrawBuffer = true;
             }
-
             x++;
         }
         z++;
+        x = -radius;
     }
-
     // TODO This should be MT
     for (auto& chunk : toGenerate)
         chunk.get().Generate();
 
-    if (!toGenerate.empty() || chunkHasModified) UpdateRenderData();
+    // If any change has happened to the chunk, rebuild the draw data since we cache it
+    if (!toGenerate.empty() || rebuildDrawBuffer) UpdateRenderData();
 }
 
 const VBO& ChunkManager::GetDrawData() const noexcept
@@ -193,12 +199,16 @@ const VBO& ChunkManager::GetDrawData() const noexcept
 
 void ChunkManager::UpdateRenderData()
 {
-    unsigned offset = 0;
-    for (const auto& vert : m_chunks)
-        for (const auto& chunk : vert)
+    //unsigned offset = 0;
+    m_buffer.SetActiveSize(0);
+    for (const auto& vertical : m_chunks)
+        for (const auto& chunk : vertical)
         {
             const auto& dData = chunk.GetDrawData();
-            memcpy(&m_buffer.Data()[offset], dData.Data(), dData.GetActiveSize() * sizeof(VBO::Vertex));
-            offset += dData.GetSize();
+            memcpy(
+                &m_buffer.Data()[m_buffer.GetActiveSize()], 
+                dData.Data(), 
+                dData.GetActiveSize() * sizeof(VBO::Vertex));
+            m_buffer.SetActiveSize(m_buffer.GetActiveSize() + dData.GetActiveSize());// offset += dData.GetSize();
         }
 }
