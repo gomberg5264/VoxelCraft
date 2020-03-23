@@ -28,7 +28,9 @@ private:
         {
             return x + (atlasY - 1 -y) * atlasX; 
         };
-        BlockDataFactory bData;
+
+        // Make sure that this stays alive 
+        static BlockDataFactory bData;
         {
             BlockData block;
             block.isSolid = false;
@@ -83,8 +85,8 @@ private:
         m_camera->Update(dt);
         const glm::fvec3 camPos = m_camera->m_eye;
         
-        //m_chunkManager.SetLoadPos(camPos);
-        //m_chunkManager->Update();
+        m_chunkManager->SetLoadPos(camPos);
+        m_chunkManager->Update();
 
         std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
             camPos.x,

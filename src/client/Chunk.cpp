@@ -79,6 +79,7 @@ bool IsVisible(int x, int y, int z, const Chunk::BlockArray& blocks, const Block
 
 void Chunk::UpdateChunkRenderData()
 {
+    m_buffer.SetActiveSize(0);
     for (unsigned x = 0; x < chunkDimension.x; x++)
         for (unsigned y = 0; y < chunkDimension.y; y++)
             for (unsigned z = 0; z < chunkDimension.z; z++)
