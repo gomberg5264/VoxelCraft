@@ -7,6 +7,28 @@ ChunkMesh::ChunkMesh(unsigned index)
 
 }
 
+bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk::BlockArray& blocks)
+{
+    // Block is only culled if it is surrounded on all sides
+
+    // If it is on the edge of a chunk, we will just render it
+    if ((dir == BlockFace::Left     && x < 1) || (dir == BlockFace::Right && x >= static_cast<int>(chunkDimension.x) - 1) ||
+        (dir == BlockFace::Bottom   && y < 1) || (dir == BlockFace::Top   && y >= static_cast<int>(chunkDimension.y) - 1) ||
+        (dir == BlockFace::Back     && z < 1) || (dir == BlockFace::Front && z >= static_cast<int>(chunkDimension.z) - 1)) return true;
+
+    // If visible from any side we should just render
+    if      (dir == BlockFace::Right    && !BlockDataFactory::GetInstance().GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
+    else if (dir == BlockFace::Left     && !BlockDataFactory::GetInstance().GetBlockData(blocks[x - 1][y][z]).isSolid) return true;
+    else if (dir == BlockFace::Top      && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y + 1][z]).isSolid) return true;
+    else if (dir == BlockFace::Bottom   && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y - 1][z]).isSolid) return true;
+    else if (dir == BlockFace::Front    && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z + 1]).isSolid) return true;
+    else if (dir == BlockFace::Back     && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z - 1]).isSolid) return true;
+
+    // This means fully encapsulated
+    return false;
+}
+
+
 void ChunkMesh::Generate(const Chunk& chunk)
 {
     m_buffer.vertices.clear();
@@ -28,13 +50,16 @@ void ChunkMesh::Generate(const Chunk& chunk)
                 // Add all 6 directions
                 for (int i = 0; i < BlockFace::Count; i++)
                 {
-                    auto buffer = Primitive::Face::MakeBuffer(
-                        BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);
+                    if (IsVisible(BlockFace(i), x, y, z, blocks))
+                    {
+                        auto buffer = Primitive::Face::MakeBuffer(
+                            BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);
 
-                    m_buffer.vertices.insert(
-                        m_buffer.vertices.end(),
-                        buffer.vertices.begin(),
-                        buffer.vertices.end());
+                        m_buffer.vertices.insert(
+                            m_buffer.vertices.end(),
+                            buffer.vertices.begin(),
+                            buffer.vertices.end());
+                    }
                 }
             }
 }

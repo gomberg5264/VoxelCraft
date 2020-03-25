@@ -74,29 +74,6 @@ void Chunk::Generate() noexcept
     }
 }
 
-/*
-bool IsVisible(int x, int y, int z, const Chunk::BlockArray& blocks, const BlockDataFactory& factory)
-{
-    // Block is only culled if it is surrounded on all sides
-
-    // If it is on the edge of a chunk, we will just render it
-    if (x < 1 || x >= static_cast<int>(chunkDimension.x) - 1 ||
-        y < 1 || y >= static_cast<int>(chunkDimension.y) - 1 ||
-        z < 1 || z >= static_cast<int>(chunkDimension.z) - 1) return true;
-
-    // If visible from any side we should just render
-    if (!factory.GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
-    if (!factory.GetBlockData(blocks[x - 1][y][z]).isSolid) return true;
-    if (!factory.GetBlockData(blocks[x][y + 1][z]).isSolid) return true;
-    if (!factory.GetBlockData(blocks[x][y - 1][z]).isSolid) return true;
-    if (!factory.GetBlockData(blocks[x][y][z + 1]).isSolid) return true;
-    if (!factory.GetBlockData(blocks[x][y][z - 1]).isSolid) return true;
-
-    // This means fully encapsulated
-    return false;
-}
-*/
-
 void Chunk::SetPos(const glm::ivec3& pos) noexcept
 {
     m_pos = pos;
