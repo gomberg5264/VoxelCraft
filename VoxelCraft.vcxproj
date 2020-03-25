@@ -102,7 +102,7 @@
     <ClCompile Include="src\client\gl\renderer\ChunkRenderer.cpp" />
     <ClCompile Include="src\client\gl\Primitive.cpp" />
     <ClCompile Include="src\client\gl\renderer\Window.cpp" />
-    <ClCompile Include="src\engine\Engine.cpp" />
+    <ClCompile Include="src\common\Engine.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\client\gl\Shader.cpp" />
     <ClCompile Include="src\vcpch.cpp">
@@ -119,7 +119,7 @@
     <ClInclude Include="src\client\gl\Camera.hpp" />
     <ClInclude Include="src\client\gl\renderer\ChunkRenderer.hpp" />
     <ClInclude Include="src\client\gl\Primitive.hpp" />
-    <ClInclude Include="src\engine\Engine.hpp" />
+    <ClInclude Include="src\common\Engine.hpp" />
     <ClInclude Include="src\client\graphics\Renderable.hpp" />
     <ClInclude Include="src\client\gl\Shader.hpp" />
     <ClInclude Include="src\utils\Singleton.hpp" />

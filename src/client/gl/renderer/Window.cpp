@@ -83,72 +83,9 @@ Window::Window(Config config)
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-
-    // Load and generate the texture
-/*
-    {
-        unsigned tex;
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
-            
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true);
-            
-        // Since we put our textures in a grid like pattern, we have to convert the data
-        // to be in a format that emulates all the textures in one columns
-        constexpr unsigned texSize = 64;
-        unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, STBI_rgb_alpha);
-
-        if (data)
-        {
-            auto image{ std::make_unique<unsigned char[]>(width * height * nrChannels) };
-
-            unsigned offset = 0;
-            for (unsigned y = 0; y < height/texSize; y++)
-            {
-                for (unsigned x = 0; x < width/texSize; x++)
-                {
-                    // Read 64 rows
-                    for (unsigned row = 0; row < texSize; row++)
-                    {
-                        memcpy(
-                            &image[offset],
-                            &data
-                            [(y * width * texSize * nrChannels) + 
-                                (x * texSize * nrChannels) + 
-                                row * width * nrChannels],
-                            texSize * nrChannels);
-                        offset += texSize * nrChannels;
-                    }
-                }
-            }
-
-            const auto size = config.atlasX * config.atlasY;
-            // Create the storage
-            glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, texSize, texSize, size);
-                
-            glTexSubImage3D(
-                GL_TEXTURE_2D_ARRAY,
-                0,
-                0,0,0,
-                texSize,texSize,size,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                image.get());
-
-            glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-        }
-        else
-        {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-        stbi_image_free(data);
-            
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-*/
 
     printf("Constructing Window DONE\n");
 }

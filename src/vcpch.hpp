@@ -40,4 +40,4 @@
 #include "client/gl/renderer/Window.hpp"
 #include "client/gl/renderer/ChunkRenderer.hpp"
 
-#include "engine/Engine.hpp"
+#include "common/Engine.hpp"

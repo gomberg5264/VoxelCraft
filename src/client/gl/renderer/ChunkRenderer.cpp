@@ -90,6 +90,10 @@ void ChunkRenderer::Display()
     m_updateQueue.clear();
 
     glDrawElements(GL_TRIANGLES, m_drawCount,GL_UNSIGNED_INT,0);
+
+    // TODO would be nice if I could add an offset of 6 after 6 passes
+    // since the order is always the same
+    //glDrawElementsBaseVertex(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0,0);
     m_drawCount = 0;
 }
 
