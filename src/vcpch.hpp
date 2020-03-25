@@ -28,6 +28,8 @@
 #include <SFML/Window.hpp>
 
 // proj
+#include "utils/Singleton.hpp"
+
 #include "client/BlockData.hpp"
 #include "client/Chunk.hpp"
 

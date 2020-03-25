@@ -1,8 +1,7 @@
 #include "vcpch.hpp"
 
-Chunk::Chunk(const BlockDataFactory& factory, glm::ivec3 pos)
+Chunk::Chunk(glm::ivec3 pos)
     : m_pos(pos)
-    , m_factory(factory)
 {
 }
 

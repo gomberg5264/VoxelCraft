@@ -15,7 +15,7 @@ private:
         
         // Setup camera
         m_camera = std::make_unique<FreelookCamera>(m_window.GetWindow());
-        m_camera->m_eye = glm::vec3(0,0,10);
+        m_camera->m_eye = glm::vec3(0,0,5);
         m_camera->m_target = glm::vec3(0,0,-1);
         auto* cast = static_cast<FreelookCamera*>(m_camera.get());
         cast->m_speed = 5.f;
@@ -31,11 +31,11 @@ private:
         };
 
         // Make sure that this stays alive 
-        static BlockDataFactory bData;
+        //static BlockDataFactory bData;
         {
             BlockData block;
             block.isSolid = false;
-            bData.AddBlockData(BlockType::Air,block);
+            BlockDataFactory::GetInstance().AddBlockData(BlockType::Air,block);
         }
         {
             BlockData block;
@@ -44,60 +44,27 @@ private:
                 T(0, 0), 
                 T(0, 1));
 
-            bData.AddBlockData(BlockType::Grass,block);
+            BlockDataFactory::GetInstance().AddBlockData(BlockType::Grass, block);
         }
         {
             BlockData block;
             block.SetTexture(T(0, 1));
 
-            bData.AddBlockData(BlockType::Dirt, block);
+            BlockDataFactory::GetInstance().AddBlockData(BlockType::Dirt, block);
         }
         {
-            BlockData block;            
+            BlockData block;
             block.SetTexture(T(1, 0));
 
-            bData.AddBlockData(BlockType::Stone, block);
+            BlockDataFactory::GetInstance().AddBlockData(BlockType::Stone, block);
         }
 
-        m_chunk = std::make_unique<Chunk>(bData, glm::ivec3(1,0,-1));
+        m_chunk = std::make_unique<Chunk>(glm::ivec3(0,0,-1));
         m_chunk->Generate();
         m_mesh.Generate(*m_chunk.get());
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
-
-        m_shad = std::make_unique<Shader>("res/shaders/debug.vert", "res/shaders/debug.frag");
-        glCreateVertexArrays(1, &m_vao);
-        glBindVertexArray(m_vao);
-
-        glGenBuffers(1, &m_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
-        float data[] =
-        {
-            -0.5f ,-0.5f, 0.f,
-             0.5f ,-0.5f, 0.f,
-             0.5f , 0.5f, 0.f,
-            -0.5f , 0.5f, 0.f,
-        };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-        glGenBuffers(1, &m_ind);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ind);
-        unsigned indices[] =
-        {
-            0,1,2,
-            0,2,3,
-        };
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3u * sizeof(float), 0);
-        glEnableVertexAttribArray(0);
-        glBindVertexArray(0);
     }
-    unsigned m_vao;
-    unsigned m_ind;
-    unsigned m_vbo;
-    std::unique_ptr<Shader> m_shad;
-
     virtual void OnUpdate(Time dt) override final
     {
         m_camera->Update(dt);
@@ -151,17 +118,9 @@ private:
         //m_chunkRenderer.SetVP(glm::mat4(1));
 
         m_window.Clear();
-        m_shad->Use();
-        glBindVertexArray(m_vao);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ind);
-
-        //glDrawArrays(GL_TRIANGLES, 0, 3); 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDisable(GL_DEPTH_TEST);
-        m_chunkRenderer.Display();
 
+        m_chunkRenderer.Display();
 
         m_window.Display();
     }

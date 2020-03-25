@@ -100,6 +100,47 @@ ChunkMesh::ChunkMesh(unsigned index)
 
 void ChunkMesh::Generate(const Chunk& chunk)
 {
+    m_buffer.indices.clear();
+    m_buffer.vertices.clear();
+    const auto& blocks = chunk.GetBlockArray();
+    for (unsigned y = 0; y < chunkDimension.y; y++)
+        for (unsigned z = 0; z < chunkDimension.z; z++)
+            for (unsigned x = 0; x < chunkDimension.x; x++)
+            {
+                const auto& bData = BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z]);
+                glm::ivec3 bPos(x, y, z);
+                bPos += chunk.GetPos();
+
+                // Add all 6 directions
+                for (int i = 0; i < BlockFace::Count; i++)
+                {
+                    auto buffer = Primitive::Face::MakeBuffer(
+                        BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);
+                    
+                    const size_t indexOffset = m_buffer.vertices.size();
+                    std::transform(
+                        buffer.indices.begin(),
+                        buffer.indices.end(),
+                        buffer.indices.begin(),
+                        [indexOffset](unsigned index) {return index + indexOffset; });
+
+                    m_buffer.indices.insert(
+                        m_buffer.indices.end(), 
+                        buffer.indices.begin(), 
+                        buffer.indices.end());
+
+                    m_buffer.vertices.insert(
+                        m_buffer.vertices.end(), 
+                        buffer.vertices.begin(), 
+                        buffer.vertices.end());                    
+                }
+
+                return;
+            }
+    
+    
+    m_buffer.indices.clear();
+    m_buffer.vertices.clear();
     m_buffer = std::move(Primitive::Face::MakeBuffer(
         BlockFace::Front, 
         chunk.GetPos().x, 

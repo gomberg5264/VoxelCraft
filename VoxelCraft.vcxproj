@@ -122,6 +122,7 @@
     <ClInclude Include="src\engine\Engine.hpp" />
     <ClInclude Include="src\client\graphics\Renderable.hpp" />
     <ClInclude Include="src\client\gl\Shader.hpp" />
+    <ClInclude Include="src\utils\Singleton.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

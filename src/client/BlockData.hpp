@@ -53,7 +53,7 @@ struct BlockData
     }
 };
 
-class BlockDataFactory
+class BlockDataFactory : public Singleton<BlockDataFactory>
 {
 public:
     using Value = BlockData;
@@ -78,3 +78,4 @@ public:
 private:
     std::unordered_map<BlockType, Value> m_data;
 };
+
