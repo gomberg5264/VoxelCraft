@@ -17,12 +17,12 @@ enum class BlockType
 
 enum BlockFace
 {
-    Back,
-    Front,
+    Top,
+    Bottom,
     Left,
     Right,
-    Bottom,
-    Top,
+    Back,
+    Front,
 
     Count
 };
@@ -50,19 +50,6 @@ struct BlockData
         SetSideTexture(side);
         texture[BlockFace::Top] = up;
         texture[BlockFace::Bottom] = bottom;
-    }
-
-    VBO CreateVBO(const glm::vec3& pos) const
-    {
-        VBO vbo{ 1 };
-        VBO::Vertex ver;
-        ver.pos[0] = pos.x;
-        ver.pos[1] = pos.y;
-        ver.pos[2] = pos.z;
-        for (int i = 0; i < BlockFace::Count; i++) ver.texIndex[i] = texture[i];
-
-        vbo.WriteBack(ver);
-        return vbo;
     }
 };
 

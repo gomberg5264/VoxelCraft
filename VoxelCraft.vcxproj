@@ -98,30 +98,34 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\client\Chunk.cpp" />
-    <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\client\gl\Camera.cpp" />
+    <ClCompile Include="src\client\gl\renderer\ChunkRenderer.cpp" />
+    <ClCompile Include="src\client\gl\Primitive.cpp" />
+    <ClCompile Include="src\client\gl\renderer\Window.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
-    <ClCompile Include="src\graphics\Renderer.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\graphics\Shader.cpp" />
+    <ClCompile Include="src\client\gl\Shader.cpp" />
     <ClCompile Include="src\vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\default.frag" />
-    <None Include="res\shaders\default.vert" />
+    <None Include="res\shaders\face.frag" />
+    <None Include="res\shaders\face.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
     <ClInclude Include="src\client\BlockData.hpp" />
     <ClInclude Include="src\client\Chunk.hpp" />
-    <ClInclude Include="src\graphics\Buffer.hpp" />
-    <ClInclude Include="src\graphics\Camera.hpp" />
+    <ClInclude Include="src\client\gl\renderer\Window.hpp" />
+    <ClInclude Include="src\client\graphics\Buffer.hpp" />
+    <ClInclude Include="src\client\gl\Camera.hpp" />
+    <ClInclude Include="src\client\gl\renderer\ChunkRenderer.hpp" />
+    <ClInclude Include="src\client\gl\Primitive.hpp" />
     <ClInclude Include="src\engine\Engine.hpp" />
-    <ClInclude Include="src\graphics\Renderable.hpp" />
-    <ClInclude Include="src\graphics\Renderer.hpp" />
-    <ClInclude Include="src\graphics\Shader.hpp" />
+    <ClInclude Include="src\client\graphics\Renderable.hpp" />
+    <ClInclude Include="src\client\gl\Shader.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

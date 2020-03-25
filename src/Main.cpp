@@ -4,25 +4,26 @@
 class Game : public Engine
 {
 public:
-    Game(Config config = {})
-        : Engine(config)
+    Game() 
+        : m_chunkRenderer(1)
+        , m_mesh(0)
     {}
-
 private:
-    virtual void OnInit(Renderer& renderer) override final
+    virtual void OnInit() override final
     {
         sf::Clock time;
         
         // Setup camera
-        m_camera = std::make_unique<FreelookCamera>(renderer.GetWindow());
-        m_camera->m_eye = glm::vec3(0,200,10);
-        m_camera->m_target = glm::vec3(0,200,-1);
+        m_camera = std::make_unique<FreelookCamera>(m_window.GetWindow());
+        m_camera->m_eye = glm::vec3(0,0,10);
+        m_camera->m_target = glm::vec3(0,0,-1);
         auto* cast = static_cast<FreelookCamera*>(m_camera.get());
         cast->m_speed = 5.f;
         cast->m_sensitivity = 0.2f;
         
-        const auto atlasX = m_config.graphics.atlasX;
-        const auto atlasY = m_config.graphics.atlasY;
+        // Setup atlas
+        const auto atlasX = 2;
+        const auto atlasY = 2;
         // Register block types
         auto T = [atlasX,atlasY](unsigned x, unsigned y)
         {
@@ -58,65 +59,105 @@ private:
             bData.AddBlockData(BlockType::Stone, block);
         }
 
-        //Generate voxels
-        m_chunkManager = std::make_unique<ChunkManager>(bData, m_config.graphics.chunkRenderRadius);
-        
-        // TEMP to generate a chunk
-        m_chunkManager->SetLoadPos(glm::ivec3(0));
-        m_chunkManager->Update();
-
-        //constexpr int size = 8;
-        //for (int x = 0; x < size; x++)
-        //{
-        //    for (int z = 0; z < size; z++)
-        //    {
-        //        m_chunks.push_back(std::make_unique<Chunk>(bData, glm::fvec3{ x * chunkDimension.x,0,z * chunkDimension.z }));
-        //        auto& chunk = m_chunks.back();
-        //        chunk->Generate();
-        //    }
-        //    std::cout << (x + 1) * size << '/' << size * size << '\n';
-        //}
+        m_chunk = std::make_unique<Chunk>(bData, glm::ivec3(0));
+        m_chunk->Generate();
+        m_mesh.Generate(*m_chunk.get());
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
+
+        glCreateVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
+
+        unsigned vbo;
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER,vbo);
+        float data[] =
+        {
+            -1.f ,-1.f,-1.f,
+             1.f ,-1.f,-1.f,
+             0.f , 1.f,-1.f,
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+        glEnableVertexAttribArray(0);
+
+        m_shad = std::make_unique<Shader>("res/shaders/face.vert", "res/shaders/face.frag");
     }
+    unsigned m_vao;
+    std::unique_ptr<Shader> m_shad;
 
     virtual void OnUpdate(Time dt) override final
     {
         m_camera->Update(dt);
         const glm::fvec3 camPos = m_camera->m_eye;
         
-        m_chunkManager->SetLoadPos(camPos);
-        m_chunkManager->Update();
+        // Process events
+        // We may want to forward these events
+        sf::Event event;
+        while (m_window.GetWindow().pollEvent(event))
+        {
+            // Close window: exit
+            if (event.type == sf::Event::Closed)
+            {
+                m_window.GetWindow().close();
+                Stop();
+            }
+        
+            // Escape key: exit
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
+            {
+                m_window.GetWindow().close();
+                Stop();
+            }
+        
+            // Resize event: adjust the viewport
+            if (event.type == sf::Event::Resized)
+                glViewport(0, 0, event.size.width, event.size.height);
+        }
 
-        std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
-            camPos.x,
-            camPos.y,
-            camPos.z);
+        //std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
+        //    camPos.x,
+        //    camPos.y,
+        //    camPos.z);
+
+        switch (m_chunk->GetState())
+        {
+        case Chunk::State::New:
+            m_chunkRenderer.Render(m_mesh, true);
+            m_chunk->MarkDone();
+            break;
+        case Chunk::State::Modified:
+            m_chunkRenderer.Render(m_mesh, true);
+            m_chunk->MarkDone();
+            break;
+        case Chunk::State::Done:
+            m_chunkRenderer.Render(m_mesh,false);
+            break;
+        }
+
+        m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+
+        m_window.Clear();
+        m_chunkRenderer.Display();
+
+        m_shad->Use();
+        glBindVertexArray(m_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        m_window.Display();
     }
 
-    virtual void OnRender(Renderer &renderer) override final
-    {
-        renderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+    Window m_window;
 
-        renderer.Render(*m_chunkManager);
-    }
-
-
-    std::unique_ptr<ChunkManager> m_chunkManager;
-
+    ChunkRenderer m_chunkRenderer;
     std::unique_ptr<Camera> m_camera;
+    std::unique_ptr<Chunk> m_chunk;
+    ChunkMesh m_mesh;
 };
 
 int main()
 {
-    Game::Config config;
-    config.graphics.atlasX = 2;
-    config.graphics.atlasY = 2;
-    config.graphics.title = "VoxelCraft";
-    config.graphics.chunkRenderRadius = 4;
-    config.graphics.maxChunkInstances = config.graphics.chunkRenderRadius * config.graphics.chunkRenderRadius *4;
-
-    Game game(config);
+    Game game;
     game.Run();
 
     return EXIT_SUCCESS;

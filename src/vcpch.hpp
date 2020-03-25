@@ -28,14 +28,14 @@
 #include <SFML/Window.hpp>
 
 // proj
-#include "graphics/Buffer.hpp"
-#include "graphics/Renderable.hpp"
-
 #include "client/BlockData.hpp"
 #include "client/Chunk.hpp"
 
-#include "graphics/Shader.hpp"
-#include "graphics/Camera.hpp"
-#include "graphics/Renderer.hpp"
+#include "client/gl/Primitive.hpp"
+#include "client/gl/Shader.hpp"
+#include "client/gl/Camera.hpp"
+
+#include "client/gl/renderer/Window.hpp"
+#include "client/gl/renderer/ChunkRenderer.hpp"
 
 #include "engine/Engine.hpp"
