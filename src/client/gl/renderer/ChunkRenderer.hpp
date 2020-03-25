@@ -27,8 +27,11 @@ private:
     std::vector<std::reference_wrapper<const ChunkMesh>> m_updateQueue;
     
     Shader m_shader;
+
     const unsigned m_chunkCount;
     unsigned m_drawCount;
+    unsigned m_vertexCount;
+    unsigned m_indiceCount;
 
     struct Buffer
     {

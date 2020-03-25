@@ -5,9 +5,10 @@ class Game : public Engine
 {
 public:
     Game() 
-        : m_chunkRenderer(1)
-        , m_mesh(0)
+        : m_mesh(0)
+        , m_mesh2(1)
     {}
+
 private:
     virtual void OnInit() override final
     {
@@ -130,7 +131,7 @@ private:
             }
             stbi_image_free(data);
 
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
@@ -141,10 +142,24 @@ private:
             m_chunk = std::make_unique<Chunk>(glm::ivec3(0,0,-1));
             m_chunk->Generate();
             m_mesh.Generate(*m_chunk.get());
+
+            m_chunk2 = std::make_unique<Chunk>(glm::ivec3(chunkDimension.x + 1, 0, -1));
+            m_chunk2->Generate();
+            m_mesh2.Generate(*m_chunk2.get());
         }
+
+        m_chunkRenderer = std::make_unique<ChunkRenderer>(2);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
+
+    std::unique_ptr<ChunkRenderer> m_chunkRenderer;
+    std::unique_ptr<Chunk> m_chunk;
+    ChunkMesh m_mesh;
+    std::unique_ptr<Chunk> m_chunk2;
+    ChunkMesh m_mesh2;
+
+
     virtual void OnUpdate(Time dt) override final
     {
         m_camera->Update(dt);
@@ -182,32 +197,44 @@ private:
         switch (m_chunk->GetState())
         {
         case Chunk::State::New:
-            m_chunkRenderer.Render(m_mesh, true);
+            m_chunkRenderer->Render(m_mesh, true);
             m_chunk->MarkDone();
             break;
         case Chunk::State::Modified:
-            m_chunkRenderer.Render(m_mesh, true);
+            m_chunkRenderer->Render(m_mesh, true);
             m_chunk->MarkDone();
             break;
         case Chunk::State::Done:
-            m_chunkRenderer.Render(m_mesh,false);
+            m_chunkRenderer->Render(m_mesh,false);
             break;
         }
 
-        m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+        switch (m_chunk2->GetState())
+        {
+        case Chunk::State::New:
+            m_chunkRenderer->Render(m_mesh2, true);
+            m_chunk2->MarkDone();
+            break;
+        case Chunk::State::Modified:
+            m_chunkRenderer->Render(m_mesh2, true);
+            m_chunk2->MarkDone();
+            break;
+        case Chunk::State::Done:
+            m_chunkRenderer->Render(m_mesh2, false);
+            break;
+        }
+
+        m_chunkRenderer->SetVP(m_camera->GetProjection() * m_camera->GetView());
         m_window.Clear();
 
-        m_chunkRenderer.Display();
+        m_chunkRenderer->Display();
 
         m_window.Display();
     }
 
     Window m_window;
 
-    ChunkRenderer m_chunkRenderer;
     std::unique_ptr<Camera> m_camera;
-    std::unique_ptr<Chunk> m_chunk;
-    ChunkMesh m_mesh;
 };
 
 int main()

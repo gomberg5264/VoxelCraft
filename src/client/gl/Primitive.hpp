@@ -23,7 +23,7 @@ namespace Primitive
             float u;
             float v;
 
-            unsigned texIndex;
+            float texIndex;
         };
 
         struct Buffer
