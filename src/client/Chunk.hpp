@@ -44,3 +44,10 @@ private:
     BlockArray m_blocks;
     State m_state = State::New;
 };
+
+//class ChunkManager
+//{
+//public:
+//    ChunkManager(unsigned radius);
+//
+//};

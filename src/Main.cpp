@@ -3,12 +3,6 @@
 
 class Game : public Engine
 {
-public:
-    Game() 
-        : m_mesh(0)
-        , m_mesh2(1)
-    {}
-
 private:
     virtual void OnInit() override final
     {
@@ -139,25 +133,29 @@ private:
         // ---
         // Generate a chunk. This should all happen during runtime
         {
+            m_chunkRenderer = std::make_unique<ChunkRenderer>();
+
             m_chunk = std::make_unique<Chunk>(glm::ivec3(0,0,-1));
             m_chunk->Generate();
-            m_mesh.Generate(*m_chunk.get());
+            m_mesh = std::make_unique<ChunkMesh>(m_chunkRenderer->GenerateIndex());
+            m_mesh->Generate(*m_chunk);
+            
 
             m_chunk2 = std::make_unique<Chunk>(glm::ivec3(chunkDimension.x + 1, 0, -1));
             m_chunk2->Generate();
-            m_mesh2.Generate(*m_chunk2.get());
+            m_mesh2 = std::make_unique<ChunkMesh>(m_chunkRenderer->GenerateIndex());
+            m_mesh2->Generate(*m_chunk2);
         }
-
-        m_chunkRenderer = std::make_unique<ChunkRenderer>(2);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
 
     std::unique_ptr<ChunkRenderer> m_chunkRenderer;
+    // temp
     std::unique_ptr<Chunk> m_chunk;
-    ChunkMesh m_mesh;
+    std::unique_ptr<ChunkMesh> m_mesh;
     std::unique_ptr<Chunk> m_chunk2;
-    ChunkMesh m_mesh2;
+    std::unique_ptr<ChunkMesh> m_mesh2;
 
 
     virtual void OnUpdate(Time dt) override final
@@ -197,30 +195,30 @@ private:
         switch (m_chunk->GetState())
         {
         case Chunk::State::New:
-            m_chunkRenderer->Render(m_mesh, true);
+            m_chunkRenderer->Render(*m_mesh, true);
             m_chunk->MarkDone();
             break;
         case Chunk::State::Modified:
-            m_chunkRenderer->Render(m_mesh, true);
+            m_chunkRenderer->Render(*m_mesh, true);
             m_chunk->MarkDone();
             break;
         case Chunk::State::Done:
-            m_chunkRenderer->Render(m_mesh,false);
+            m_chunkRenderer->Render(*m_mesh,false);
             break;
         }
 
         switch (m_chunk2->GetState())
         {
         case Chunk::State::New:
-            m_chunkRenderer->Render(m_mesh2, true);
+            m_chunkRenderer->Render(*m_mesh2, true);
             m_chunk2->MarkDone();
             break;
         case Chunk::State::Modified:
-            m_chunkRenderer->Render(m_mesh2, true);
+            m_chunkRenderer->Render(*m_mesh2, true);
             m_chunk2->MarkDone();
             break;
         case Chunk::State::Done:
-            m_chunkRenderer->Render(m_mesh2, false);
+            m_chunkRenderer->Render(*m_mesh2, false);
             break;
         }
 

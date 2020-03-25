@@ -29,7 +29,6 @@ namespace Primitive
         struct Buffer
         {
             std::vector<Primitive::Face::Vertex> vertices;
-            std::vector<unsigned> indices;
         };
 
         Buffer MakeBuffer(BlockFace dir, float x, float y, float z, unsigned texIndex);

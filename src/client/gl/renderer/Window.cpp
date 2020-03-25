@@ -78,8 +78,8 @@ Window::Window(Config config)
         glDebugMessageCallback(glDebugOutput, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-        glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0,
-            GL_DEBUG_SEVERITY_MEDIUM, -1, "Test error message!");
+        //glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0,
+        //    GL_DEBUG_SEVERITY_MEDIUM, -1, "Test error message!");
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);

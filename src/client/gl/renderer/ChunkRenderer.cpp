@@ -4,12 +4,13 @@
 ChunkMesh::ChunkMesh(unsigned index)
     : m_index(index)
 {
+
 }
 
 void ChunkMesh::Generate(const Chunk& chunk)
 {
-    m_buffer.indices.clear();
     m_buffer.vertices.clear();
+ 
     const auto& blocks = chunk.GetBlockArray();
     for (unsigned y = 0; y < chunkDimension.y; y++)
         for (unsigned z = 0; z < chunkDimension.z; z++)
@@ -30,18 +31,6 @@ void ChunkMesh::Generate(const Chunk& chunk)
                     auto buffer = Primitive::Face::MakeBuffer(
                         BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);
 
-                    const size_t indexOffset = m_buffer.vertices.size();
-                    std::transform(
-                        buffer.indices.begin(),
-                        buffer.indices.end(),
-                        buffer.indices.begin(),
-                        [indexOffset](unsigned index) {return index + indexOffset; });
-
-                    m_buffer.indices.insert(
-                        m_buffer.indices.end(),
-                        buffer.indices.begin(),
-                        buffer.indices.end());
-
                     m_buffer.vertices.insert(
                         m_buffer.vertices.end(),
                         buffer.vertices.begin(),
@@ -51,57 +40,65 @@ void ChunkMesh::Generate(const Chunk& chunk)
 }
 
 
-ChunkRenderer::ChunkRenderer(unsigned chunkCount)
+ChunkRenderer::ChunkRenderer()
     : m_shader("res/shaders/face.vert","res/shaders/face.frag")
-    , m_chunkCount(chunkCount)
-    , m_drawCount(0)
-    , m_vertexCount(chunkCount * chunkSize * 4u * 6u)
-    , m_indiceCount(chunkCount * chunkSize * 6u * 6u)
-
+    , m_elementCount(0)
+    , m_ebo(0)
 {
-    // Create buffers
-    glGenVertexArrays(1, &m_buffer.vao);
-    glBindVertexArray(m_buffer.vao);
+    // 6 indices per face, 6 faces per voxel
+    m_elementCount = 6u * 6u * chunkSize;
 
-    glGenBuffers(1, &m_buffer.vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.vertices);
-    glBufferData(
-        GL_ARRAY_BUFFER, 
-        // FaceCount * VertexElementCount * SizeOfVertex * BlockCount * ChunkCount
-        m_vertexCount * sizeof(Primitive::Face::Vertex),
-        nullptr, 
-        GL_DYNAMIC_DRAW);
-
-    glGenBuffers(1, &m_buffer.indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer.indices);
+    unsigned* ebo = new unsigned[m_elementCount];
+    unsigned offset = 0;
+    for (unsigned i = 0; i < m_elementCount; i += 6)
     {
-        unsigned *ebo = new unsigned[m_indiceCount];
-        
-        unsigned offset = 0;
-        for (int i = 0; i < m_indiceCount ; i += 6)
-        {
-            unsigned indices[] { 3 + offset,0 + offset,1 + offset,3 + offset,1 + offset,2 + offset };
-            memcpy(&ebo[i], indices, 6 * sizeof(unsigned));
-            offset += 4;
-        }
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indiceCount * sizeof(unsigned),ebo, GL_DYNAMIC_DRAW);
-        delete ebo;
+        unsigned indices[]{ 3 + offset,0 + offset,1 + offset,3 + offset,1 + offset,2 + offset };
+        memcpy(&ebo[i], indices, 6 * sizeof(unsigned));
+        offset += 4;
     }
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(0u * sizeof(float)));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), (void*)(3u * sizeof(float)));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(5u * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glBindVertexArray(0);
+    glGenBuffers(1, &m_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_elementCount * sizeof(unsigned), ebo, GL_STATIC_DRAW);
+
+    delete[] ebo;
+
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(0u * sizeof(float)));
+    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), (void*)(3u * sizeof(float)));
+    //glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(5u * sizeof(float)));
+    //glEnableVertexAttribArray(0);
+    //glEnableVertexAttribArray(1);
+    //glEnableVertexAttribArray(2);
+    //
+    //glBindVertexArray(0);
 }
 
 ChunkRenderer::~ChunkRenderer()
 {
-    glDeleteBuffers(1, &m_buffer.vertices);
-    glDeleteBuffers(1, &m_buffer.indices);
-    glDeleteBuffers(1, &m_buffer.vao);
+    glDeleteBuffers(1, &m_ebo);
+}
+
+unsigned ChunkRenderer::GenerateIndex()
+{
+    m_vaos.emplace_back();
+    auto& vao = m_vaos.back();
+    vao.AddVBO(
+        {
+            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
+            { 1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
+            { 2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 5u * sizeof(float) },
+        });
+
+    vao.Bind();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    vao.Unbind();
+
+        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(0u * sizeof(float)));
+        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), (void*)(3u * sizeof(float)));
+        //glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(5u * sizeof(float)));
+
+    //UpdateIndicesBuffer(m_vaos.size());
+    return m_vaos.size() - 1u;
 }
 
 void ChunkRenderer::SetVP(const glm::mat4& vp)
@@ -112,52 +109,31 @@ void ChunkRenderer::SetVP(const glm::mat4& vp)
 
 void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
 {
-    //m_renderQueue.push_back(mesh);
-    m_drawCount += mesh.m_buffer.indices.size();
-    if (updateDrawData) m_updateQueue.push_back(mesh);
+    m_renderQueue.emplace_back(Command{mesh, updateDrawData});
 }
 
 void ChunkRenderer::Display()
 {
-    assert(m_drawCount <= m_indiceCount && "Too many instances");
-
-    glBindVertexArray(m_buffer.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.vertices);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer.indices);
+//  glBindVertexArray(m_vao);
     m_shader.Use();
 
-    for (const auto& mesh : m_updateQueue)
+    for (const auto& mesh : m_renderQueue)
     {
-        //glBufferData(
-        //    GL_ARRAY_BUFFER,
-        //    mesh.get().m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
-        //    mesh.get().m_buffer.vertices.data(),
-        //    GL_DYNAMIC_DRAW);
+        auto& vao = m_vaos[mesh.mesh.m_index];
+        //glBindBuffer(GL_ARRAY_BUFFER, m_vbos[mesh.mesh.m_index]);
 
-        //glBufferData(
-        //    GL_ELEMENT_ARRAY_BUFFER,
-        //    mesh.get().m_buffer.indices.size() * sizeof(unsigned),
-        //    mesh.get().m_buffer.indices.data(),
-        //    GL_DYNAMIC_DRAW);
+        vao.Bind();
 
-        glBufferSubData(
-            GL_ARRAY_BUFFER,
-            mesh.get().m_index * chunkSize * 4u * 6u * sizeof(Primitive::Face::Vertex),
-            mesh.get().m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
-            mesh.get().m_buffer.vertices.data());
+        if (mesh.upload)
+        {
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                mesh.mesh.m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
+                mesh.mesh.m_buffer.vertices.data(),
+                GL_DYNAMIC_DRAW);
+        }
 
-        //glBufferSubData(
-        //    GL_ELEMENT_ARRAY_BUFFER,
-        //    mesh.get().m_index * chunkSize * 6u * 6u * sizeof(unsigned),
-        //    mesh.get().m_buffer.indices.size() * sizeof(unsigned),
-        //    mesh.get().m_buffer.indices.data());
+        glDrawElements(GL_TRIANGLES, mesh.mesh.m_buffer.vertices.size() / 4u * 6u, GL_UNSIGNED_INT, 0);
     }
-    m_updateQueue.clear();
-
-    glDrawElements(GL_TRIANGLES, m_indiceCount,GL_UNSIGNED_INT,0);
-
-    // TODO would be nice if I could add an offset of 6 after 6 passes
-    // since the order is always the same
-    //glDrawElementsBaseVertex(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0,0);
-    m_drawCount = 0;
+    m_renderQueue.clear();
 }

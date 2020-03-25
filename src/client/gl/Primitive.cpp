@@ -54,13 +54,5 @@ Primitive::Face::Buffer Primitive::Face::MakeBuffer(BlockFace dir, float x, floa
         break;
     }
 
-    buffer.indices.push_back(3);
-    buffer.indices.push_back(0);
-    buffer.indices.push_back(1);
-
-    buffer.indices.push_back(3);
-    buffer.indices.push_back(1);
-    buffer.indices.push_back(2);
-
     return buffer;
 }

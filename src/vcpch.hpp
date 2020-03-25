@@ -12,6 +12,8 @@
 
 #include <array>
 #include <vector>
+#include <queue>
+#include <list>
 #include <unordered_map>
 
 // deps
@@ -29,10 +31,12 @@
 
 // proj
 #include "utils/Singleton.hpp"
+#include "utils/NonCopyable.hpp"
 
 #include "client/BlockData.hpp"
 #include "client/Chunk.hpp"
 
+#include "client/gl/Buffer.hpp"
 #include "client/gl/Primitive.hpp"
 #include "client/gl/Shader.hpp"
 #include "client/gl/Camera.hpp"

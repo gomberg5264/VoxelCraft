@@ -11,32 +11,34 @@ public:
 };
 
 /**
- * Specialized renderer for chunks
+ * The chunk renderer handles all the rendering for chunks.
+ * This is handles here so that we only have to change the state once.
+ * Also by doing this, we won't have to recreate a vertex array every time 
  */
 class ChunkRenderer
 {
 public:
-    ChunkRenderer(unsigned chunkCount);
+    ChunkRenderer();
     ~ChunkRenderer();
+
+    unsigned GenerateIndex();
 
     void SetVP(const glm::mat4& vp);
     void Render(const ChunkMesh& mesh, bool updateDrawData);
     void Display();
 
 private:
-    std::vector<std::reference_wrapper<const ChunkMesh>> m_updateQueue;
     
+    struct Command
+    {
+        const ChunkMesh& mesh;
+        bool upload;
+    };
+    std::vector<Command> m_renderQueue;
+
     Shader m_shader;
 
-    const unsigned m_chunkCount;
-    unsigned m_drawCount;
-    unsigned m_vertexCount;
-    unsigned m_indiceCount;
-
-    struct Buffer
-    {
-        unsigned vertices;
-        unsigned indices;
-        unsigned vao;
-    }m_buffer;
+    unsigned m_elementCount;
+    unsigned m_ebo;
+    std::vector<VAO> m_vaos;
 };

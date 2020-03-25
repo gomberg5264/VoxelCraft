@@ -102,6 +102,7 @@
     <ClCompile Include="src\client\gl\renderer\ChunkRenderer.cpp" />
     <ClCompile Include="src\client\gl\Primitive.cpp" />
     <ClCompile Include="src\client\gl\renderer\Window.cpp" />
+    <ClCompile Include="src\client\gl\Buffer.cpp" />
     <ClCompile Include="src\common\Engine.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\client\gl\Shader.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="src\client\BlockData.hpp" />
     <ClInclude Include="src\client\Chunk.hpp" />
     <ClInclude Include="src\client\gl\renderer\Window.hpp" />
+    <ClInclude Include="src\client\gl\Buffer.hpp" />
     <ClInclude Include="src\client\graphics\Buffer.hpp" />
     <ClInclude Include="src\client\gl\Camera.hpp" />
     <ClInclude Include="src\client\gl\renderer\ChunkRenderer.hpp" />
@@ -122,6 +124,7 @@
     <ClInclude Include="src\common\Engine.hpp" />
     <ClInclude Include="src\client\graphics\Renderable.hpp" />
     <ClInclude Include="src\client\gl\Shader.hpp" />
+    <ClInclude Include="src\utils\NonCopyable.hpp" />
     <ClInclude Include="src\utils\Singleton.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
