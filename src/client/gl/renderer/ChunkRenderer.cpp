@@ -31,6 +31,7 @@ ChunkRenderer::ChunkRenderer(unsigned chunkCount)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glBindVertexArray(0);
 }
 
 ChunkRenderer::~ChunkRenderer()
@@ -42,7 +43,6 @@ ChunkRenderer::~ChunkRenderer()
 
 void ChunkRenderer::SetVP(const glm::mat4& vp)
 {
-    m_shader.Use();
     m_shader.SetMatrix("aVP", glm::value_ptr(vp));
 }
 
@@ -56,10 +56,24 @@ void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
 void ChunkRenderer::Display()
 {
     glBindVertexArray(m_buffer.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_buffer.vertices);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer.indices);
     m_shader.Use();
 
     for (const auto& mesh : m_updateQueue)
     {
+        //glBufferData(
+        //    GL_ARRAY_BUFFER,
+        //    mesh.get().m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
+        //    mesh.get().m_buffer.vertices.data(),
+        //    GL_DYNAMIC_DRAW);
+
+        //glBufferData(
+        //    GL_ELEMENT_ARRAY_BUFFER,
+        //    mesh.get().m_buffer.indices.size() * sizeof(unsigned),
+        //    mesh.get().m_buffer.indices.data(),
+        //    GL_DYNAMIC_DRAW);
+
         glBufferSubData(
             GL_ARRAY_BUFFER,
             mesh.get().m_index * 4u * 6u * chunkSize * sizeof(Primitive::Face::Vertex),
@@ -85,5 +99,10 @@ ChunkMesh::ChunkMesh(unsigned index)
 
 void ChunkMesh::Generate(const Chunk& chunk)
 {
-    m_buffer = std::move(Primitive::Face::MakeBuffer(BlockFace::Front, 0, 0, -1, 0));
+    m_buffer = std::move(Primitive::Face::MakeBuffer(
+        BlockFace::Front, 
+        chunk.GetPos().x, 
+        chunk.GetPos().y, 
+        chunk.GetPos().z, 
+        0));
 }

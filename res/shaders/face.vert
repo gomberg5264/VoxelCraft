@@ -13,5 +13,5 @@ void main()
     uv = aUV;
     texIndex = aTexIndex;
     gl_Position = aVP * vec4(aPos ,1.0f);
-    gl_Position = vec4(aPos ,1.0f);
+    // gl_Position = vec4(aPos.xy,-1.0f ,1.0f);
 }

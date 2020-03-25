@@ -111,10 +111,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\face.frag" />
-    <None Include="res\shaders\face.vert" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
     <ClInclude Include="src\client\BlockData.hpp" />
     <ClInclude Include="src\client\Chunk.hpp" />

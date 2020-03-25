@@ -82,7 +82,7 @@ Window::Window(Config config)
             GL_DEBUG_SEVERITY_MEDIUM, -1, "Test error message!");
 
         glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
     }
 
     // Load and generate the texture

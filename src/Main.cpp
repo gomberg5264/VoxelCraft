@@ -59,31 +59,43 @@ private:
             bData.AddBlockData(BlockType::Stone, block);
         }
 
-        m_chunk = std::make_unique<Chunk>(bData, glm::ivec3(0));
+        m_chunk = std::make_unique<Chunk>(bData, glm::ivec3(1,0,-1));
         m_chunk->Generate();
         m_mesh.Generate(*m_chunk.get());
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
 
+        m_shad = std::make_unique<Shader>("res/shaders/debug.vert", "res/shaders/debug.frag");
         glCreateVertexArrays(1, &m_vao);
         glBindVertexArray(m_vao);
 
-        unsigned vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER,vbo);
+        glGenBuffers(1, &m_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
         float data[] =
         {
-            -1.f ,-1.f,-1.f,
-             1.f ,-1.f,-1.f,
-             0.f , 1.f,-1.f,
+            -0.5f ,-0.5f, 0.f,
+             0.5f ,-0.5f, 0.f,
+             0.5f , 0.5f, 0.f,
+            -0.5f , 0.5f, 0.f,
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-        glEnableVertexAttribArray(0);
 
-        m_shad = std::make_unique<Shader>("res/shaders/face.vert", "res/shaders/face.frag");
+        glGenBuffers(1, &m_ind);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ind);
+        unsigned indices[] =
+        {
+            0,1,2,
+            0,2,3,
+        };
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3u * sizeof(float), 0);
+        glEnableVertexAttribArray(0);
+        glBindVertexArray(0);
     }
     unsigned m_vao;
+    unsigned m_ind;
+    unsigned m_vbo;
     std::unique_ptr<Shader> m_shad;
 
     virtual void OnUpdate(Time dt) override final
@@ -136,13 +148,19 @@ private:
         }
 
         m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+        m_chunkRenderer.SetVP(glm::mat4(1));
 
         m_window.Clear();
-        m_chunkRenderer.Display();
-
         m_shad->Use();
         glBindVertexArray(m_vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ind);
+
+        //glDrawArrays(GL_TRIANGLES, 0, 3); 
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        m_chunkRenderer.Display();
+
 
         m_window.Display();
     }

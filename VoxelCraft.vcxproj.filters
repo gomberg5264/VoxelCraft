@@ -50,10 +50,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\face.frag" />
-    <None Include="res\shaders\face.vert" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\vcpch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
