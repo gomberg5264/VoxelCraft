@@ -148,7 +148,7 @@ private:
         }
 
         m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
-        m_chunkRenderer.SetVP(glm::mat4(1));
+        //m_chunkRenderer.SetVP(glm::mat4(1));
 
         m_window.Clear();
         m_shad->Use();
@@ -157,8 +157,9 @@ private:
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ind);
 
         //glDrawArrays(GL_TRIANGLES, 0, 3); 
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        glDisable(GL_DEPTH_TEST);
         m_chunkRenderer.Display();
 
 

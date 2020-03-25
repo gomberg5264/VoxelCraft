@@ -43,6 +43,7 @@ ChunkRenderer::~ChunkRenderer()
 
 void ChunkRenderer::SetVP(const glm::mat4& vp)
 {
+    m_shader.Use();
     m_shader.SetMatrix("aVP", glm::value_ptr(vp));
 }
 
