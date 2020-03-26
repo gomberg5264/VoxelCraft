@@ -41,7 +41,7 @@ public:
         , m_renderer(renderer) {}
     
     // Radius in units (multiply by chunkdimension)
-    inline void SetRadius(float radius) noexcept { m_radius = radius; }
+    inline void SetRadius(float radius) noexcept { m_radius = radius; m_chunks.reserve(radius * radius * radius / chunkSize); }
     void SetPos(const glm::vec3& pos) noexcept;
 
     void Update();
@@ -55,5 +55,6 @@ private:
     glm::vec3 m_pos;
 
     ChunkMap m_chunks;
+    std::list<std::reference_wrapper<ChunkMapValue>> m_chunksNotFilled;
     ChunkRenderer& m_renderer;
 };

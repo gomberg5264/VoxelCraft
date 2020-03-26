@@ -26,6 +26,7 @@ void ChunkManager::SetPos(const glm::vec3& pos) noexcept
     {
         m_chunks.emplace(center ,center);
         LoadChunk(m_chunks.at(center));
+        m_chunksNotFilled.push_back(m_chunks.at(center));
     }
 }
 
@@ -64,6 +65,8 @@ void ChunkManager::Update()
         for (const auto& val : toRemove)
         {
             assert(m_chunks.at(val).chunk.m_neighbors.count == 0 && "Count should be 0. Chunk is not unregistered");
+
+            m_chunksNotFilled.remove_if([&val](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.GetPos() == val; });
             m_chunks.erase(val);
         }
     }
@@ -76,24 +79,27 @@ void ChunkManager::Update()
     pos.z -= pos.z % chunkDimension.z;
 
     // We fake mt loading by limiting the amount of chunks to load a frame
-    int chunkGenLeft = 1;
-    std::function<void(ChunkMapValue& value)> loadFn = [&](ChunkMapValue& current)
+    int chunkGenLeft = 6;
+    std::function<void()> loadFn = [&]()
     {
-        if (chunkGenLeft < 0) return;
+        //// If the boi is fully loaded, go to the neighbor
+        //if (current.chunk.m_neighbors.count == 6)
+        //{
+        //    for (int i = 0; i < 6; i++)
+        //    {
+        //        loadFn(m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
+        //    }
+        //}
+        //else
+        
+        // For the chunks withough fully populated neighbor check if neighbors can be loaded
+        for (auto& chunk : m_chunksNotFilled)
+        {
+            auto& current = chunk.get();
+            for (int i = 0; i < 6; i++)
+            {
+                if (chunkGenLeft < 0) return;
 
-        // If the boi is fully loaded, go to the neighbor
-        if (current.chunk.m_neighbors.count == 6)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                loadFn(m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
-            }
-        }
-        else
-        {
-            // For the neighbor chunks check if they can be loaded
-            for (int i = 0; i < 6; i++)
-            {
                 auto* dir = current.chunk.m_neighbors.neighbor.m[i];
                 if (!dir)
                 {
@@ -132,13 +138,16 @@ void ChunkManager::Update()
                         neighbor.chunk.m_neighbors.count++;
 
                         chunkGenLeft--;
+                        m_chunksNotFilled.push_back(neighbor);
                     }
                 }
             }
         }
     };
-    auto& center = m_chunks.at(pos);
-    loadFn(center);
+    loadFn();
+
+    // Update edge list
+    m_chunksNotFilled.remove_if([](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.m_neighbors.count == 6; });
 }
 
 void ChunkManager::Render()

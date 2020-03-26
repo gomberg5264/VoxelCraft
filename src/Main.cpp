@@ -140,7 +140,7 @@ private:
         }
 
         m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
-        m_chunkManager->SetRadius(2 * chunkDimension.x);
+        m_chunkManager->SetRadius(16 * chunkDimension.x);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
