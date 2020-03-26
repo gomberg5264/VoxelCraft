@@ -19,8 +19,8 @@ public:
     VBO(VBO&& vbo) noexcept;
     VBO& operator=(VBO&& vbo) noexcept;
 
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    void Unbind() const;
 
     void AddElement(const Element& element);
     const std::vector<Element>& GetElements() const;
@@ -38,8 +38,8 @@ public:
     VAO(VAO&& vao) noexcept;
     VAO& operator=(VAO&& vao) noexcept;
 
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    void Unbind() const;
 
     void AddVBO(const std::initializer_list<VBO::Element>& elements);
 

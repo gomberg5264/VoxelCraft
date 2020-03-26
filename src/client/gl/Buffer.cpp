@@ -26,12 +26,12 @@ VBO& VBO::operator=(VBO&& vbo) noexcept
     return *this;
 }
 
-void VBO::Bind()
+void VBO::Bind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_id);
 }
 
-void VBO::Unbind()
+void VBO::Unbind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -73,13 +73,13 @@ VAO& VAO::operator=(VAO&& vao) noexcept
     return *this;
 }
 
-void VAO::Bind()
+void VAO::Bind() const
 {
     glBindVertexArray(m_id);
     for (auto& vbo : m_vbos) vbo.Bind();
 }
 
-void VAO::Unbind()
+void VAO::Unbind() const
 {
     glBindVertexArray(0);
 }

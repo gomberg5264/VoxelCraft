@@ -1,6 +1,6 @@
 #include "vcpch.hpp"
 
-Chunk::Chunk(glm::ivec3 pos)
+Chunk::Chunk(const glm::ivec3& pos)
     : m_pos(pos)
 {
 }
@@ -13,21 +13,25 @@ void Chunk::Generate() noexcept
         {
             for (unsigned z = 0; z < chunkDimension.z; z++)
             {
-                auto DefaultBlockGen = [](float x, float y, float z) -> BlockType
+                auto DefaultBlockGen = [](int x, int y, int z) -> BlockType
                 {
-                    // The lower the more flat
-                    constexpr float flatFactor = 0.10f;
+                    // The higher the more flat
+                    constexpr float flatFactor = 1.5f;//0.25f;
+                    constexpr float xVarianceFactor = 1.f / (float(chunkDimension.x) * flatFactor);
+                    constexpr float zVarianceFactor = 1.f / (float(chunkDimension.z) * flatFactor);
 
                     // Execute generation criteria
-                    const float perlin = glm::perlin(
-                        glm::fvec2(x,z) * flatFactor);
+                    const float noise = glm::simplex(
+                        glm::fvec2(x * xVarianceFactor,z * zVarianceFactor));
 
-                    assert(perlin >= -1.f && "Why is perlin negative???");
+                    assert(noise >= -1.f && "Why is noise negative???");
                     
-                    // perlin [0,1]
-                    const unsigned height = static_cast<unsigned>(
-                        (perlin + 1.f) / 2.f) * (chunkDimension.y * 0.5f) + (chunkDimension.y * 0.5f);
+                    // noise [0,1]
+                    const int height = static_cast<int>(
+                        (noise + 1.f) / 2.f * (float(chunkDimension.y) * 0.5f) + (float(chunkDimension.y) * 0.5f));
                     glm::fvec3 pos{ x,y,z };
+
+                    //std::cout << x << ' ' << y << ' ' << (perlin + 1.f) / 2.f)<< '\n';
 
                     BlockType type;
                     if (y > height)
@@ -53,6 +57,9 @@ void Chunk::Generate() noexcept
                 };
                 auto DebugBlockGen = [](float x, float y, float z)->BlockType
                 {
+                    if (y == 5 && x > 3 && x < 12 && z > 3 && z < 12)
+                        return BlockType::Air;
+
                     //return BlockType::Grass;
                     if (y + 1 == chunkDimension.y - 2)
                         return BlockType::Air;
@@ -64,37 +71,12 @@ void Chunk::Generate() noexcept
                         return BlockType::Stone;
                 };
 
-                glm::fvec3 blockPos(x, y, z);
+                glm::ivec3 blockPos(x, y, z);
                 blockPos += m_pos;
 
-                //m_blocks[x][y][z] = DefaultBlockGen(blockPos.x,blockPos.y,blockPos.z);
-                m_blocks[x][y][z] = DebugBlockGen(blockPos.x, blockPos.y, blockPos.z);
+                m_blocks[x][y][z] = DefaultBlockGen(blockPos.x,blockPos.y,blockPos.z);
+                //m_blocks[x][y][z] = DebugBlockGen(blockPos.x, blockPos.y, blockPos.z);
             }
         }
     }
-}
-
-void Chunk::SetPos(const glm::ivec3& pos) noexcept
-{
-    m_pos = pos;
-}
-
-glm::ivec3 Chunk::GetPos() const noexcept
-{
-    return m_pos;
-}
-
-void Chunk::MarkDone()
-{
-    m_state = State::Done;
-}
-
-Chunk::State Chunk::GetState() const noexcept
-{
-    return m_state;
-}
-
-const Chunk::BlockArray& Chunk::GetBlockArray() const
-{
-    return m_blocks;
 }

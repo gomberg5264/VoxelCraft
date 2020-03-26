@@ -1,38 +1,39 @@
 #include "vcpch.hpp"
 
-
-ChunkMesh::ChunkMesh(unsigned index)
-    : m_index(index)
+ChunkMesh::ChunkMesh()
 {
-
+    m_vao.AddVBO(
+        {
+            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
+            { 1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
+            { 2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 5u * sizeof(float) },
+        });
 }
+
 
 bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk::BlockArray& blocks)
 {
     // Block is only culled if it is surrounded on all sides
 
     // If it is on the edge of a chunk, we will just render it
-    if ((dir == BlockFace::Left     && x < 1) || (dir == BlockFace::Right && x >= static_cast<int>(chunkDimension.x) - 1) ||
-        (dir == BlockFace::Bottom   && y < 1) || (dir == BlockFace::Top   && y >= static_cast<int>(chunkDimension.y) - 1) ||
-        (dir == BlockFace::Back     && z < 1) || (dir == BlockFace::Front && z >= static_cast<int>(chunkDimension.z) - 1)) return true;
+    if ((dir == BlockFace::Left && x < 1) || (dir == BlockFace::Right && x >= static_cast<int>(chunkDimension.x) - 1) ||
+        (dir == BlockFace::Bottom && y < 1) || (dir == BlockFace::Top && y >= static_cast<int>(chunkDimension.y) - 1) ||
+        (dir == BlockFace::Back && z < 1) || (dir == BlockFace::Front && z >= static_cast<int>(chunkDimension.z) - 1)) return true;
 
     // If visible from any side we should just render
-    if      (dir == BlockFace::Right    && !BlockDataFactory::GetInstance().GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
-    else if (dir == BlockFace::Left     && !BlockDataFactory::GetInstance().GetBlockData(blocks[x - 1][y][z]).isSolid) return true;
-    else if (dir == BlockFace::Top      && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y + 1][z]).isSolid) return true;
-    else if (dir == BlockFace::Bottom   && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y - 1][z]).isSolid) return true;
-    else if (dir == BlockFace::Front    && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z + 1]).isSolid) return true;
-    else if (dir == BlockFace::Back     && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z - 1]).isSolid) return true;
+    if (dir == BlockFace::Right && !BlockDataFactory::GetInstance().GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
+    else if (dir == BlockFace::Left && !BlockDataFactory::GetInstance().GetBlockData(blocks[x - 1][y][z]).isSolid) return true;
+    else if (dir == BlockFace::Top && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y + 1][z]).isSolid) return true;
+    else if (dir == BlockFace::Bottom && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y - 1][z]).isSolid) return true;
+    else if (dir == BlockFace::Front && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z + 1]).isSolid) return true;
+    else if (dir == BlockFace::Back && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z - 1]).isSolid) return true;
 
     // This means fully encapsulated
     return false;
 }
 
-
 void ChunkMesh::Generate(const Chunk& chunk)
 {
-    m_buffer.vertices.clear();
- 
     const auto& blocks = chunk.GetBlockArray();
     for (unsigned y = 0; y < chunkDimension.y; y++)
         for (unsigned z = 0; z < chunkDimension.z; z++)
@@ -43,8 +44,8 @@ void ChunkMesh::Generate(const Chunk& chunk)
                 {
                     continue;
                 }
-                
-                glm::ivec3 bPos(x, y, z);
+
+                glm::fvec3 bPos(x, y, z);
                 bPos += chunk.GetPos();
 
                 // Add all 6 directions
@@ -64,15 +65,12 @@ void ChunkMesh::Generate(const Chunk& chunk)
             }
 }
 
-
 ChunkRenderer::ChunkRenderer()
     : m_shader("res/shaders/face.vert","res/shaders/face.frag")
-    , m_elementCount(0)
+    // 6 indices per face, 6 faces per voxel
+    , m_elementCount(6u * 6u * chunkSize)
     , m_ebo(0)
 {
-    // 6 indices per face, 6 faces per voxel
-    m_elementCount = 6u * 6u * chunkSize;
-
     unsigned* ebo = new unsigned[m_elementCount];
     unsigned offset = 0;
     for (unsigned i = 0; i < m_elementCount; i += 6)
@@ -87,15 +85,6 @@ ChunkRenderer::ChunkRenderer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_elementCount * sizeof(unsigned), ebo, GL_STATIC_DRAW);
 
     delete[] ebo;
-
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(0u * sizeof(float)));
-    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), (void*)(3u * sizeof(float)));
-    //glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(5u * sizeof(float)));
-    //glEnableVertexAttribArray(0);
-    //glEnableVertexAttribArray(1);
-    //glEnableVertexAttribArray(2);
-    //
-    //glBindVertexArray(0);
 }
 
 ChunkRenderer::~ChunkRenderer()
@@ -103,27 +92,11 @@ ChunkRenderer::~ChunkRenderer()
     glDeleteBuffers(1, &m_ebo);
 }
 
-unsigned ChunkRenderer::GenerateIndex()
+void ChunkRenderer::RegisterVAO(VAO& vao)
 {
-    m_vaos.emplace_back();
-    auto& vao = m_vaos.back();
-    vao.AddVBO(
-        {
-            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
-            { 1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
-            { 2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 5u * sizeof(float) },
-        });
-
     vao.Bind();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     vao.Unbind();
-
-        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(0u * sizeof(float)));
-        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), (void*)(3u * sizeof(float)));
-        //glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), (void*)(5u * sizeof(float)));
-
-    //UpdateIndicesBuffer(m_vaos.size());
-    return m_vaos.size() - 1u;
 }
 
 void ChunkRenderer::SetVP(const glm::mat4& vp)
@@ -139,26 +112,24 @@ void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
 
 void ChunkRenderer::Display()
 {
-//  glBindVertexArray(m_vao);
     m_shader.Use();
 
     for (const auto& mesh : m_renderQueue)
     {
-        auto& vao = m_vaos[mesh.mesh.m_index];
-        //glBindBuffer(GL_ARRAY_BUFFER, m_vbos[mesh.mesh.m_index]);
-
+        auto& vao = mesh.chunk.m_vao;
+        
         vao.Bind();
 
         if (mesh.upload)
         {
             glBufferData(
                 GL_ARRAY_BUFFER,
-                mesh.mesh.m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
-                mesh.mesh.m_buffer.vertices.data(),
+                mesh.chunk.m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
+                mesh.chunk.m_buffer.vertices.data(),
                 GL_DYNAMIC_DRAW);
         }
 
-        glDrawElements(GL_TRIANGLES, mesh.mesh.m_buffer.vertices.size() / 4u * 6u, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh.chunk.m_buffer.vertices.size() / 4u * 6u, GL_UNSIGNED_INT, 0u);
     }
     m_renderQueue.clear();
 }

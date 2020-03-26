@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr glm::uvec3 chunkDimension { 16,16,16 };
+constexpr glm::uvec3 chunkDimension { 16,16,16};
 constexpr unsigned long chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
 /**
@@ -12,14 +12,14 @@ public:
     enum class State
     {
         New,
-        Modified,
+        Modify,
         Done,
     };
 
     //using BlockArray = std::array<std::array<std::array<BlockType, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
     using BlockArray = BlockType[chunkDimension.x][chunkDimension.y][chunkDimension.z];
 
-    explicit Chunk(glm::ivec3 pos = glm::ivec3(-1));
+    Chunk(const glm::ivec3& pos);
 
     /**
      * Sets the block type to the correct type
@@ -27,27 +27,28 @@ public:
      */
     void Generate() noexcept; 
 
-    void SetPos(const glm::ivec3& pos) noexcept;
-    glm::ivec3 GetPos() const noexcept;
+    inline glm::ivec3 GetPos() const noexcept { return m_pos; }
     
-    /**
-     * Mostly called at the end of a frame
-     * Means that the chunk is done loading/modifying etc
-     */
-    void MarkDone();
-    State GetState() const noexcept;
-    const BlockArray& GetBlockArray() const;
+    inline void MarkModify() noexcept { m_state = State::Modify; }
+    inline void MarkDone() noexcept { m_state = State::Done; }
+    inline State GetState() const noexcept { return m_state; }
+
+    inline const BlockArray& GetBlockArray() const noexcept { return m_blocks; }
 
 private:
-    glm::ivec3 m_pos{ -1 };
+    const glm::ivec3 m_pos;
     
     BlockArray m_blocks;
     State m_state = State::New;
 };
 
-//class ChunkManager
-//{
-//public:
-//    ChunkManager(unsigned radius);
-//
-//};
+/**
+ * ChunkManager loads multiple chunks in memory based on conditions
+ * There can be multiple types of chunk managers
+ * One for the player, this chunk manager would load chunks in a circle
+ * One for the server, it would get a collection of chunks that it will keep track of
+ */
+class PlayerChunkManager
+{
+
+};

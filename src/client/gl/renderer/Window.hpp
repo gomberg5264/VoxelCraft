@@ -5,8 +5,8 @@ class Window
 public:
     struct Config
     {
-        float x{ 1280 };
-        float y{ 720 };
+        unsigned x{ 1280 };
+        unsigned y{ 720 };
 
         std::string title{ "VoxelCraft" };
     };

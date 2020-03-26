@@ -12,7 +12,7 @@ namespace Primitive
                 , z(z)
                 , u(u)
                 , v(v)
-                , texIndex(texIndex)
+                , texIndex(static_cast<float>(texIndex)) // For some reason opengl doen't work if this is unsigned
             {}
 
 

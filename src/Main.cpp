@@ -137,13 +137,14 @@ private:
 
             m_chunk = std::make_unique<Chunk>(glm::ivec3(0,0,-1));
             m_chunk->Generate();
-            m_mesh = std::make_unique<ChunkMesh>(m_chunkRenderer->GenerateIndex());
+            m_mesh = std::make_unique<ChunkMesh>();
+            m_chunkRenderer->RegisterVAO(m_mesh->m_vao);
             m_mesh->Generate(*m_chunk);
             
-
-            m_chunk2 = std::make_unique<Chunk>(glm::ivec3(chunkDimension.x + 1, 0, -1));
+            m_chunk2 = std::make_unique<Chunk>(glm::ivec3(chunkDimension.x, 0, -1));
             m_chunk2->Generate();
-            m_mesh2 = std::make_unique<ChunkMesh>(m_chunkRenderer->GenerateIndex());
+            m_mesh2 = std::make_unique<ChunkMesh>();
+            m_chunkRenderer->RegisterVAO(m_mesh2->m_vao);
             m_mesh2->Generate(*m_chunk2);
         }
 
@@ -198,7 +199,7 @@ private:
             m_chunkRenderer->Render(*m_mesh, true);
             m_chunk->MarkDone();
             break;
-        case Chunk::State::Modified:
+        case Chunk::State::Modify:
             m_chunkRenderer->Render(*m_mesh, true);
             m_chunk->MarkDone();
             break;
@@ -213,7 +214,7 @@ private:
             m_chunkRenderer->Render(*m_mesh2, true);
             m_chunk2->MarkDone();
             break;
-        case Chunk::State::Modified:
+        case Chunk::State::Modify:
             m_chunkRenderer->Render(*m_mesh2, true);
             m_chunk2->MarkDone();
             break;
