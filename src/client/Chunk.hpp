@@ -1,7 +1,7 @@
 #pragma once
 #include "BlockData.hpp"
 
-constexpr glm::uvec3 chunkDimension { 128,16, 128};
+constexpr glm::uvec3 chunkDimension { 16,16, 16};
 constexpr unsigned long chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
 /**
@@ -17,6 +17,30 @@ public:
         Done,
     };
 
+    struct Neighbors
+    {
+        Neighbors()
+            : count(0)
+        {
+            for (int i = 0; i < 6; i++) neighbor.m[0] = nullptr;
+        }
+        
+        int count;
+        union
+        {
+            Chunk* m[6];
+            struct
+            {
+                Chunk* top;
+                Chunk* left;
+                Chunk* front;
+                Chunk* bottom;
+                Chunk* right;
+                Chunk* back;
+            };
+        }neighbor;
+    };
+    
     //using BlockArray = std::array<std::array<std::array<BlockType, chunkDimension.z>, chunkDimension.y>, chunkDimension.x>;
     using BlockArray = BlockType[chunkDimension.x][chunkDimension.y][chunkDimension.z];
 
@@ -38,6 +62,7 @@ public:
 
     // Used for optimization by the renderer
     bool m_isAir;
+    Neighbors m_neighbors;
 
 private:
     const glm::ivec3 m_pos;

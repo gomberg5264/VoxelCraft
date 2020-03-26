@@ -5,17 +5,22 @@ Chunk::Chunk(const glm::ivec3& pos)
     : m_isAir(true)
     , m_pos(pos)
 {
+    // Pos should be multiple of 16
+    assert(pos.x % chunkDimension.x == 0);
+    assert(pos.y % chunkDimension.y == 0);
+    assert(pos.z % chunkDimension.z == 0);
 }
 
 void Chunk::Generate() noexcept
 {
+    bool isAirOnly = true;
     for (unsigned x = 0; x < chunkDimension.x; x++)
     {
         for (unsigned y = 0; y < chunkDimension.y; y++)
         {
             for (unsigned z = 0; z < chunkDimension.z; z++)
             {
-                auto DefaultBlockGen = [](int x, int y, int z) -> BlockType
+                auto DefaultBlockGen = [&isAirOnly](int x, int y, int z) -> BlockType
                 {
                     // The lower the more flat
                     constexpr float flatFactor = 5.0f;//0.25f;
@@ -42,6 +47,8 @@ void Chunk::Generate() noexcept
                     }
                     else
                     {
+                        isAirOnly = false;
+
                         if (y == height)
                         {
                             type = (BlockType::Grass);
@@ -81,4 +88,6 @@ void Chunk::Generate() noexcept
             }
         }
     }
+
+    m_isAir = isAirOnly;
 }

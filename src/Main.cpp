@@ -139,35 +139,11 @@ private:
             glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
-        // TEMP
-        // ---
-        // Generate a chunk. This should all happen during runtime
-        {
-            m_chunkRenderer = std::make_unique<ChunkRenderer>();
-
-            m_chunk = std::make_unique<Chunk>(glm::ivec3(0,0,-1));
-            m_chunk->Generate();
-            m_mesh = std::make_unique<ChunkMesh>();
-            m_chunkRenderer->RegisterVAO(m_mesh->m_vao);
-            m_mesh->Generate(*m_chunk);
-            
-            m_chunk2 = std::make_unique<Chunk>(glm::ivec3(chunkDimension.x, 0, -1));
-            m_chunk2->Generate();
-            m_mesh2 = std::make_unique<ChunkMesh>();
-            m_chunkRenderer->RegisterVAO(m_mesh2->m_vao);
-            m_mesh2->Generate(*m_chunk2);
-        }
+        m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
+        m_chunkManager->SetRadius(16 * chunkDimension.x);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
-
-    std::unique_ptr<ChunkRenderer> m_chunkRenderer;
-    // temp
-    std::unique_ptr<Chunk> m_chunk;
-    std::unique_ptr<ChunkMesh> m_mesh;
-    std::unique_ptr<Chunk> m_chunk2;
-    std::unique_ptr<ChunkMesh> m_mesh2;
-
 
     virtual void OnUpdate(Time dt) override final
     {
@@ -203,45 +179,21 @@ private:
         //    camPos.y,
         //    camPos.z);
 
-        switch (m_chunk->GetState())
-        {
-        case Chunk::State::New:
-            m_chunkRenderer->Render(*m_mesh, true);
-            m_chunk->MarkDone();
-            break;
-        case Chunk::State::Modify:
-            m_chunkRenderer->Render(*m_mesh, true);
-            m_chunk->MarkDone();
-            break;
-        case Chunk::State::Done:
-            m_chunkRenderer->Render(*m_mesh,false);
-            break;
-        }
+        m_chunkManager->SetPos(m_camera->m_eye);
+        m_chunkManager->Update();
 
-        switch (m_chunk2->GetState())
-        {
-        case Chunk::State::New:
-            m_chunkRenderer->Render(*m_mesh2, true);
-            m_chunk2->MarkDone();
-            break;
-        case Chunk::State::Modify:
-            m_chunkRenderer->Render(*m_mesh2, true);
-            m_chunk2->MarkDone();
-            break;
-        case Chunk::State::Done:
-            m_chunkRenderer->Render(*m_mesh2, false);
-            break;
-        }
-
-        m_chunkRenderer->SetVP(m_camera->GetProjection() * m_camera->GetView());
+        m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
         m_window.Clear();
 
-        m_chunkRenderer->Display();
+        m_chunkManager->Render();
+        m_chunkRenderer.Display();
 
         m_window.Display();
     }
 
     Window m_window;
+    std::unique_ptr<ChunkManager> m_chunkManager;
+    ChunkRenderer m_chunkRenderer;
 
     std::unique_ptr<Camera> m_camera;
 };

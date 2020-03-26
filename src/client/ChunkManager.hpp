@@ -24,13 +24,12 @@ public:
         ChunkMapValue(Chunk&& chunk) noexcept
             : chunk(std::move(chunk))
         {
-            mesh.Generate(chunk);
         }
 
         Chunk chunk;
         ChunkMesh mesh;
     };
-    using ChunkMap= std::unordered_map<glm::ivec3, ChunkMapValue>;
+    using ChunkMap = std::unordered_map<glm::ivec3, std::unique_ptr<ChunkMapValue>>;
 
     /** 
      * Reference to chunk renderer is needed to register buffers 
@@ -41,13 +40,17 @@ public:
         , m_pos(0)
         , m_renderer(renderer) {}
     
+    // Radius in units (multiply by chunkdimension)
     inline void SetRadius(float radius) noexcept { m_radius = radius; }
-    inline void SetPos(const glm::vec3& pos) noexcept { m_pos = pos; }
+    void SetPos(const glm::vec3& pos) noexcept;
 
     void Update();
     void Render() const;
 
 private:
+
+    void LoadChunk(ChunkMapValue& value);
+
     float m_radius;
     glm::vec3 m_pos;
 
