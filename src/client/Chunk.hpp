@@ -22,7 +22,7 @@ public:
         Neighbors()
             : count(0)
         {
-            for (int i = 0; i < 6; i++) neighbor.m[0] = nullptr;
+            for (int i = 0; i < 6; i++) neighbor.m[i] = nullptr;
         }
         
         int count;

@@ -48,11 +48,11 @@ void ChunkManager::Update()
                         auto* dir = val.second.chunk.m_neighbors.neighbor.m[i];
                         if (dir)
                         {
+                            val.second.chunk.m_neighbors.neighbor.m[i] = nullptr;
+                            val.second.chunk.m_neighbors.count--;
+
                             dir->m_neighbors.neighbor.m[(i + 3) % 6] = nullptr;
                             dir->m_neighbors.count--;
-
-                            val.second.chunk.m_neighbors.count--;
-                            dir = nullptr;
                         }
                     }
 
@@ -70,16 +70,13 @@ void ChunkManager::Update()
     
     // Add chunks in range
     // ---
-    // We fake mt loading by limiting the amount of chunks to load a frame
-    int chunkGenLeft = 10;
     glm::ivec3 pos = glm::ivec3(m_pos);
     pos.x -= pos.x % chunkDimension.x;
     pos.y -= pos.y % chunkDimension.y;
     pos.z -= pos.z % chunkDimension.z;
 
-    // Get center chunk
-    auto& center = m_chunks.at(pos);
-
+    // We fake mt loading by limiting the amount of chunks to load a frame
+    int chunkGenLeft = 1;
     std::function<void(ChunkMapValue& value)> loadFn = [&](ChunkMapValue& current)
     {
         if (chunkGenLeft < 0) return;
@@ -106,32 +103,33 @@ void ChunkManager::Update()
                     //Chunk* bottom;
                     //Chunk* right;
                     //Chunk* back;
-                    glm::ivec3 offset;
+                    glm::ivec3 offset(0);
                     if (i == 0) offset.y = (int)chunkDimension.y;
-                    if (i == 1) offset.x = -(int)chunkDimension.x;
-                    if (i == 2) offset.z = (int)chunkDimension.z;
-                    if (i == 3) offset.y = -(int)chunkDimension.y;
-                    if (i == 4) offset.x = (int)chunkDimension.x;
-                    if (i == 5) offset.z = -(int)chunkDimension.z;
-                    glm::ivec3 neigborPos = current.chunk.GetPos() + offset;
+                    else if (i == 1) offset.x = -(int)chunkDimension.x;
+                    else if (i == 2) offset.z = (int)chunkDimension.z;
+                    else if (i == 3) offset.y = -(int)chunkDimension.y;
+                    else if (i == 4) offset.x = (int)chunkDimension.x;
+                    else if (i == 5) offset.z = -(int)chunkDimension.z;
+                    glm::ivec3 neighborPos = current.chunk.GetPos() + offset;
 
-                    const float distance = glm::distance(glm::vec3(neigborPos), m_pos);
+                    const float distance = glm::distance(glm::vec3(neighborPos), m_pos);
 
                     // If in radius but not yet loaded
                     if (distance < m_radius)
                     {
                         // Add the chunk
                         // Create and put in list
-                        m_chunks.emplace(neigborPos, neigborPos);
-                        auto& neighbor = m_chunks.at(pos);
+                        m_chunks.emplace(neighborPos, neighborPos);
+                        auto& neighbor = m_chunks.at(neighborPos);
                         LoadChunk(neighbor);
 
                         // Set up neighbors
-                        dir = &neighbor.chunk;
+                        //dir = &neighbor.chunk;
+                        current.chunk.m_neighbors.neighbor.m[i] = &neighbor.chunk;
                         current.chunk.m_neighbors.count++;
 
-                        neighbor.chunk.m_neighbors.count++;
                         neighbor.chunk.m_neighbors.neighbor.m[(i + 3) % 6] = &current.chunk;
+                        neighbor.chunk.m_neighbors.count++;
 
                         chunkGenLeft--;
                     }
@@ -139,6 +137,8 @@ void ChunkManager::Update()
             }
         }
     };
+    auto& center = m_chunks.at(pos);
+    loadFn(center);
 }
 
 void ChunkManager::Render()
