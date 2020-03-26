@@ -1,4 +1,7 @@
 #pragma once
+#include "client/gl/Primitive.hpp"
+#include "client/gl/Buffer.hpp"
+#include "client/gl/Shader.hpp"
 
 class ChunkMesh
 {

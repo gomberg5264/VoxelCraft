@@ -1,4 +1,14 @@
 #include "vcpch.hpp"
+
+#include "common/Engine.hpp"
+#include "client/BlockData.hpp"
+#include "client/Chunk.hpp"
+#include "client/ChunkManager.hpp"
+#include "client/gl/Camera.hpp"
+#include "client/gl/renderer/Window.hpp"
+#include "client/gl/renderer/ChunkRenderer.hpp"
+
+//#include <SFML/Window/Window.hpp>
 #include <iostream>
 
 class Game : public Engine

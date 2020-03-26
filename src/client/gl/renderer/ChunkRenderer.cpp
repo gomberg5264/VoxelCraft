@@ -1,4 +1,8 @@
 #include "vcpch.hpp"
+#include "client/BlockData.hpp"
+#include "client/Chunk.hpp"
+
+#include "client/gl/renderer/ChunkRenderer.hpp"
 
 ChunkMesh::ChunkMesh()
 {

@@ -30,18 +30,18 @@
 #include <SFML/Window.hpp>
 
 // proj
-#include "utils/Singleton.hpp"
-#include "utils/NonCopyable.hpp"
-
-#include "client/BlockData.hpp"
-#include "client/Chunk.hpp"
-
-#include "client/gl/Buffer.hpp"
-#include "client/gl/Primitive.hpp"
-#include "client/gl/Shader.hpp"
-#include "client/gl/Camera.hpp"
-
-#include "client/gl/renderer/Window.hpp"
-#include "client/gl/renderer/ChunkRenderer.hpp"
-
-#include "common/Engine.hpp"
+//#include "utils/Singleton.hpp"
+//#include "utils/NonCopyable.hpp"
+//
+//#include "client/BlockData.hpp"
+//#include "client/Chunk.hpp"
+//
+//#include "client/gl/Buffer.hpp"
+//#include "client/gl/Primitive.hpp"
+//#include "client/gl/Shader.hpp"
+//#include "client/gl/Camera.hpp"
+//
+//#include "client/gl/renderer/Window.hpp"
+//#include "client/gl/renderer/ChunkRenderer.hpp"
+//
+//#include "common/Engine.hpp"

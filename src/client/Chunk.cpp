@@ -1,7 +1,9 @@
 #include "vcpch.hpp"
+#include "Chunk.hpp"
 
 Chunk::Chunk(const glm::ivec3& pos)
-    : m_pos(pos)
+    : m_isAir(true)
+    , m_pos(pos)
 {
 }
 
@@ -15,10 +17,10 @@ void Chunk::Generate() noexcept
             {
                 auto DefaultBlockGen = [](int x, int y, int z) -> BlockType
                 {
-                    // The higher the more flat
-                    constexpr float flatFactor = 1.5f;//0.25f;
-                    constexpr float xVarianceFactor = 1.f / (float(chunkDimension.x) * flatFactor);
-                    constexpr float zVarianceFactor = 1.f / (float(chunkDimension.z) * flatFactor);
+                    // The lower the more flat
+                    constexpr float flatFactor = 5.0f;//0.25f;
+                    constexpr float xVarianceFactor = 1.f / float(chunkDimension.x) * flatFactor;
+                    constexpr float zVarianceFactor = 1.f / float(chunkDimension.z) * flatFactor;
 
                     // Execute generation criteria
                     const float noise = glm::simplex(

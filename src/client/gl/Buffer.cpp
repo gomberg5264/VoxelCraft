@@ -1,4 +1,5 @@
 #include "vcpch.hpp"
+#include "client/gl/Buffer.hpp"
 
 VBO::VBO()
 {

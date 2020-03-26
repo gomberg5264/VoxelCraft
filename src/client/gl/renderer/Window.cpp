@@ -1,4 +1,5 @@
 #include "vcpch.hpp"
+#include "client/gl/renderer/Window.hpp"
 
 void APIENTRY glDebugOutput(GLenum source,
     GLenum type,

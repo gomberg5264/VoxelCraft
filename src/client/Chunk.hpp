@@ -1,6 +1,7 @@
 #pragma once
+#include "BlockData.hpp"
 
-constexpr glm::uvec3 chunkDimension { 16,16,16};
+constexpr glm::uvec3 chunkDimension { 128,16, 128};
 constexpr unsigned long chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
 /**
@@ -35,20 +36,12 @@ public:
 
     inline const BlockArray& GetBlockArray() const noexcept { return m_blocks; }
 
+    // Used for optimization by the renderer
+    bool m_isAir;
+
 private:
     const glm::ivec3 m_pos;
     
     BlockArray m_blocks;
     State m_state = State::New;
-};
-
-/**
- * ChunkManager loads multiple chunks in memory based on conditions
- * There can be multiple types of chunk managers
- * One for the player, this chunk manager would load chunks in a circle
- * One for the server, it would get a collection of chunks that it will keep track of
- */
-class PlayerChunkManager
-{
-
 };

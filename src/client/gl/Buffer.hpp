@@ -1,5 +1,5 @@
 #pragma once
-
+#include "utils/NonCopyable.hpp"
 
 class VBO : public NonCopyable
 {

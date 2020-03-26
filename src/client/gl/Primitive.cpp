@@ -1,4 +1,7 @@
 #include "vcpch.hpp"
+#include "client/BlockData.hpp"
+
+#include "client/gl/Primitive.hpp"
 
 Primitive::Face::Buffer Primitive::Face::MakeBuffer(BlockFace dir, float x, float y, float z, unsigned texIndex)
 {

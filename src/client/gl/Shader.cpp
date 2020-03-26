@@ -1,4 +1,5 @@
 #include "vcpch.hpp"
+#include "client/gl/Shader.hpp"
 
 // https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h
 

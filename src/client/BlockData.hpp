@@ -1,4 +1,5 @@
 #pragma once
+#include "utils/Singleton.hpp"
 
 enum class BlockType
 {
