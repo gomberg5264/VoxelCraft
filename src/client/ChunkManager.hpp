@@ -19,7 +19,7 @@ class ChunkRenderer;
 class ChunkManager
 {
 public:
-    struct ChunkMapValue
+    struct ChunkMapValue : public NonCopyable
     {
         ChunkMapValue(Chunk&& chunk) noexcept
             : chunk(std::move(chunk))
@@ -29,7 +29,7 @@ public:
         Chunk chunk;
         ChunkMesh mesh;
     };
-    using ChunkMap = std::unordered_map<glm::ivec3, std::unique_ptr<ChunkMapValue>>;
+    using ChunkMap = std::unordered_map<glm::ivec3, ChunkMapValue>;
 
     /** 
      * Reference to chunk renderer is needed to register buffers 
@@ -45,7 +45,7 @@ public:
     void SetPos(const glm::vec3& pos) noexcept;
 
     void Update();
-    void Render() const;
+    void Render();
 
 private:
 

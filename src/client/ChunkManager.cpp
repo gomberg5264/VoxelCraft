@@ -22,10 +22,10 @@ void ChunkManager::SetPos(const glm::vec3& pos) noexcept
     center.z -= center.z % chunkDimension.z;
 
     //auto& center = m_chunks.at(pos);
-    if (m_chunks.count(pos) == 0)
+    if (m_chunks.count(center) == 0)
     {
-        m_chunks[center] = { std::make_unique<ChunkMapValue>(Chunk(center)) };
-        LoadChunk(*m_chunks.at(center));
+        m_chunks.emplace(center ,center);
+        LoadChunk(m_chunks.at(center));
     }
 }
 
@@ -37,21 +37,21 @@ void ChunkManager::Update()
         std::vector<glm::ivec3> toRemove;
         for (auto& val : m_chunks)
         {
-            if (val.second->chunk.m_neighbors.count != 6)
+            if (val.second.chunk.m_neighbors.count != 6)
             {
-                const float distance = glm::distance(glm::vec3(val.second->chunk.GetPos()), m_pos);
+                const float distance = glm::distance(glm::vec3(val.second.chunk.GetPos()), m_pos);
                 if (distance > m_radius)
                 {
                     // Remove self from other chunks
                     for (int i = 0; i < 6; i++)
                     {
-                        auto* dir = val.second->chunk.m_neighbors.neighbor.m[i];
+                        auto* dir = val.second.chunk.m_neighbors.neighbor.m[i];
                         if (dir)
                         {
                             dir->m_neighbors.neighbor.m[(i + 3) % 6] = nullptr;
                             dir->m_neighbors.count--;
 
-                            val.second->chunk.m_neighbors.count--;
+                            val.second.chunk.m_neighbors.count--;
                             dir = nullptr;
                         }
                     }
@@ -63,7 +63,7 @@ void ChunkManager::Update()
 
         for (const auto& val : toRemove)
         {
-            assert(m_chunks.at(val)->chunk.m_neighbors.count == 0 && "Count should be 0. Chunk is not unregistered");
+            assert(m_chunks.at(val).chunk.m_neighbors.count == 0 && "Count should be 0. Chunk is not unregistered");
             m_chunks.erase(val);
         }
     }
@@ -89,7 +89,7 @@ void ChunkManager::Update()
         {
             for (int i = 0; i < 6; i++)
             {
-                loadFn(*m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
+                loadFn(m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
             }
         }
         else
@@ -122,16 +122,16 @@ void ChunkManager::Update()
                     {
                         // Add the chunk
                         // Create and put in list
-                        m_chunks.emplace(neigborPos, std::make_unique<ChunkMapValue>(std::move(Chunk(neigborPos))));
+                        m_chunks.emplace(neigborPos, neigborPos);
                         auto& neighbor = m_chunks.at(pos);
-                        LoadChunk(*neighbor);
+                        LoadChunk(neighbor);
 
                         // Set up neighbors
-                        dir = &neighbor->chunk;
+                        dir = &neighbor.chunk;
                         current.chunk.m_neighbors.count++;
 
-                        neighbor->chunk.m_neighbors.count++;
-                        neighbor->chunk.m_neighbors.neighbor.m[(i + 3) % 6] = &current.chunk;
+                        neighbor.chunk.m_neighbors.count++;
+                        neighbor.chunk.m_neighbors.neighbor.m[(i + 3) % 6] = &current.chunk;
 
                         chunkGenLeft--;
                     }
@@ -141,11 +141,21 @@ void ChunkManager::Update()
     };
 }
 
-void ChunkManager::Render() const
+void ChunkManager::Render()
 {
-    for (const auto& chunk : m_chunks)
+    for (auto& chunk : m_chunks)
     {
-        if(!chunk.second->chunk.m_isAir)
-            m_renderer.Render(chunk.second->mesh, chunk.second->chunk.GetState() == Chunk::State::Modify);
+        //if (!chunk.second.chunk.m_isAir)
+        {
+            if (chunk.second.chunk.GetState() == Chunk::State::Modify)
+            {
+                m_renderer.Render(chunk.second.mesh, true);
+                chunk.second.chunk.MarkDone();
+            }
+            else
+            {
+                m_renderer.Render(chunk.second.mesh, false);
+            }
+        }
     }
 }

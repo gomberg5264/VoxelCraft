@@ -23,7 +23,7 @@ void Chunk::Generate() noexcept
                 auto DefaultBlockGen = [&isAirOnly](int x, int y, int z) -> BlockType
                 {
                     // The lower the more flat
-                    constexpr float flatFactor = 5.0f;//0.25f;
+                    constexpr float flatFactor = 0.25f;
                     constexpr float xVarianceFactor = 1.f / float(chunkDimension.x) * flatFactor;
                     constexpr float zVarianceFactor = 1.f / float(chunkDimension.z) * flatFactor;
 
