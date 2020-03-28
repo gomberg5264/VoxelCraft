@@ -30,6 +30,30 @@ private:
     unsigned m_id;
 };
 
+class EBO : public NonCopyable
+{
+public:
+    EBO();
+    ~EBO();
+    EBO(EBO&& ebo) noexcept;
+    EBO& operator=(EBO&& ebo) noexcept;
+
+    /**
+     * If count == 0 this doesn't do anything
+     */
+    void Bind() const;
+    void Unbind() const;
+    void SetIndices(const std::vector<unsigned>& indices);
+
+    unsigned m_elementCount;
+
+private:
+    unsigned m_id;
+};
+
+/**
+ * Only binds an ebo if it is not zero
+ */
 class VAO : public NonCopyable
 {
 public:

@@ -1,0 +1,23 @@
+#pragma once
+#include "common/Player.hpp"
+
+#include "client/gl/Buffer.hpp"
+#include "client/gl/Primitive.hpp"
+
+#include "client/gl/Shader.hpp"
+#include "client/gl/Camera.hpp"
+
+class PlayerMesh
+{
+public:
+    PlayerMesh(Transform& transform);
+
+    void Draw(const Camera& camera);
+
+private:
+    Shader m_shader;
+
+    Transform& m_transform;
+    VAO m_vao;
+    EBO m_ebo;
+};

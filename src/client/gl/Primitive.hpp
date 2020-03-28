@@ -1,4 +1,5 @@
 #pragma once
+#include "client/BlockData.hpp"
 
 namespace Primitive
 {
@@ -32,5 +33,7 @@ namespace Primitive
         };
 
         Buffer MakeBuffer(BlockFace dir, float x, float y, float z, unsigned texIndex);
+        std::vector<unsigned> MakeIndices(unsigned faceCount);
+
     }
 }

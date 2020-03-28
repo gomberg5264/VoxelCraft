@@ -10,7 +10,6 @@ void Engine::Run()
 
     while(!m_shouldStop)
     {
-
         OnUpdate(clock.restart().asSeconds());
     }
 }

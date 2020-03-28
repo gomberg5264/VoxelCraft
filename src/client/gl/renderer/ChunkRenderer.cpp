@@ -117,6 +117,7 @@ void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
 void ChunkRenderer::Display()
 {
     m_shader.Use();
+    m_shader.SetMatrix("aModel", glm::value_ptr(glm::mat4(1)));
 
     for (const auto& mesh : m_renderQueue)
     {
