@@ -131,6 +131,7 @@
     <ClInclude Include="src\client\gl\Shader.hpp" />
     <ClInclude Include="src\common\Player.hpp" />
     <ClInclude Include="src\common\Transform.hpp" />
+    <ClInclude Include="src\utils\Math.hpp" />
     <ClInclude Include="src\utils\NonCopyable.hpp" />
     <ClInclude Include="src\utils\Singleton.hpp" />
     <ClInclude Include="src\vcpch.hpp" />

@@ -5,6 +5,7 @@ in vec2 uv;
 in flat float texIndex; 
 
 in vec3 vertPos;
+in float skyIntensity;
 in vec3 skyLightDir; 
 in vec3 skyLightColor; 
 
@@ -14,17 +15,14 @@ uniform sampler2DArray sampl;
 
 void main()
 {
-    float lamb = max(dot(-skyLightDir, normal), 0.0);
+    vec3 ambient = skyIntensity * skyLightColor;
+    vec3 toSky = -skyLightDir;
     
-    vec3 ambient = vec3(0.1);
-    vec3 skyColor = skyLightColor * lamb;
-    
-    if(lamb == 0.0)
-    {
-        skyColor = ambient;
-    }
+    float diff = max(dot(toSky, normal), 0.0);
+    vec3 diffuse = skyLightColor * diff;
 
-    color = vec4(skyColor,1) * texture(sampl,vec3(uv,texIndex));
+    vec3 result = min(ambient + diffuse,vec3(1));
+    color = vec4(result,1) * texture(sampl,vec3(uv,texIndex));
     
     //color = vec4(1);
     // color = vec4(vec3(float(texIndex) / 2.f),1);

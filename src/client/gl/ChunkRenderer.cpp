@@ -116,11 +116,16 @@ void ChunkRenderer::SetSkyLightDirection(const glm::vec3& lightDir) noexcept
     m_shader.SetVec3("aSkyLightDir", glm::value_ptr(lightDir));
 }
 
+void ChunkRenderer::SetSkyIntensity(float intensity) noexcept
+{
+    m_shader.Use();
+    m_shader.SetFloat("aSkyIntensity", intensity);
+}
+
 void ChunkRenderer::SetSkyLightColor(const glm::vec3& color) noexcept
 {
     m_shader.Use();
     m_shader.SetVec3("aSkyLightColor", glm::value_ptr(color));
-
 }
 
 void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)

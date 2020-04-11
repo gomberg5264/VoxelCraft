@@ -35,6 +35,7 @@ public:
 
     void SetVP(const glm::mat4& vp) noexcept;
     void SetSkyLightDirection(const glm::vec3& lightDir) noexcept;
+    void SetSkyIntensity(float intensity) noexcept;
 
     /**
      * @param color [0,1]

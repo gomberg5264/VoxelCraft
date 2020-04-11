@@ -1,5 +1,7 @@
 #include "vcpch.hpp"
 
+#include "utils/Math.hpp"
+
 #include "common/Engine.hpp"
 #include "common/Player.hpp"
 
@@ -11,9 +13,6 @@
 #include "client/gl/Window.hpp"
 #include "client/gl/ChunkRenderer.hpp"
 #include "client/gl/PlayerRenderer.hpp"
-
-//#include <SFML/Window/Window.hpp>
-#include <iostream>
 
 void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
 {
@@ -118,6 +117,7 @@ void LoadTexture(unsigned atlasX, unsigned atlasY)
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
+// TODO: This is a client engine instance. Move it to a dedicated file
 class Game : public Engine
 {
 private:
@@ -153,12 +153,12 @@ private:
         m_chunkManager->SetRadius(10 * chunkDimension.x);
         
         m_chunkRenderer.SetSkyLightColor(glm::vec3(1));
-        m_chunkRenderer.SetSkyLightDirection(glm::normalize(glm::vec3(-1, -5, -2)));
+        m_chunkRenderer.SetSkyLightDirection(glm::normalize(glm::vec3(-1, -3, -2)));
+        m_chunkRenderer.SetSkyIntensity(0.6f);
 
         m_playerMesh = std::make_unique<PlayerMesh>(m_player.m_transform);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
-
     }
 
     virtual void OnUpdate(Time dt) override final
@@ -167,7 +167,7 @@ private:
         const glm::fvec3 camPos = m_camera->m_eye;
         
         // Process events
-        // We may want to forward these events
+        // TODO: We may want to forward these events
         sf::Event event;
         while (m_window.GetWindow().pollEvent(event))
         {
@@ -197,6 +197,16 @@ private:
         static float et = 0;
         et += dt;
 
+        // TODO: temp day cycle
+        constexpr float dayDur = 1.f / 1.f;
+        const float time = glm::radians(et * glm::pi<float>() * 2.f * dayDur);
+        m_chunkRenderer.SetSkyIntensity(Math::Lerp(glm::cos(time),0.1f,0.8f));
+        m_chunkRenderer.SetSkyLightDirection(glm::vec3(
+            glm::cos(time),
+            glm::cos(time),
+            glm::cos(time)));
+
+        // TODO: Move this to a player class
         m_player.m_transform.m_pos = glm::vec3(0, 20, 0);
         m_player.m_transform.m_scale = glm::vec3(glm::sin(et),glm::cos(et),glm::sin(glm::cos(et))) * 10.f;
         m_player.m_transform.m_euler = m_player.m_transform.m_euler + glm::vec3(dt, dt * 3.f, dt * 1.5f);

@@ -9,12 +9,14 @@ out vec2 uv;
 out flat float texIndex; 
 
 out vec3 vertPos;
+out float skyIntensity;
 out vec3 skyLightDir;
 out vec3 skyLightColor;
 
 uniform mat4 aVP;
 uniform mat4 aModel;
 
+uniform float aSkyIntensity;
 uniform vec3 aSkyLightDir;
 uniform vec3 aSkyLightColor;
 
@@ -25,6 +27,7 @@ void main()
     texIndex = aTexIndex;
  
     vertPos = aPos;
+    skyIntensity = aSkyIntensity;
     skyLightDir = aSkyLightDir;
     skyLightColor = aSkyLightColor;
 
