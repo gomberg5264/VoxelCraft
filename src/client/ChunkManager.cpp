@@ -148,6 +148,14 @@ void ChunkManager::Update()
 
     // Update edge list
     m_chunksNotFilled.remove_if([](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.m_neighbors.count == 6; });
+
+    static int frameCount = 0;
+    frameCount++;
+    if (frameCount > 10)
+    {
+        std::cout << m_chunks.size() << " Chunks" << std::endl;
+        frameCount = 0;
+    }
 }
 
 void ChunkManager::Render()

@@ -124,7 +124,6 @@ private:
     virtual void OnInit() override final
     {
         sf::Clock time;
-        
         // Setup camera
         // ---
         {
@@ -151,7 +150,7 @@ private:
 
         // Create chunk manager
         m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
-        m_chunkManager->SetRadius(16 * chunkDimension.x);
+        m_chunkManager->SetRadius(10 * chunkDimension.x);
         
         m_playerMesh = std::make_unique<PlayerMesh>(m_player.m_transform);
 
