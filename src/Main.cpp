@@ -152,9 +152,13 @@ private:
         m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
         m_chunkManager->SetRadius(10 * chunkDimension.x);
         
+        m_chunkRenderer.SetSkyLightColor(glm::vec3(1));
+        m_chunkRenderer.SetSkyLightDirection(glm::normalize(glm::vec3(-1, -5, -2)));
+
         m_playerMesh = std::make_unique<PlayerMesh>(m_player.m_transform);
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
+
     }
 
     virtual void OnUpdate(Time dt) override final

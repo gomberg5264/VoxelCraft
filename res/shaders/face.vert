@@ -7,11 +7,14 @@ layout (location = 3) in float aTexIndex;
 out vec3 normal;
 out vec2 uv;
 out flat float texIndex; 
+
+out vec3 vertPos;
 out vec3 skyLightDir;
-out vec3 skyColor;
+out vec3 skyLightColor;
 
 uniform mat4 aVP;
 uniform mat4 aModel;
+
 uniform vec3 aSkyLightDir;
 uniform vec3 aSkyLightColor;
 
@@ -20,8 +23,10 @@ void main()
     normal = aNormal;
     uv = aUV;
     texIndex = aTexIndex;
+ 
+    vertPos = aPos;
     skyLightDir = aSkyLightDir;
-    skyColor = aSkyLightColor;
+    skyLightColor = aSkyLightColor;
 
     gl_Position = aVP * aModel * vec4(aPos ,1.0f);
     
