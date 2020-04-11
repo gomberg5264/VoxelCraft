@@ -20,8 +20,9 @@ PlayerMesh::PlayerMesh(Transform& transform)
     m_vao.AddVBO(
         {
             { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
-            { 1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
-            { 2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 5u * sizeof(float) },
+            { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
+            { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
+            { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) },
         });
     m_vao.Bind();
 

@@ -7,19 +7,27 @@ namespace Primitive
     {
         struct Vertex
         {
-            Vertex(float x, float y, float z, float u, float v, unsigned texIndex)
+            Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v, unsigned texIndex)
                 : x(x)
                 , y(y)
                 , z(z)
+                , nX(nX)
+                , nY(nY)
+                , nZ(nZ)
                 , u(u)
                 , v(v)
                 , texIndex(static_cast<float>(texIndex)) // For some reason opengl doen't work if this is unsigned
-            {}
+            {
+            }
 
 
             float x;
             float y;
             float z;
+
+            float nX;
+            float nY;
+            float nZ;
         
             float u;
             float v;

@@ -9,8 +9,9 @@ ChunkMesh::ChunkMesh()
     m_vao.AddVBO(
         {
             { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
-            { 1, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
-            { 2, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 5u * sizeof(float) },
+            { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
+            { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
+            { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) },
         });
 }
 
@@ -109,10 +110,17 @@ void ChunkRenderer::SetVP(const glm::mat4& vp) noexcept
     m_shader.SetMatrix("aVP", glm::value_ptr(vp));
 }
 
-void ChunkRenderer::SetLightDirection(const glm::vec3& lightDir) noexcept
+void ChunkRenderer::SetSkyLightDirection(const glm::vec3& lightDir) noexcept
 {
     m_shader.Use();
     m_shader.SetVec3("aSkyLightDir", glm::value_ptr(lightDir));
+}
+
+void ChunkRenderer::SetSkyLightColor(const glm::vec3& color) noexcept
+{
+    m_shader.Use();
+    m_shader.SetVec3("aSkyLightColor", glm::value_ptr(color));
+
 }
 
 void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
