@@ -128,8 +128,8 @@ private:
         // ---
         {
             m_camera = std::make_unique<FreelookCamera>(m_window.GetWindow());
-            m_camera->m_eye = glm::vec3(0,20,5);
-            m_camera->m_target = glm::vec3(0,20,-1);
+            m_camera->m_eye = glm::vec3(0,20,10);
+            m_camera->m_target = m_camera->m_eye + Transform::Forward();
             auto* cast = static_cast<FreelookCamera*>(m_camera.get());
             cast->m_speed = 5.f;
             cast->m_sensitivity = 0.2f;

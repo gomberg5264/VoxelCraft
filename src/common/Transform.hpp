@@ -5,7 +5,7 @@
 class Transform
 {
 public:
-    inline static constexpr glm::vec3 Forward() noexcept { return glm::vec3(0, 0, -1); }
+    inline static constexpr glm::vec3 Forward() noexcept { return glm::vec3(0, 0, 1); }
     inline static constexpr glm::vec3 Right() noexcept { return glm::vec3(1, 0, 0); }
     inline static constexpr glm::vec3 Up() noexcept { return glm::vec3(0, 1, 0); }
 
