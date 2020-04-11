@@ -41,7 +41,7 @@
 //#include "client/gl/Shader.hpp"
 //#include "client/gl/Camera.hpp"
 //
-//#include "client/gl/renderer/Window.hpp"
-//#include "client/gl/renderer/ChunkRenderer.hpp"
+//#include "client/gl/Window.hpp"
+//#include "client/gl/ChunkRenderer.hpp"
 //
 //#include "common/Engine.hpp"

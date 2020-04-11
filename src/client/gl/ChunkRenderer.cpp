@@ -2,7 +2,7 @@
 #include "client/BlockData.hpp"
 #include "client/Chunk.hpp"
 
-#include "client/gl/renderer/ChunkRenderer.hpp"
+#include "client/gl/ChunkRenderer.hpp"
 
 ChunkMesh::ChunkMesh()
 {

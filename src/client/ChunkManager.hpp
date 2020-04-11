@@ -4,7 +4,7 @@
 #include <glm/vec3.hpp>
 
 #include "client/Chunk.hpp"
-#include "client/gl/renderer/ChunkRenderer.hpp"
+#include "client/gl/ChunkRenderer.hpp"
 
 class ChunkRenderer;
 
@@ -31,15 +31,15 @@ public:
     };
     using ChunkMap = std::unordered_map<glm::ivec3, ChunkMapValue>;
 
-    /** 
-     * Reference to chunk renderer is needed to register buffers 
+    /**
+     * Reference to chunk renderer is needed to register buffers
      * for new chunks
      */
     ChunkManager(ChunkRenderer& renderer) noexcept
         : m_radius(0)
         , m_pos(0)
         , m_renderer(renderer) {}
-    
+
     // Radius in units (multiply by chunkdimension)
     inline void SetRadius(float radius) noexcept { m_radius = radius; m_chunks.reserve(radius * radius * radius / chunkSize); }
     void SetPos(const glm::vec3& pos) noexcept;

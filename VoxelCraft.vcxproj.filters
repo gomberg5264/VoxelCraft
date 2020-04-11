@@ -36,12 +36,6 @@
     <ClCompile Include="src\client\gl\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\renderer\ChunkRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\gl\renderer\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\client\gl\Primitive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,7 +51,13 @@
     <ClCompile Include="src\common\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\renderer\PlayerRenderer.cpp">
+    <ClCompile Include="src\client\gl\ChunkRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\gl\PlayerRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\gl\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,12 +86,6 @@
     <ClInclude Include="src\client\gl\Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\renderer\ChunkRenderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\client\gl\renderer\Window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\client\gl\Primitive.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -113,10 +107,16 @@
     <ClInclude Include="src\common\Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\renderer\PlayerRenderer.hpp">
+    <ClInclude Include="src\common\Transform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Transform.hpp">
+    <ClInclude Include="src\client\gl\Window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\gl\ChunkRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\client\gl\PlayerRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

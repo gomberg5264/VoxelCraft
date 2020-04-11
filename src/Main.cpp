@@ -8,9 +8,9 @@
 #include "client/ChunkManager.hpp"
 
 #include "client/gl/Camera.hpp"
-#include "client/gl/renderer/Window.hpp"
-#include "client/gl/renderer/ChunkRenderer.hpp"
-#include "client/gl/renderer/PlayerRenderer.hpp"
+#include "client/gl/Window.hpp"
+#include "client/gl/ChunkRenderer.hpp"
+#include "client/gl/PlayerRenderer.hpp"
 
 //#include <SFML/Window/Window.hpp>
 #include <iostream>
