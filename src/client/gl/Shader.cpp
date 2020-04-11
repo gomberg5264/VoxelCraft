@@ -82,33 +82,3 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
-
-void Shader::Use() const
-{
-    glUseProgram(m_ID);
-}
-
-void Shader::SetInt(const char* name, int val) const
-{
-    glUniform1i(glGetUniformLocation(m_ID, name), val);
-}
-
-void Shader::SetFloat(const char* name, float val) const
-{
-    glUniform1f(glGetUniformLocation(m_ID, name), val);
-}
-
-void Shader::SetVec2(const char* name, float* val) const
-{
-    glUniform2fv(glGetUniformLocation(m_ID, name), 1, val);
-}
-
-void Shader::SetBool(const char* name, bool val) const
-{
-    glUniform1i(glGetUniformLocation(m_ID, name), val);
-}
-
-void Shader::SetMatrix(const char* name, const float* val) const
-{
-    glUniformMatrix4fv(glGetUniformLocation(m_ID, name), 1,GL_FALSE, val);
-}

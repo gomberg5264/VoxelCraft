@@ -103,10 +103,16 @@ void ChunkRenderer::RegisterVAO(VAO& vao)
     vao.Unbind();
 }
 
-void ChunkRenderer::SetVP(const glm::mat4& vp)
+void ChunkRenderer::SetVP(const glm::mat4& vp) noexcept
 {
     m_shader.Use();
     m_shader.SetMatrix("aVP", glm::value_ptr(vp));
+}
+
+void ChunkRenderer::SetLightDirection(const glm::vec3& lightDir) noexcept
+{
+    m_shader.Use();
+    m_shader.SetVec3("aSkyLightDir", glm::value_ptr(lightDir));
 }
 
 void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
@@ -114,7 +120,7 @@ void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
     m_renderQueue.emplace_back(Command{mesh, updateDrawData});
 }
 
-void ChunkRenderer::Display()
+void ChunkRenderer::Display() noexcept
 {
     m_shader.Use();
     m_shader.SetMatrix("aModel", glm::value_ptr(glm::mat4(1)));

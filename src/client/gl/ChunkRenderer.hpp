@@ -33,9 +33,16 @@ public:
 
     void RegisterVAO(VAO& vao);
 
-    void SetVP(const glm::mat4& vp);
+    void SetVP(const glm::mat4& vp) noexcept;
+    void SetLightDirection(const glm::vec3& lightDir) noexcept;
+
+    /**
+     * @param color [0,1]
+     */
+    void SetAmbientLight(const glm::vec3& color) noexcept;
+
     void Render(const ChunkMesh& mesh, bool updateDrawData);
-    void Display();
+    void Display() noexcept;
 
 private:
     struct Command
