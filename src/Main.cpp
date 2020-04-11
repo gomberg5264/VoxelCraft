@@ -3,11 +3,11 @@
 #include "common/Engine.hpp"
 #include "common/Player.hpp"
 
-#include "client/BlockData.hpp"
-#include "client/Chunk.hpp"
+#include "common/BlockData.hpp"
+#include "common/Chunk.hpp"
 #include "client/ChunkManager.hpp"
+#include "client/Camera.hpp"
 
-#include "client/gl/Camera.hpp"
 #include "client/gl/Window.hpp"
 #include "client/gl/ChunkRenderer.hpp"
 #include "client/gl/PlayerRenderer.hpp"

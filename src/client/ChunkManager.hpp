@@ -3,7 +3,7 @@
 #include <glm/gtx/hash.hpp>
 #include <glm/vec3.hpp>
 
-#include "client/Chunk.hpp"
+#include "common/Chunk.hpp"
 #include "client/gl/ChunkRenderer.hpp"
 
 class ChunkRenderer;

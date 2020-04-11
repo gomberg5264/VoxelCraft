@@ -1,5 +1,5 @@
 #include "vcpch.hpp"
-#include "client/BlockData.hpp"
+#include "common/BlockData.hpp"
 
 #include "client/gl/Primitive.hpp"
 

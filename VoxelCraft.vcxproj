@@ -97,9 +97,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\client\Chunk.cpp" />
+    <ClCompile Include="src\common\Chunk.cpp" />
     <ClCompile Include="src\client\ChunkManager.cpp" />
-    <ClCompile Include="src\client\gl\Camera.cpp" />
+    <ClCompile Include="src\client\Camera.cpp" />
     <ClCompile Include="src\client\gl\ChunkRenderer.cpp" />
     <ClCompile Include="src\client\gl\Primitive.cpp" />
     <ClCompile Include="src\client\gl\PlayerRenderer.cpp" />
@@ -116,14 +116,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\stb_image\stb_image.h" />
-    <ClInclude Include="src\client\BlockData.hpp" />
-    <ClInclude Include="src\client\Chunk.hpp" />
+    <ClInclude Include="src\common\BlockData.hpp" />
+    <ClInclude Include="src\common\Chunk.hpp" />
     <ClInclude Include="src\client\ChunkManager.hpp" />
     <ClInclude Include="src\client\gl\PlayerRenderer.hpp" />
     <ClInclude Include="src\client\gl\Window.hpp" />
     <ClInclude Include="src\client\gl\Buffer.hpp" />
     <ClInclude Include="src\client\graphics\Buffer.hpp" />
-    <ClInclude Include="src\client\gl\Camera.hpp" />
+    <ClInclude Include="src\client\Camera.hpp" />
     <ClInclude Include="src\client\gl\ChunkRenderer.hpp" />
     <ClInclude Include="src\client\gl\Primitive.hpp" />
     <ClInclude Include="src\common\Engine.hpp" />

@@ -1,11 +1,11 @@
 #pragma once
 #include "common/Player.hpp"
+#include "client/Camera.hpp"
 
 #include "client/gl/Buffer.hpp"
 #include "client/gl/Primitive.hpp"
 
 #include "client/gl/Shader.hpp"
-#include "client/gl/Camera.hpp"
 
 class PlayerMesh
 {

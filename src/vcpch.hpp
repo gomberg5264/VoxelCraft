@@ -33,8 +33,8 @@
 //#include "utils/Singleton.hpp"
 //#include "utils/NonCopyable.hpp"
 //
-//#include "client/BlockData.hpp"
-//#include "client/Chunk.hpp"
+//#include "common/BlockData.hpp"
+//#include "common/Chunk.hpp"
 //
 //#include "client/gl/Buffer.hpp"
 //#include "client/gl/Primitive.hpp"

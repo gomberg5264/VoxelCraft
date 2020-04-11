@@ -2,7 +2,7 @@
 #include "Camera.hpp"
 
 // This should not be included but we use it for projection matrix for the time being
-#include "client/Chunk.hpp"
+#include "common/Chunk.hpp"
 
 Camera::Camera(sf::Window& window)
     : m_window(window)

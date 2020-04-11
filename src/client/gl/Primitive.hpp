@@ -1,5 +1,5 @@
 #pragma once
-#include "client/BlockData.hpp"
+#include "common/BlockData.hpp"
 
 namespace Primitive
 {

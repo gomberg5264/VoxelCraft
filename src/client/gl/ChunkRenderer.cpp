@@ -1,6 +1,6 @@
 #include "vcpch.hpp"
-#include "client/BlockData.hpp"
-#include "client/Chunk.hpp"
+#include "common/BlockData.hpp"
+#include "common/Chunk.hpp"
 
 #include "client/gl/ChunkRenderer.hpp"
 
