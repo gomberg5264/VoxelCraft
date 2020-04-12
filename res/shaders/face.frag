@@ -24,7 +24,7 @@ void main()
     vec3 result = min(ambient + diffuse,vec3(1));
     color = vec4(result,1) * texture(sampl,vec3(uv,texIndex));
     
-    //color = vec4(1);
+    //color = vec4(vec3(skyIntensity),1);
     // color = vec4(vec3(float(texIndex) / 2.f),1);
     //color = vec4(tex / 5.f,1);
 }

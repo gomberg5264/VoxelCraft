@@ -7,9 +7,11 @@
 
 #include "common/BlockData.hpp"
 #include "common/Chunk.hpp"
+
 #include "client/ChunkManager.hpp"
 #include "client/Camera.hpp"
 
+#include "client/gl/Texture.hpp"
 #include "client/gl/Window.hpp"
 #include "client/gl/ChunkRenderer.hpp"
 #include "client/gl/PlayerRenderer.hpp"
@@ -54,69 +56,6 @@ void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
     }
 }
 
-void LoadTexture(unsigned atlasX, unsigned atlasY)
-{
-    unsigned tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
-
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-
-    // Since we put our textures in a grid like pattern, we have to convert the data
-    // to be in a format that emulates all the textures in one columns
-    constexpr unsigned texSize = 64;
-    unsigned char* data = stbi_load("res/texture.png", &width, &height, &nrChannels, STBI_rgb_alpha);
-
-    if (data)
-    {
-        auto image{ std::make_unique<unsigned char[]>(width * height * nrChannels) };
-
-        unsigned offset = 0;
-        for (unsigned y = 0; y < height / texSize; y++)
-        {
-            for (unsigned x = 0; x < width / texSize; x++)
-            {
-                // Read 64 rows
-                for (unsigned row = 0; row < texSize; row++)
-                {
-                    memcpy(
-                        &image[offset],
-                        &data
-                        [(y * width * texSize * nrChannels) +
-                    (x * texSize * nrChannels) +
-                        row * width * nrChannels],
-                        texSize * nrChannels);
-                    offset += texSize * nrChannels;
-                }
-            }
-        }
-
-        const auto size = atlasX * atlasY;
-        // Create the storage
-        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, texSize, texSize, size);
-
-        glTexSubImage3D(
-            GL_TEXTURE_2D_ARRAY,
-            0,
-            0, 0, 0,
-            texSize, texSize, size,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            image.get());
-
-        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-}
-
 // TODO: This is a client engine instance. Move it to a dedicated file
 class Game : public Engine
 {
@@ -146,7 +85,8 @@ private:
         // TODO move this to its own class
         // At the momement I'm planning on putting all the textures in the array texture
         // so I can put it here for the time being
-        LoadTexture(atlasX, atlasY);
+        static TextureAtlas at("res/texture.png", atlasX, atlasY);
+        //LoadTexture(atlasX, atlasY);
 
         // Create chunk manager
         m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
@@ -198,9 +138,11 @@ private:
         et += dt;
 
         // TODO: temp day cycle
-        constexpr float dayDur = 1.f / 1.f;
+        constexpr float dayDur = 1.f / 0.1f;
         const float time = glm::radians(et * glm::pi<float>() * 2.f * dayDur);
-        m_chunkRenderer.SetSkyIntensity(Math::Lerp(glm::cos(time),0.1f,0.8f));
+        float tval = Math::InverseLerp(glm::cos(time), -1.f, 1.f);
+
+        m_chunkRenderer.SetSkyIntensity(Math::Lerp(tval,0.3f,0.8f));
         m_chunkRenderer.SetSkyLightDirection(glm::vec3(
             glm::cos(time),
             glm::cos(time),

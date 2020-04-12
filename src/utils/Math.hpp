@@ -10,4 +10,13 @@ namespace Math
         return min + t * (max - min);
     }
 
+    /**
+     * Returns a normalized t between min and max
+     */
+    template <typename T>
+    inline constexpr T InverseLerp(const T& val, const T& min, const T& max) noexcept
+    {
+        assert(val >= min && val <= max && "Val has to be between min and max");
+        return (val - min) / (max - min);
+    }
 }
