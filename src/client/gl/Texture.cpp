@@ -63,9 +63,9 @@ TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
         auto image{ std::make_unique<unsigned char[]>(width * height * nrChannels) };
 
         unsigned offset = 0;
-        for (unsigned y = 0; y < height / texSize; y++)
+        for (unsigned yI = 0; yI < height / texSize; yI++)
         {
-            for (unsigned x = 0; x < width / texSize; x++)
+            for (unsigned xI = 0; xI < width / texSize; xI++)
             {
                 // Read 64 rows
                 for (unsigned row = 0; row < texSize; row++)
@@ -73,8 +73,8 @@ TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
                     memcpy(
                         &image[offset],
                         &data
-                        [(y * width * texSize * nrChannels) +
-                    (x * texSize * nrChannels) +
+                        [(yI * width * texSize * nrChannels) +
+                    (xI * texSize * nrChannels) +
                         row * width * nrChannels],
                         texSize * nrChannels);
                     offset += texSize * nrChannels;

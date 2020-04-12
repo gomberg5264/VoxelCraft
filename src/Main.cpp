@@ -82,15 +82,12 @@ private:
 
         // Load and generate the texture
         // ---
-        // TODO move this to its own class
-        // At the momement I'm planning on putting all the textures in the array texture
-        // so I can put it here for the time being
         static TextureAtlas at("res/texture.png", atlasX, atlasY);
         //LoadTexture(atlasX, atlasY);
 
         // Create chunk manager
         m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
-        m_chunkManager->SetRadius(10 * chunkDimension.x);
+        m_chunkManager->SetRadius(10.f * chunkDimension.x);
         
         m_chunkRenderer.SetSkyLightColor(glm::vec3(1));
         m_chunkRenderer.SetSkyLightDirection(glm::normalize(glm::vec3(-1, -3, -2)));

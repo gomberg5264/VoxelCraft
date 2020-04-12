@@ -18,7 +18,7 @@ public:
     inline void SetInt(const char* name, const int val) const { glUniform1i(glGetUniformLocation(m_ID, name), val); }
     inline void SetFloat(const char* name, const float val) const { glUniform1f(glGetUniformLocation(m_ID, name), val); }
     inline void SetBool(const char* name, const bool val) const { glUniform1i(glGetUniformLocation(m_ID, name), val); };
-    inline void SetMatrix(const char* name, const const float* val) const { glUniformMatrix4fv(glGetUniformLocation(m_ID, name), 1, GL_FALSE, val); }
+    inline void SetMatrix(const char* name, const float* val) const { glUniformMatrix4fv(glGetUniformLocation(m_ID, name), 1, GL_FALSE, val); }
 
     inline void SetVec2(const char* name, const float* val) const { glUniform2fv(glGetUniformLocation(m_ID, name), 1, val); }
     inline void SetVec3(const char* name, const float* val) const { glUniform3fv(glGetUniformLocation(m_ID, name), 1, val); }

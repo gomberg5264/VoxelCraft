@@ -45,7 +45,7 @@ public:
     void Unbind() const;
     void SetIndices(const std::vector<unsigned>& indices);
 
-    unsigned m_elementCount;
+    size_t m_elementCount;
 
 private:
     unsigned m_id;
