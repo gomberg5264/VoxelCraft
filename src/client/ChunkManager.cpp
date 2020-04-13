@@ -151,8 +151,17 @@ void ChunkManager::Update()
         };
         loadFn();
 
-        // Update edge list
-        m_chunksNotFilled.remove_if([](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.m_neighbors.count == 6; });
+        // Remove chunks from edge list if their neighbors are full
+        // Also regenreate them since we can cull based on adjacent faces
+        m_chunksNotFilled.remove_if([](std::reference_wrapper<ChunkMapValue>& value) 
+            {
+                if (value.get().chunk.m_neighbors.count == 6)
+                {
+                    value.get().chunk.MarkModify();
+                    return true; 
+                }
+                return false;
+            });
 
         static int frameCount = 0;
         frameCount++;

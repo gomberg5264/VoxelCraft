@@ -24,6 +24,7 @@ void FreelookCamera::Update(float dt)
     glm::fvec3 forward(0, 0, -1);
     {
         const auto pos = sf::Mouse::getPosition(m_window);
+        const sf::Vector2i center = static_cast<sf::Vector2i>(m_window.getSize()) / 2;
         sf::Vector2f delta = static_cast<sf::Vector2f>(pos - m_oldPos) * m_sensitivity;
         delta.y = -delta.y;
 
@@ -33,7 +34,9 @@ void FreelookCamera::Update(float dt)
         forward.x = cos(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
         forward.y = sin(glm::radians(m_euler.x));
         forward.z = sin(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
-        m_oldPos = pos;
+
+        sf::Mouse::setPosition(center, m_window);
+        m_oldPos = center;
     }
 
     // Movement

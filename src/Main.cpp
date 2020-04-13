@@ -63,6 +63,8 @@ private:
     virtual void OnInit() override final
     {
         sf::Clock time;
+        m_window.GetWindow().setMouseCursorVisible(false);
+
         // Setup camera
         // ---
         {
