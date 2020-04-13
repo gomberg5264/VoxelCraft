@@ -54,6 +54,7 @@ void ChunkManager::Update()
 
                             dir->m_neighbors.neighbor.m[(i + 3) % 6] = nullptr;
                             dir->m_neighbors.count--;
+                            dir->MarkModify(); // This is so the chunk regenerates their mesh
                         }
                     }
 
