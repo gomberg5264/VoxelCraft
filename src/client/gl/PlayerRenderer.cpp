@@ -12,7 +12,7 @@ PlayerMesh::PlayerMesh(Transform& transform)
             { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) },
         })
 {
-    m_shader.Use();
+    m_shader.Bind();
     
     m_vao.Bind();
     m_vao.m_ebo = std::make_unique<EBO>();
@@ -40,7 +40,7 @@ void PlayerMesh::Draw(const Camera& camera)
 {
     m_vao.Bind();
 
-    m_shader.Use();
+    m_shader.Bind();
     //m_shader.SetMatrix("aVP", glm::value_ptr(camera.GetProjection() * camera.GetView()));
     //m_shader.SetMatrix("aModel", glm::value_ptr(m_transform.ToWorld()));
     auto model = glm::mat4(1);// glm::translate(glm::vec3(0, 20, -4));

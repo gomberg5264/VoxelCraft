@@ -28,8 +28,8 @@ public:
     TextureAtlas(const char* path, unsigned x, unsigned y);
     ~TextureAtlas();
 
-    inline void Bind() const noexcept { glBindTexture(GL_TEXTURE_2D, m_ID); }
-    inline void Unbind() const noexcept { glBindTexture(GL_TEXTURE_2D, m_ID); }
+    inline void Bind() const noexcept { glBindTexture(GL_TEXTURE_2D_ARRAY, m_ID); }
+    inline void Unbind() const noexcept { glBindTexture(GL_TEXTURE_2D_ARRAY, m_ID); }
 
 private:
     unsigned m_ID;

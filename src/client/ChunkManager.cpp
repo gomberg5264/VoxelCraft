@@ -164,13 +164,13 @@ void ChunkManager::Update()
                 return false;
             });
 
-        static int frameCount = 0;
-        frameCount++;
-        if (frameCount > 10)
-        {
-            std::cout << m_chunks.size() << " Chunks" << std::endl;
-            frameCount = 0;
-        }
+        //static int frameCount = 0;
+        //frameCount++;
+        //if (frameCount > 10)
+        //{
+        //    std::cout << m_chunks.size() << " Chunks" << std::endl;
+        //    frameCount = 0;
+        //}
     }
 }
 

@@ -15,6 +15,7 @@
 #include "client/gl/Window.hpp"
 #include "client/gl/ChunkRenderer.hpp"
 #include "client/gl/PlayerRenderer.hpp"
+#include "client/gl/SkyRenderer.hpp"
 
 void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
 {
@@ -84,7 +85,6 @@ private:
 
         // Load and generate the texture
         // ---
-        static TextureAtlas at("res/texture.png", atlasX, atlasY);
         //LoadTexture(atlasX, atlasY);
 
         // Create chunk manager
@@ -161,6 +161,9 @@ private:
         m_chunkManager->Render();
         m_chunkRenderer.Display();
 
+        m_skyRenderer.SetCameraRotateProject(m_camera->GetProjection() * m_camera->GetRotation());
+        m_skyRenderer.Display();
+
         m_playerMesh->Draw(*m_camera);
 
         m_window.Display();
@@ -169,6 +172,7 @@ private:
     Window m_window;
     std::unique_ptr<ChunkManager> m_chunkManager;
     ChunkRenderer m_chunkRenderer;
+    SkyRenderer m_skyRenderer;
 
     Player m_player;
     std::unique_ptr<PlayerMesh> m_playerMesh;

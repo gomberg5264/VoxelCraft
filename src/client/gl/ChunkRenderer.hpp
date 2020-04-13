@@ -23,11 +23,8 @@ public:
 /**
  * The chunk renderer has the index buffers for chunks since this is constant
  * It also has the shader
- * TODO perhaps refactor this into the chunk itself since the renderer seems redundant
- * Right now, the chunk renderer is a class that queues render calls.
- * By batching the calls, we only have to set the shader once. 
- * The chunkRenderer also contains a ebo that is the max size. We can make this static however.
- * So simply said, the chunkrenderer makes it so that we set the shader once. 
+ * 
+ * TODO: ChunkRenderer creates the textures for block right now, make a texture manager
  */
 class ChunkRenderer
 {
@@ -58,4 +55,5 @@ private:
 
     Shader m_shader;
     EBO m_ebo;
+    TextureAtlas m_texture;
 };

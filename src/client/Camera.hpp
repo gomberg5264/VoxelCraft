@@ -9,6 +9,7 @@ public:
 
     glm::mat4 GetProjection() const;
     glm::mat4 GetView() const;
+    glm::mat4 GetRotation() const;
 
     glm::fvec3 m_target{ 0,0,1 };
     glm::fvec3 m_eye{ 0 };

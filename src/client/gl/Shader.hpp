@@ -1,6 +1,8 @@
 #pragma once
 #include <glad/glad.h>
 
+#include "client/gl/Texture.hpp"
+
 /**
  * Simple wrapper around a shader to compile and display errors
  * 
@@ -12,7 +14,7 @@ public:
     Shader(const char* vertexPath, const char* fragmentPath);
     
     
-    inline void Use() const { glUseProgram(m_ID); }
+    inline void Bind() const { glUseProgram(m_ID); }
     inline void Unbind() const { glUseProgram(0); }
 
     inline void SetInt(const char* name, const int val) const { glUniform1i(glGetUniformLocation(m_ID, name), val); }

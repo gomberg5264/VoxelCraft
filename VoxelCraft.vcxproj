@@ -95,6 +95,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\client\gl\SkyRenderer.cpp" />
     <ClCompile Include="src\client\gl\Texture.cpp" />
     <ClCompile Include="src\common\Chunk.cpp" />
     <ClCompile Include="src\client\ChunkManager.cpp" />
@@ -114,6 +115,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\client\gl\SkyRenderer.hpp" />
     <ClInclude Include="src\client\gl\Texture.hpp" />
     <ClInclude Include="src\common\BlockData.hpp" />
     <ClInclude Include="src\common\Chunk.hpp" />

@@ -104,6 +104,7 @@ void ChunkMesh::Generate(const Chunk& chunk)
 
 ChunkRenderer::ChunkRenderer()
     : m_shader("res/shaders/face.vert","res/shaders/face.frag")
+    , m_texture("res/texture.png", 2u, 2u)
 {
     // 6 indices per face, 6 faces per voxel
     constexpr auto chunkElemCount = 6u * 6u * chunkSize;
@@ -137,25 +138,25 @@ void ChunkRenderer::RegisterEBOToVAO(const VAO& vao)
 
 void ChunkRenderer::SetVP(const glm::mat4& vp) noexcept
 {
-    m_shader.Use();
+    m_shader.Bind();
     m_shader.SetMatrix("aVP", glm::value_ptr(vp));
 }
 
 void ChunkRenderer::SetSkyLightDirection(const glm::vec3& lightDir) noexcept
 {
-    m_shader.Use();
+    m_shader.Bind();
     m_shader.SetVec3("aSkyLightDir", glm::value_ptr(glm::max(lightDir,glm::vec3(0))));
 }
 
 void ChunkRenderer::SetSkyIntensity(float intensity) noexcept
 {
-    m_shader.Use();
+    m_shader.Bind();
     m_shader.SetFloat("aSkyIntensity", intensity);
 }
 
 void ChunkRenderer::SetSkyLightColor(const glm::vec3& color) noexcept
 {
-    m_shader.Use();
+    m_shader.Bind();
     m_shader.SetVec3("aSkyLightColor", glm::value_ptr(color));
 }
 
@@ -166,7 +167,8 @@ void ChunkRenderer::Render(const ChunkMesh& mesh)
 
 void ChunkRenderer::Display() noexcept
 {
-    m_shader.Use();
+    m_shader.Bind();
+    m_texture.Bind();
     m_shader.SetMatrix("aModel", glm::value_ptr(glm::mat4(1)));
 
     for (const auto& mesh : m_renderQueue)

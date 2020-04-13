@@ -71,3 +71,9 @@ glm::mat4 Camera::GetView() const
 {
     return glm::lookAt(m_eye, m_target,glm::fvec3(0,1,0));
 }
+
+glm::mat4 Camera::GetRotation() const
+{
+    const glm::vec3 dir = glm::normalize(m_target - m_eye);
+    return glm::lookAt(glm::vec3(0), dir, glm::fvec3(0, 1, 0));
+}
