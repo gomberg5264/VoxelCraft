@@ -2,7 +2,7 @@
 #include "BlockData.hpp"
 
 constexpr glm::uvec3 chunkDimension { 16,16, 16};
-constexpr unsigned long chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
+constexpr auto chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
 /**
  * A chunk contains the data of a certain place in the world

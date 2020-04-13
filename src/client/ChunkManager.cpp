@@ -73,105 +73,109 @@ void ChunkManager::Update()
     
     // Add chunks in range
     // ---
-    glm::ivec3 pos = glm::ivec3(m_pos);
-    pos.x -= pos.x % chunkDimension.x;
-    pos.y -= pos.y % chunkDimension.y;
-    pos.z -= pos.z % chunkDimension.z;
-
-    // We fake mt loading by limiting the amount of chunks to load a frame
-    int chunkGenLeft = 6;
-    std::function<void()> loadFn = [&]()
     {
-        //// If the boi is fully loaded, go to the neighbor
-        //if (current.chunk.m_neighbors.count == 6)
-        //{
-        //    for (int i = 0; i < 6; i++)
-        //    {
-        //        loadFn(m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
-        //    }
-        //}
-        //else
-        
-        // For the chunks withough fully populated neighbor check if neighbors can be loaded
-        for (auto& chunk : m_chunksNotFilled)
+        glm::ivec3 pos = glm::ivec3(m_pos);
+        pos.x -= pos.x % chunkDimension.x;
+        pos.y -= pos.y % chunkDimension.y;
+        pos.z -= pos.z % chunkDimension.z;
+
+        // We fake mt loading by limiting the amount of chunks to load a frame
+        int chunkGenLeft = 6;
+
+        // TODO: Do targeted loading
+        // Right now, this loads in just a circular pattern
+        // It should optimize based on certain conditions that are yet to be specified
+        std::function<void()> loadFn = [&]()
         {
-            auto& current = chunk.get();
-            for (int i = 0; i < 6; i++)
+            //// If the boi is fully loaded, go to the neighbor
+            //if (current.chunk.m_neighbors.count == 6)
+            //{
+            //    for (int i = 0; i < 6; i++)
+            //    {
+            //        loadFn(m_chunks.at(current.chunk.m_neighbors.neighbor.m[i]->GetPos()));
+            //    }
+            //}
+            //else
+            
+            // For the chunks withough fully populated neighbor check if neighbors can be loaded
+            for (auto& chunk : m_chunksNotFilled)
             {
-                if (chunkGenLeft < 0) return;
-
-                auto* dir = current.chunk.m_neighbors.neighbor.m[i];
-                if (!dir)
+                auto& current = chunk.get();
+                for (int i = 0; i < 6; i++)
                 {
-                    //Chunk* top;
-                    //Chunk* left;
-                    //Chunk* front;
-                    //Chunk* bottom;
-                    //Chunk* right;
-                    //Chunk* back;
-                    glm::ivec3 offset(0);
-                    if (i == 0) offset.y = (int)chunkDimension.y;
-                    else if (i == 1) offset.x = -(int)chunkDimension.x;
-                    else if (i == 2) offset.z = (int)chunkDimension.z;
-                    else if (i == 3) offset.y = -(int)chunkDimension.y;
-                    else if (i == 4) offset.x = (int)chunkDimension.x;
-                    else if (i == 5) offset.z = -(int)chunkDimension.z;
-                    glm::ivec3 neighborPos = current.chunk.GetPos() + offset;
+                    if (chunkGenLeft < 0) return;
 
-                    const float distance = glm::distance(glm::vec3(neighborPos), m_pos);
-
-                    // If in radius but not yet loaded
-                    if (distance < m_radius)
+                    auto* dir = current.chunk.m_neighbors.neighbor.m[i];
+                    if (!dir)
                     {
-                        // Add the chunk
-                        // Create and put in list
-                        m_chunks.emplace(neighborPos, neighborPos);
-                        auto& neighbor = m_chunks.at(neighborPos);
-                        LoadChunk(neighbor);
+                        //Chunk* top;
+                        //Chunk* left;
+                        //Chunk* front;
+                        //Chunk* bottom;
+                        //Chunk* right;
+                        //Chunk* back;
+                        glm::ivec3 offset(0);
+                        if (i == 0) offset.y = (int)chunkDimension.y;
+                        else if (i == 1) offset.x = -(int)chunkDimension.x;
+                        else if (i == 2) offset.z = (int)chunkDimension.z;
+                        else if (i == 3) offset.y = -(int)chunkDimension.y;
+                        else if (i == 4) offset.x = (int)chunkDimension.x;
+                        else if (i == 5) offset.z = -(int)chunkDimension.z;
+                        glm::ivec3 neighborPos = current.chunk.GetPos() + offset;
 
-                        // Set up neighbors
-                        //dir = &neighbor.chunk;
-                        current.chunk.m_neighbors.neighbor.m[i] = &neighbor.chunk;
-                        current.chunk.m_neighbors.count++;
+                        const float distance = glm::distance(glm::vec3(neighborPos), m_pos);
 
-                        neighbor.chunk.m_neighbors.neighbor.m[(i + 3) % 6] = &current.chunk;
-                        neighbor.chunk.m_neighbors.count++;
+                        // If in radius but not yet loaded
+                        if (distance < m_radius)
+                        {
+                            // Add the chunk
+                            // Create and put in list
+                            m_chunks.emplace(neighborPos, neighborPos);
+                            auto& neighbor = m_chunks.at(neighborPos);
+                            LoadChunk(neighbor);
 
-                        chunkGenLeft--;
-                        m_chunksNotFilled.push_back(neighbor);
+                            // Set up neighbors
+                            //dir = &neighbor.chunk;
+                            current.chunk.m_neighbors.neighbor.m[i] = &neighbor.chunk;
+                            current.chunk.m_neighbors.count++;
+
+                            neighbor.chunk.m_neighbors.neighbor.m[(i + 3) % 6] = &current.chunk;
+                            neighbor.chunk.m_neighbors.count++;
+
+                            chunkGenLeft--;
+                            m_chunksNotFilled.push_back(neighbor);
+                        }
                     }
                 }
             }
+        };
+        loadFn();
+
+        // Update edge list
+        m_chunksNotFilled.remove_if([](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.m_neighbors.count == 6; });
+
+        static int frameCount = 0;
+        frameCount++;
+        if (frameCount > 10)
+        {
+            std::cout << m_chunks.size() << " Chunks" << std::endl;
+            frameCount = 0;
         }
-    };
-    loadFn();
-
-    // Update edge list
-    m_chunksNotFilled.remove_if([](const std::reference_wrapper<ChunkMapValue>& value) {return value.get().chunk.m_neighbors.count == 6; });
-
-    static int frameCount = 0;
-    frameCount++;
-    if (frameCount > 10)
-    {
-        std::cout << m_chunks.size() << " Chunks" << std::endl;
-        frameCount = 0;
     }
 }
 
 void ChunkManager::Render()
 {
+    // TODO: Do culling
     for (auto& chunk : m_chunks)
     {
-        //if (!chunk.second.chunk.m_isAir)
+        if (!chunk.second.chunk.m_isAir)
         {
+            m_renderer.Render(chunk.second.mesh);
             if (chunk.second.chunk.GetState() == Chunk::State::Modify)
             {
-                m_renderer.Render(chunk.second.mesh, true);
+                chunk.second.mesh.Generate(chunk.second.chunk);
                 chunk.second.chunk.MarkDone();
-            }
-            else
-            {
-                m_renderer.Render(chunk.second.mesh, false);
             }
         }
     }

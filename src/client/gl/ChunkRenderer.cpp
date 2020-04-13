@@ -80,35 +80,34 @@ void ChunkMesh::Generate(const Chunk& chunk)
 
 ChunkRenderer::ChunkRenderer()
     : m_shader("res/shaders/face.vert","res/shaders/face.frag")
-    // 6 indices per face, 6 faces per voxel
-    , m_elementCount(6u * 6u * chunkSize)
-    , m_ebo(0)
 {
-    unsigned* ebo = new unsigned[m_elementCount];
+    // 6 indices per face, 6 faces per voxel
+    constexpr auto chunkElemCount = 6u * 6u * chunkSize;
+
+    std::array<unsigned,chunkElemCount> ebo;
+    //unsigned ebo[chunkElemCount];
     unsigned offset = 0;
-    for (unsigned i = 0; i < m_elementCount; i += 6)
+    for (unsigned i = 0; i < chunkElemCount; i += 6)
     {
         unsigned indices[]{ 3 + offset,0 + offset,1 + offset,3 + offset,1 + offset,2 + offset };
         memcpy(&ebo[i], indices, 6 * sizeof(unsigned));
         offset += 4;
     }
 
-    glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_elementCount * sizeof(unsigned), ebo, GL_STATIC_DRAW);
+    m_ebo.Bind();
+    m_ebo.Upload(ebo);
+    m_ebo.Unbind();
 
-    delete[] ebo;
+    //glGenBuffers(1, &m_ebo);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_elementCount * sizeof(unsigned), ebo, GL_STATIC_DRAW);
+    //
 }
 
-ChunkRenderer::~ChunkRenderer()
-{
-    glDeleteBuffers(1, &m_ebo);
-}
-
-void ChunkRenderer::RegisterEBOToVAO(VAO& vao)
+void ChunkRenderer::RegisterEBOToVAO(const VAO& vao)
 {
     vao.Bind();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    m_ebo.Bind();
     vao.Unbind();
 }
 
@@ -136,9 +135,9 @@ void ChunkRenderer::SetSkyLightColor(const glm::vec3& color) noexcept
     m_shader.SetVec3("aSkyLightColor", glm::value_ptr(color));
 }
 
-void ChunkRenderer::Render(const ChunkMesh& mesh, bool updateDrawData)
+void ChunkRenderer::Render(const ChunkMesh& mesh)
 {
-    m_renderQueue.emplace_back(Command{mesh, updateDrawData});
+    m_renderQueue.emplace_back(mesh);
 }
 
 void ChunkRenderer::Display() noexcept
@@ -147,11 +146,9 @@ void ChunkRenderer::Display() noexcept
     m_shader.SetMatrix("aModel", glm::value_ptr(glm::mat4(1)));
 
     for (const auto& mesh : m_renderQueue)
-    {
-        auto& vao = mesh.chunk.m_vao;
-        
-        vao.Bind();
-        glDrawElements(GL_TRIANGLES, mesh.chunk.m_elemCount / 4u * 6u, GL_UNSIGNED_INT, 0u);
+    {   
+        mesh.get().m_vao.Bind();
+        glDrawElements(GL_TRIANGLES, mesh.get().m_elemCount / 4u * 6u, GL_UNSIGNED_INT, 0u);
     }
     m_renderQueue.clear();
 }

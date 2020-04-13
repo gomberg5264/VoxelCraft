@@ -33,13 +33,12 @@ class ChunkRenderer
 {
 public:
     ChunkRenderer();
-    ~ChunkRenderer();
 
     /**
      * Since the VAO uses the EBO inside ChunkRenderer, we make sure that 
      * VAO is bound to that EBO with this function
      */
-    void RegisterEBOToVAO(VAO& vao);
+    void RegisterEBOToVAO(const VAO& vao);
 
     void SetVP(const glm::mat4& vp) noexcept;
     void SetSkyLightDirection(const glm::vec3& lightDir) noexcept;
@@ -51,19 +50,12 @@ public:
     void SetSkyLightColor(const glm::vec3& color) noexcept;
     //void SetAmbientLight(const glm::vec3& color) noexcept;
     
-    void Render(const ChunkMesh& mesh, bool updateDrawData);
+    void Render(const ChunkMesh& mesh);
     void Display() noexcept;
 
 private:
-    struct Command
-    {
-        const ChunkMesh& chunk;
-        bool upload;
-    };
-    std::vector<Command> m_renderQueue;
+    std::vector<std::reference_wrapper<const ChunkMesh>> m_renderQueue;
 
     Shader m_shader;
-
-    const unsigned m_elementCount;
-    unsigned m_ebo;
+    EBO m_ebo;
 };
