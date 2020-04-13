@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include <initializer_list>
 
+#include <cmath>
+
 // deps
 #include <glad/glad.h>
 

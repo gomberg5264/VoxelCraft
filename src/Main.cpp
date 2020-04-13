@@ -137,8 +137,8 @@ private:
         et += dt;
 
         // TODO: temp day cycle
-        constexpr float dayDur = 1.f / 0.1f;
-        const float time = glm::radians(et * glm::pi<float>() * 2.f * dayDur);
+        constexpr float dayDur = 1.f / 3.0f;
+        const float time = et * glm::pi<float>() * 2.f * dayDur;
         float tval = Math::InverseLerp(glm::cos(time), -1.f, 1.f);
 
         m_chunkRenderer.SetSkyIntensity(Math::Lerp(tval,0.3f,0.8f));
@@ -156,13 +156,14 @@ private:
         m_chunkManager->Update();
 
         m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+        m_skyRenderer.SetTime(time / glm::two_pi<float>() - 0.25f);
+        m_skyRenderer.SetCameraRotateProject(m_camera->GetProjection() * m_camera->GetRotation());
         m_window.Clear();
+
+        m_skyRenderer.Display();
 
         m_chunkManager->Render();
         m_chunkRenderer.Display();
-
-        m_skyRenderer.SetCameraRotateProject(m_camera->GetProjection() * m_camera->GetRotation());
-        m_skyRenderer.Display();
 
         m_playerMesh->Draw(*m_camera);
 

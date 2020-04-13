@@ -2,6 +2,7 @@
 #include "SkyRenderer.hpp"
 
 #include "client/gl/Primitive.hpp"
+#include "utils/Math.hpp"
 
 SkyRenderer::SkyRenderer() noexcept
     : m_time(0.f)
@@ -16,9 +17,9 @@ SkyRenderer::SkyRenderer() noexcept
      
     m_vao.Bind();
     // Fill VBO
-    // TODO
-    auto sun = Primitive::Face::MakeBuffer(BlockFace::Front, 0, 0, -1.5f, 0).vertices;
-    auto moon = Primitive::Face::MakeBuffer(BlockFace::Back, 0, 0, 1.5f, 0).vertices;
+    constexpr float distance = 10.f;
+    auto sun = Primitive::Face::MakeBuffer(BlockFace::Right, -distance, 0, 0 , 0).vertices;
+    auto moon = Primitive::Face::MakeBuffer(BlockFace::Left, distance, 0,  0, 1).vertices;
     sun.insert(std::end(sun), std::begin(moon), std::end(moon));
     m_vao.m_vbo.Bind();
     m_vao.m_vbo.Upload(sun);
@@ -35,14 +36,26 @@ SkyRenderer::SkyRenderer() noexcept
 void SkyRenderer::SetCameraRotateProject(const glm::mat4& rotProj)
 {
     m_shader.Bind();
-    m_shader.SetMatrix("aRotProj", glm::value_ptr(rotProj));
+
+    //const float angle = Math::InverseLerp(
+    //    glm::sin(m_time * glm::pi<float>() * 2.f),-1.f,1.f) * 
+    const auto rot = glm::rotate(m_time * glm::pi<float>() * 2.f, glm::vec3(0, 0, 1));
+    m_shader.SetMatrix("aRotProj", glm::value_ptr(rotProj * rot));
+}
+
+void SkyRenderer::SetTime(float t)
+{
+    m_time = t;
 }
 
 void SkyRenderer::Display()
 {
+    glDepthMask(GL_FALSE);
+    //glDepthFunc(GL_LESS);
     m_shader.Bind();
     m_texture.Bind();
     m_vao.Bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_vao.m_ebo->ElementCount());
+    glDrawElements(GL_TRIANGLES, m_vao.m_ebo->ElementCount(), GL_UNSIGNED_INT, 0);
     m_vao.Unbind();
+    glDepthMask(GL_TRUE);
 }
