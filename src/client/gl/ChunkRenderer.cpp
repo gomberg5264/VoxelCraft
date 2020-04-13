@@ -16,29 +16,53 @@ ChunkMesh::ChunkMesh()
 {
 }
 
-bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk::BlockArray& blocks)
+bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk& chunk)
 {
-    // Block is only culled if it is surrounded on all sides
+    // TODO: Please rewrite this. IsVisible is a confusing name for me I like IsOccluded more and
+    // make it loop based. Or never touch it again. 
 
-    // If it is on the edge of a chunk, we will just render it
-    if ((dir == BlockFace::Left && x < 1) || (dir == BlockFace::Right && x >= static_cast<int>(chunkDimension.x) - 1) ||
-        (dir == BlockFace::Bottom && y < 1) || (dir == BlockFace::Top && y >= static_cast<int>(chunkDimension.y) - 1) ||
-        (dir == BlockFace::Back && z < 1) || (dir == BlockFace::Front && z >= static_cast<int>(chunkDimension.z) - 1)) return true;
+    // Block is only culled if it is surrounded on all sides
+    auto& blocks = chunk.GetBlockArray();
+
+    // If we are on an edge
+    if ((dir == BlockFace::Left && x == 0) || (dir == BlockFace::Right && x == chunkDimension.x - 1u) ||
+        (dir == BlockFace::Bottom && y == 0) || (dir == BlockFace::Top && y == chunkDimension.y - 1u) ||
+        (dir == BlockFace::Back && z == 0) || (dir == BlockFace::Front && z == chunkDimension.z - 1u))
+    {
+        // Just return true if not all neighbors have been loaded yet
+        if (chunk.m_neighbors.count != 6) return true;
+
+        // Check if block goes to neighbor
+        if (chunk.m_neighbors.neighbor.left && dir == BlockFace::Left && x == 0)
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.left->GetBlockArray()[chunkDimension.x - 1u][y][z]).isSolid;
+        else if (chunk.m_neighbors.neighbor.right && dir == BlockFace::Right && x == chunkDimension.x - 1u)
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.right->GetBlockArray()[0][y][z]).isSolid;
+        else if (chunk.m_neighbors.neighbor.bottom && dir == BlockFace::Bottom && y == 0)
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.bottom->GetBlockArray()[x][chunkDimension.y - 1u][z]).isSolid;
+        else if (chunk.m_neighbors.neighbor.top && dir == BlockFace::Top && y == chunkDimension.y - 1u)
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.top->GetBlockArray()[x][0][z]).isSolid;
+        else if (chunk.m_neighbors.neighbor.front && dir == BlockFace::Front && z == chunkDimension.z - 1u)
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.front->GetBlockArray()[x][y][0]).isSolid;
+        else if (chunk.m_neighbors.neighbor.back && dir == BlockFace::Back && z == 0 )
+            return !BlockDataFactory::GetInstance().GetBlockData(chunk.m_neighbors.neighbor.back->GetBlockArray()[x][y][chunkDimension.z - 1u]).isSolid;
+    }
 
     // If visible from any side we should just render
-    if (dir == BlockFace::Right && !BlockDataFactory::GetInstance().GetBlockData(blocks[x + 1][y][z]).isSolid) return true;
-    else if (dir == BlockFace::Left && !BlockDataFactory::GetInstance().GetBlockData(blocks[x - 1][y][z]).isSolid) return true;
-    else if (dir == BlockFace::Top && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y + 1][z]).isSolid) return true;
-    else if (dir == BlockFace::Bottom && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y - 1][z]).isSolid) return true;
-    else if (dir == BlockFace::Front && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z + 1]).isSolid) return true;
-    else if (dir == BlockFace::Back && !BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z - 1]).isSolid) return true;
+    if (dir == BlockFace::Right && BlockDataFactory::GetInstance().GetBlockData(blocks[x + 1][y][z]).isSolid) return false;
+    else if (dir == BlockFace::Left && BlockDataFactory::GetInstance().GetBlockData(blocks[x - 1][y][z]).isSolid) return false;
+    else if (dir == BlockFace::Top && BlockDataFactory::GetInstance().GetBlockData(blocks[x][y + 1][z]).isSolid) return false;
+    else if (dir == BlockFace::Bottom && BlockDataFactory::GetInstance().GetBlockData(blocks[x][y - 1][z]).isSolid) return false;
+    else if (dir == BlockFace::Front && BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z + 1]).isSolid) return false;
+    else if (dir == BlockFace::Back && BlockDataFactory::GetInstance().GetBlockData(blocks[x][y][z - 1]).isSolid) return false;
 
-    // This means fully encapsulated
-    return false;
+    // This means the face is not occluded
+    return true;
 }
 
 void ChunkMesh::Generate(const Chunk& chunk)
 {
+    if (chunk.m_isAir) return;
+
     Primitive::Face::Buffer mesh;
 
     const auto& blocks = chunk.GetBlockArray();
@@ -58,7 +82,7 @@ void ChunkMesh::Generate(const Chunk& chunk)
                 // Add all 6 directions
                 for (int i = 0; i < BlockFace::Count; i++)
                 {
-                    if (IsVisible(BlockFace(i), x, y, z, blocks))
+                    if (IsVisible(BlockFace(i), x, y, z, chunk))
                     {
                         auto buffer = Primitive::Face::MakeBuffer(
                             BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);

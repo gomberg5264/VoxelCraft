@@ -26,6 +26,17 @@ public:
         }
         
         int count;
+        
+        /**
+         * The data is ordered like this because
+         * when we remove a neighbor such as one on top, we want
+         * to remove the neighbor at the bottom, so we can just
+         * add 3 and module by the size.
+         * This way, I won't have to write if (up remove bottom and up) but
+         * I can just use a loop
+         *
+         * In practice tho, I don't think it really saves a lot.
+         */
         union
         {
             Chunk* m[6];
