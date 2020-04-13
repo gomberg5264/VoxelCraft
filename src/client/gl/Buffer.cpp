@@ -1,40 +1,52 @@
 #include "vcpch.hpp"
 #include "client/gl/Buffer.hpp"
 
-VBO::VBO()
+constexpr Buffer::Buffer(Type type) noexcept
+    : m_type(type)
+    , m_id(0)
 {
     glGenBuffers(1, &m_id);
-    //std::cout << "+ VBO " << m_id << '\n';
 }
 
-VBO::~VBO()
+Buffer::~Buffer() noexcept
 {
-    glDeleteBuffers(1, &m_id);
-    //std::cout << "- VBO " << m_id << '\n';
+    if (m_id != 0)
+        glDeleteBuffers(1, &m_id);
 }
 
-VBO::VBO(VBO&& vbo) noexcept
-    : m_elements(std::move(vbo.m_elements))
-    , m_id(std::exchange(vbo.m_id,0))
+Buffer::Buffer(Buffer&& rhs) noexcept
+    : m_type(rhs.m_type)
+    , m_id(std::exchange(rhs.m_id, 0))
 {
 }
 
-VBO& VBO::operator=(VBO&& vbo) noexcept
+void Buffer::Bind() const noexcept
 {
-    m_elements = std::move(vbo.m_elements);
-    m_id = std::exchange(vbo.m_id, 0);
-
-    return *this;
+    glBindBuffer(static_cast<GLenum>(m_type), m_id);
 }
 
-void VBO::Bind() const
+void Buffer::Unbind() const noexcept
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_id);
+    glBindBuffer(static_cast<GLenum>(m_type), 0);
 }
 
-void VBO::Unbind() const
+//VBO::VBO(VBO&& vbo) noexcept
+//    : m_elements(std::move(vbo.m_elements))
+//    , m_id(std::exchange(vbo.m_id,0))
+//{
+//}
+//
+//VBO& VBO::operator=(VBO&& vbo) noexcept
+//{
+//    m_elements = std::move(vbo.m_elements);
+//    m_id = std::exchange(vbo.m_id, 0);
+//
+//    return *this;
+//}
+
+VBO::VBO() noexcept
+    : Buffer(Type::Vertex)
 {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void VBO::AddElement(const Element& element)
@@ -46,6 +58,36 @@ const std::vector<VBO::Element>& VBO::GetElements() const
 {
     return m_elements;
 }
+
+EBO::EBO() noexcept
+    : Buffer(Type::Element)
+    , m_elementCount(0)
+{    
+}
+//
+//EBO::EBO(EBO&& rhs) noexcept
+//    : Buffer(std::move(rhs))
+//    , m_elementCount(rhs.m_elementCount)
+//{
+//}
+
+//EBO::EBO(EBO&& ebo) noexcept
+//    : m_elementCount(ebo.m_elementCount)
+//    , m_id(std::exchange(ebo.m_id,0))
+//{
+//}
+
+void EBO::SetIndices(const std::vector<unsigned>& indices)
+{
+    m_elementCount = indices.size();
+    Bind();
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        indices.size() * sizeof(unsigned),
+        indices.data(), GL_STATIC_DRAW);
+    Unbind();
+}
+
 
 VAO::VAO()
 {
@@ -62,7 +104,7 @@ VAO::~VAO()
 
 VAO::VAO(VAO&& vao) noexcept
     : m_vbos(std::move(vao.m_vbos))
-    , m_id(std::exchange(vao.m_id,0))
+    , m_id(std::exchange(vao.m_id, 0))
 {
 }
 
@@ -96,6 +138,7 @@ void VAO::AddVBO(const std::initializer_list<VBO::Element>& elements)
         vbo.AddElement(elem);
 
     vbo.Bind();
+    
     for (const auto& elem : vbo.GetElements())
     {
         glEnableVertexAttribArray(elem.index);
@@ -109,50 +152,4 @@ void VAO::AddVBO(const std::initializer_list<VBO::Element>& elements)
             );
     }
     vbo.Unbind();
-}
-
-EBO::EBO()
-    : m_elementCount(0)
-{
-    glGenBuffers(1, &m_id);    
-}
-
-EBO::~EBO()
-{
-    glDeleteBuffers(1, &m_id);
-}
-
-EBO::EBO(EBO&& ebo) noexcept
-    : m_elementCount(ebo.m_elementCount)
-    , m_id(std::exchange(ebo.m_id,0))
-{
-}
-
-EBO& EBO::operator=(EBO&& ebo) noexcept
-{
-    if (this == &ebo) return *this;
-
-    m_elementCount = ebo.m_elementCount;
-    m_id = ebo.m_id;
-}
-
-void EBO::Bind() const
-{
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-}
-
-void EBO::Unbind() const
-{
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-void EBO::SetIndices(const std::vector<unsigned>& indices)
-{
-    m_elementCount = indices.size();
-    Bind();
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER,
-        indices.size() * sizeof(unsigned),
-        indices.data(), GL_STATIC_DRAW);
-    Unbind();
 }

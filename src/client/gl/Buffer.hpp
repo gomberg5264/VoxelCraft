@@ -1,7 +1,36 @@
 #pragma once
 #include "utils/NonCopyable.hpp"
 
-class VBO : public NonCopyable
+/**
+ * Buffer is the base object for any OpenGL buffers.
+ * It defines a constructor and move operators.
+ * It is not supposed to be used as a base class.
+ * 
+ * TODO: Should be const but not sure how to make it work with
+ * assignment operator
+ */
+class Buffer : public NonCopyable
+{
+public:
+    enum class Type
+    {
+        Vertex = GL_ARRAY_BUFFER,
+        Element = GL_ELEMENT_ARRAY_BUFFER
+    };
+
+    constexpr Buffer(Type type) noexcept;
+    ~Buffer() noexcept;
+    Buffer(Buffer&& rhs) noexcept;
+    
+    void Bind() const noexcept;
+    void Unbind() const noexcept;
+
+private:
+    const Type m_type;
+    unsigned m_id;
+};
+
+class VBO : public Buffer
 {
 public:
     struct Element
@@ -14,41 +43,24 @@ public:
         unsigned offset;
     };
 
-    VBO();
-    ~VBO();
-    VBO(VBO&& vbo) noexcept;
-    VBO& operator=(VBO&& vbo) noexcept;
+    VBO() noexcept;
 
-    void Bind() const;
-    void Unbind() const;
-
+    //void Upload() const;
     void AddElement(const Element& element);
     const std::vector<Element>& GetElements() const;
 
 private:
     std::vector<Element> m_elements;
-    unsigned m_id;
 };
 
-class EBO : public NonCopyable
+class EBO : public Buffer
 {
 public:
-    EBO();
-    ~EBO();
-    EBO(EBO&& ebo) noexcept;
-    EBO& operator=(EBO&& ebo) noexcept;
+    EBO() noexcept;
 
-    /**
-     * If count == 0 this doesn't do anything
-     */
-    void Bind() const;
-    void Unbind() const;
     void SetIndices(const std::vector<unsigned>& indices);
 
     size_t m_elementCount;
-
-private:
-    unsigned m_id;
 };
 
 /**
