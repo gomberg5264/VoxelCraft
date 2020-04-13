@@ -4,17 +4,17 @@
 
 #include "client/gl/ChunkRenderer.hpp"
 
-ChunkMesh::ChunkMesh()
-{
-    m_vao.AddVBO(
+ChunkMesh::ChunkMesh() 
+    : m_vao(
         {
             { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
             { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
             { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
             { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) },
-        });
+        })
+    , m_elemCount(0)
+{
 }
-
 
 bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk::BlockArray& blocks)
 {
@@ -39,6 +39,8 @@ bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk::BlockArray& bloc
 
 void ChunkMesh::Generate(const Chunk& chunk)
 {
+    Primitive::Face::Buffer mesh;
+
     const auto& blocks = chunk.GetBlockArray();
     for (unsigned y = 0; y < chunkDimension.y; y++)
         for (unsigned z = 0; z < chunkDimension.z; z++)
@@ -61,13 +63,19 @@ void ChunkMesh::Generate(const Chunk& chunk)
                         auto buffer = Primitive::Face::MakeBuffer(
                             BlockFace(i), bPos.x, bPos.y, bPos.z, bData.texture[i]);
 
-                        m_buffer.vertices.insert(
-                            m_buffer.vertices.end(),
+                        mesh.vertices.insert(
+                            mesh.vertices.end(),
                             buffer.vertices.begin(),
                             buffer.vertices.end());
                     }
                 }
             }
+
+    // Upload to the gpu
+    m_vao.m_vbo.Bind();
+    m_vao.m_vbo.Upload(mesh.vertices);
+    m_elemCount = mesh.vertices.size();
+    m_vao.m_vbo.Unbind();
 }
 
 ChunkRenderer::ChunkRenderer()
@@ -97,7 +105,7 @@ ChunkRenderer::~ChunkRenderer()
     glDeleteBuffers(1, &m_ebo);
 }
 
-void ChunkRenderer::RegisterVAO(VAO& vao)
+void ChunkRenderer::RegisterEBOToVAO(VAO& vao)
 {
     vao.Bind();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
@@ -143,17 +151,7 @@ void ChunkRenderer::Display() noexcept
         auto& vao = mesh.chunk.m_vao;
         
         vao.Bind();
-
-        if (mesh.upload)
-        {
-            glBufferData(
-                GL_ARRAY_BUFFER,
-                mesh.chunk.m_buffer.vertices.size() * sizeof(Primitive::Face::Vertex),
-                mesh.chunk.m_buffer.vertices.data(),
-                GL_DYNAMIC_DRAW);
-        }
-
-        glDrawElements(GL_TRIANGLES, mesh.chunk.m_buffer.vertices.size() / 4u * 6u, GL_UNSIGNED_INT, 0u);
+        glDrawElements(GL_TRIANGLES, mesh.chunk.m_elemCount / 4u * 6u, GL_UNSIGNED_INT, 0u);
     }
     m_renderQueue.clear();
 }

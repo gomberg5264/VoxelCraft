@@ -4,7 +4,6 @@
 
 #include "client/gl/Buffer.hpp"
 #include "client/gl/Primitive.hpp"
-
 #include "client/gl/Shader.hpp"
 
 class PlayerMesh
@@ -19,5 +18,4 @@ private:
 
     Transform& m_transform;
     VAO m_vao;
-    EBO m_ebo;
 };

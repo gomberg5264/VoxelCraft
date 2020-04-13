@@ -19,8 +19,8 @@ public:
     };
 
     constexpr Buffer(Type type) noexcept;
-    ~Buffer() noexcept;
     Buffer(Buffer&& rhs) noexcept;
+    ~Buffer() noexcept;
     
     void Bind() const noexcept;
     void Unbind() const noexcept;
@@ -30,8 +30,13 @@ private:
     unsigned m_id;
 };
 
+class VAO;
+/**
+ * A wrapper for a buffer object
+ */
 class VBO : public Buffer
 {
+    friend VAO;
 public:
     struct Element
     {
@@ -43,14 +48,32 @@ public:
         unsigned offset;
     };
 
-    VBO() noexcept;
+    VBO(const std::initializer_list<VBO::Element>& elements) noexcept;
 
-    //void Upload() const;
-    void AddElement(const Element& element);
-    const std::vector<Element>& GetElements() const;
-
+    /**
+     * Assumes a vector but we use begin so that we can also
+     * use initializer lists
+     */
+    template<typename T>
+    void Upload(const T& attributes) noexcept
+    {
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            attributes.size() * sizeof(*attributes.begin()),
+            &(*attributes.begin()),
+            GL_DYNAMIC_DRAW);
+    }
+    
 private:
-    std::vector<Element> m_elements;
+
+    /**
+     * This function will be called from the VAO
+     * It should only be called when a valid VAO is bound
+     * It sets up the vertex attribute pointers
+     */
+    void Setup();
+    
+    const std::initializer_list<Element> m_elements;
 };
 
 class EBO : public Buffer
@@ -58,28 +81,63 @@ class EBO : public Buffer
 public:
     EBO() noexcept;
 
-    void SetIndices(const std::vector<unsigned>& indices);
+    template<typename T>
+    void Upload(const T& indices) noexcept
+    {
+        m_elementCount = indices.size();
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            indices.size() * sizeof(*indices.begin()),
+            &(*indices.begin()),
+            GL_STATIC_DRAW);
+    }
 
+    size_t ElementCount() const noexcept;
+
+private:
     size_t m_elementCount;
 };
 
 /**
- * Only binds an ebo if it is not zero
+ * A vertex array object wrapper for OpenGL
+ *
+ * The reason why we call Setup is because we have to bind the 
+ * vertex attribute information after we have bound the vao.
+ * To adhere to RAII, we have to pass the vbo in the constructor
+ * 
+ * You can modify the buffers by simply binding them
+ * For drawing, you only have to bind the VAO.
+ *
+ * TODO: Right now, you can only use one vbo
+ * TODO: Chunk renderer defines one ebo for all chunk vbos.
+ * Instead of checking ebo, make a unique class for it.
  */
 class VAO : public NonCopyable
 {
 public:
-    VAO();
-    ~VAO();
+    VAO(VBO&& vbo) noexcept;
     VAO(VAO&& vao) noexcept;
-    VAO& operator=(VAO&& vao) noexcept;
+    ~VAO() noexcept;
 
+    /**
+     * This only binds the VAO. 
+     * Binding a VAO means that all buffer address information is stored.
+     * This regards the vertex attrib pointers. It stores where that data is.
+     * This means that vbo will not be binded when calling this, it doesn't need to.
+     * This does mean that the ebo will be binded (if one exists).
+     * 
+     * https://stackoverflow.com/questions/17332657/does-a-vao-remember-both-a-ebo-ibo-elements-or-indices-and-a-vbo
+     */
     void Bind() const;
     void Unbind() const;
 
-    void AddVBO(const std::initializer_list<VBO::Element>& elements);
+    VBO m_vbo;
+
+    /**
+     * Be sure that when you create an EBO, you also bind it
+     */
+    std::unique_ptr<EBO> m_ebo;
 
 private:
-    std::vector<VBO> m_vbos;
     unsigned m_id;
 };

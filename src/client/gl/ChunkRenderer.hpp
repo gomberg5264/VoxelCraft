@@ -1,6 +1,6 @@
 #pragma once
-#include "client/gl/Primitive.hpp"
 #include "client/gl/Buffer.hpp"
+#include "client/gl/Primitive.hpp"
 #include "client/gl/Shader.hpp"
 
 /**
@@ -10,10 +10,14 @@ class ChunkMesh
 {
 public:
     ChunkMesh();
+
+    /**
+     * This function generates and uploads the mesh to the gpu
+     */
     void Generate(const Chunk& chunk);
 
     VAO m_vao;
-    Primitive::Face::Buffer m_buffer;
+    size_t m_elemCount;
 };
 
 /**
@@ -31,7 +35,11 @@ public:
     ChunkRenderer();
     ~ChunkRenderer();
 
-    void RegisterVAO(VAO& vao);
+    /**
+     * Since the VAO uses the EBO inside ChunkRenderer, we make sure that 
+     * VAO is bound to that EBO with this function
+     */
+    void RegisterEBOToVAO(VAO& vao);
 
     void SetVP(const glm::mat4& vp) noexcept;
     void SetSkyLightDirection(const glm::vec3& lightDir) noexcept;

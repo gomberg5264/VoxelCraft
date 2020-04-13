@@ -15,6 +15,7 @@
 #include <queue>
 #include <list>
 #include <unordered_map>
+#include <initializer_list>
 
 // deps
 #include <glad/glad.h>

@@ -7,7 +7,7 @@ void ChunkManager::LoadChunk(ChunkManager::ChunkMapValue& value)
     value.chunk.MarkModify();
     value.mesh.Generate(value.chunk);
 
-    m_renderer.RegisterVAO(value.mesh.m_vao);
+    m_renderer.RegisterEBOToVAO(value.mesh.m_vao);
 }
 
 void ChunkManager::SetPos(const glm::vec3& pos) noexcept
