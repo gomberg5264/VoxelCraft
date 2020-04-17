@@ -19,4 +19,13 @@ namespace Math
         assert(val >= min && val <= max && "Val has to be between min and max");
         return (val - min) / (max - min);
     }
+
+    /**
+     * Returns a normalized t between min and max
+     */
+    template <typename T>
+    inline constexpr T Map(const T& val, const T& currentMin, const T& currentMax, const T& newMin, const T& newMax) noexcept
+    {
+        return Lerp(InverseLerp(val,currentMin,currentMax),newMin,newMax);
+    }
 }

@@ -135,6 +135,7 @@
     <ClInclude Include="src\utils\Math.hpp" />
     <ClInclude Include="src\utils\NonCopyable.hpp" />
     <ClInclude Include="src\utils\Singleton.hpp" />
+    <ClInclude Include="src\utils\Timeline.hpp" />
     <ClInclude Include="src\vcpch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

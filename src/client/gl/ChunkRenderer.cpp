@@ -145,7 +145,14 @@ void ChunkRenderer::SetVP(const glm::mat4& vp) noexcept
 void ChunkRenderer::SetSkyLightDirection(const glm::vec3& lightDir) noexcept
 {
     m_shader.Bind();
-    m_shader.SetVec3("aSkyLightDir", glm::value_ptr(glm::max(lightDir,glm::vec3(0))));
+    std::printf("x%.2f y%.2f %.2f\n", lightDir.x, lightDir.y, lightDir.z);
+    m_shader.SetVec3("aSkyLightDir", glm::value_ptr(lightDir));
+}
+
+void ChunkRenderer::SetDiffuseIntensity(float intensity) noexcept
+{
+    m_shader.Bind();
+    m_shader.SetFloat("aSkyDiffuseIntensity", intensity);
 }
 
 void ChunkRenderer::SetSkyIntensity(float intensity) noexcept

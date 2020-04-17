@@ -45,6 +45,14 @@ public:
     void SetPos(const glm::vec3& pos) noexcept;
 
     void Update();
+    
+    /**
+     * Pushes render requests to the renderer given in the constructor
+     * TODO: We may want to remove this code from the chunkManager and instead
+     * move all that logic into ChunkRenderer. We would have to expose the chunk map in that case.
+     * It comes down to the question whether the renderer should be concerned with doing culling or if 
+     * the chunk manager should do the culling
+     */
     void Render();
 
 private:

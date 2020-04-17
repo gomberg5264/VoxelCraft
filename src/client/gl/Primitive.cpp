@@ -11,13 +11,15 @@ Primitive::Face::Buffer Primitive::Face::MakeBuffer(BlockFace dir, float x, floa
     // Bottom right
     // Top right
 
+
     switch (dir)
     {
     case BlockFace::Top:
-        buffer.vertices.emplace_back(x - 0.5f, y + 0.5f, z - 0.5f, 0.f, 1.f, 0.1, 0.f, 1.f, texIndex);
-        buffer.vertices.emplace_back(x - 0.5f, y + 0.5f, z + 0.5f, 0.f, 1.f, 0.1, 0.f, 0.f, texIndex);
-        buffer.vertices.emplace_back(x + 0.5f, y + 0.5f, z + 0.5f, 0.f, 1.f, 0.1, 1.f, 0.f, texIndex);
-        buffer.vertices.emplace_back(x + 0.5f, y + 0.5f, z - 0.5f, 0.f, 1.f, 0.1, 1.f, 1.f, texIndex);
+        //                           x         y         z         nx   ny   nz   u    v
+        buffer.vertices.emplace_back(x - 0.5f, y + 0.5f, z - 0.5f, 0.f, 1.f, 0.f, 0.f, 1.f, texIndex);
+        buffer.vertices.emplace_back(x - 0.5f, y + 0.5f, z + 0.5f, 0.f, 1.f, 0.f, 0.f, 0.f, texIndex);
+        buffer.vertices.emplace_back(x + 0.5f, y + 0.5f, z + 0.5f, 0.f, 1.f, 0.f, 1.f, 0.f, texIndex);
+        buffer.vertices.emplace_back(x + 0.5f, y + 0.5f, z - 0.5f, 0.f, 1.f, 0.f, 1.f, 1.f, texIndex);
 
         break;
     case BlockFace::Bottom:

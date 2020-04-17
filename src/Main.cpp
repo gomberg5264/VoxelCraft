@@ -102,9 +102,6 @@ private:
 
     virtual void OnUpdate(Time dt) override final
     {
-        m_camera->Update(dt);
-        const glm::fvec3 camPos = m_camera->m_eye;
-        
         // Process events
         // TODO: We may want to forward these events
         sf::Event event;
@@ -129,42 +126,55 @@ private:
                 glViewport(0, 0, event.size.width, event.size.height);
         }
 
-        //std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
-        //    camPos.x,
-        //    camPos.y,
-        //    camPos.z);
+        // UPDATE
+        // ---------------------
         static float et = 0;
         et += dt;
-
         // TODO: temp day cycle
-        constexpr float dayDur = 1.f / 3.0f;
-        const float time = et * glm::pi<float>() * 2.f * dayDur;
-        float tval = Math::InverseLerp(glm::cos(time), -1.f, 1.f);
+        constexpr float dayDur = 1.f / 8.0f;
+        const float time = et * dayDur;
 
-        m_chunkRenderer.SetSkyIntensity(Math::Lerp(tval,0.3f,0.8f));
-        m_chunkRenderer.SetSkyLightDirection(glm::vec3(
-            glm::cos(time),
-            glm::cos(time),
-            glm::cos(time)));
-
-        // TODO: Move this to a player class
-        m_player.m_transform.m_pos = glm::vec3(0, 20, 0);
-        m_player.m_transform.m_scale = glm::vec3(glm::sin(et),glm::cos(et),glm::sin(glm::cos(et))) * 10.f;
-        m_player.m_transform.m_euler = m_player.m_transform.m_euler + glm::vec3(dt, dt * 3.f, dt * 1.5f);
+        m_camera->Update(dt);
 
         m_chunkManager->SetPos(m_camera->m_eye);
         m_chunkManager->Update();
 
-        m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
-        m_skyRenderer.SetTime(time / glm::two_pi<float>() - 0.25f);
+        // TODO: Move this to a player class
+        m_player.m_transform.m_pos = glm::vec3(0, 20, 0);
+        m_player.m_transform.m_scale = glm::vec3(glm::sin(et), glm::cos(et), glm::sin(glm::cos(et))) * 10.f;
+        m_player.m_transform.m_euler = m_player.m_transform.m_euler + glm::vec3(dt, dt * 3.f, dt * 1.5f);
+
+        //std::printf("Cam x:%.2f y:%.2f z:%.2f\n",
+        //    camPos.x,
+        //    camPos.y,
+        //    camPos.z);
+
+        // RENDERING
+        // ---------------------
+        // Make draw requests to renderers
+        m_chunkManager->Render();
+
+        // Set up renderers state
+        // Update sky renderer by passing current time
+        m_skyRenderer.SetTime(std::fmod(time, 1.f));
+        
+        // Set up ligting for renderers
+        m_chunkRenderer.SetSkyIntensity(m_skyRenderer.GetSkyAmbient());
+        m_chunkRenderer.SetSkyLightDirection(m_skyRenderer.GetLightDir());
+        m_chunkRenderer.SetSkyLightColor(m_skyRenderer.GetColor());
+        m_chunkRenderer.SetDiffuseIntensity(m_skyRenderer.GetIntensity());
+
+        // Set up camera matrices
         m_skyRenderer.SetCameraRotateProject(m_camera->GetProjection() * m_camera->GetRotation());
+        m_chunkRenderer.SetVP(m_camera->GetProjection() * m_camera->GetView());
+
+        // Render contents to the screen
         m_window.Clear();
 
         m_skyRenderer.Display();
-
-        m_chunkManager->Render();
         m_chunkRenderer.Display();
 
+        // TODO: Make a player renderer/entity renderer
         m_playerMesh->Draw(*m_camera);
 
         m_window.Display();
