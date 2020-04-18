@@ -29,7 +29,7 @@ Texture::Texture(const char* path)
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture: " << path << std::endl;
     }
     stbi_image_free(data);
 
@@ -90,7 +90,7 @@ TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture: " << path << std::endl;
     }
     stbi_image_free(data);
 
@@ -100,41 +100,48 @@ TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
 
 TextureCubemap::TextureCubemap(const char* dir, const char* extension)
 {
+    Bind();
+
+    //#define GL_TEXTURE_CUBE_MAP_POSITIVE_X 0x8515
+    //#define GL_TEXTURE_CUBE_MAP_NEGATIVE_X 0x8516
+    //#define GL_TEXTURE_CUBE_MAP_POSITIVE_Y 0x8517
+    //#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y 0x8518
+    //#define GL_TEXTURE_CUBE_MAP_POSITIVE_Z 0x8519
+    //#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z 0x851A
+
     const std::string image[6]
     {
-        dir + std::string("right.") + extension,
-        dir + std::string("left.") + extension,
-        dir + std::string("top.") + extension,
-        dir + std::string("bottom.") + extension,
-        dir + std::string("back.") + extension,
-        dir + std::string("front.") + extension
+        dir + std::string("/right.") + extension,
+        dir + std::string("/left.") + extension,
+        dir + std::string("/top.") + extension,
+        dir + std::string("/bottom.") + extension,
+        dir + std::string("/front.") + extension,
+        dir + std::string("/back.") + extension,
     };
 
+    stbi_set_flip_vertically_on_load(false);
     for (int i = 0; i < 6; i++)
     {
         int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true);
 
-        unsigned char* data = stbi_load(image[i].c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
-
+        unsigned char* data = stbi_load(image[i].c_str(), &width, &height, &nrChannels, STBI_rgb);
+        std::cout << nrChannels << '\n';
         if (data)
         {
             glTexImage2D(
                 GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0,
-                GL_RGBA,
+                GL_RGB,
                 width,
                 height,
                 0,
-                GL_RGBA,
+                GL_RGB,
                 GL_UNSIGNED_BYTE,
                 data);
-
-            glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
         {
-            std::cout << "Failed to load texture" << std::endl;
+            std::cout << "Failed to load texture: " << image[i] << std::endl;
         }
         stbi_image_free(data);
     }

@@ -25,40 +25,52 @@ void SkyRenderer::LoadStars()
 
 void SkyRenderer::LoadSkybox()
 {
-    constexpr std::array<float, 8 * 3> vertices
+    const std::vector<float> skyboxVertices 
     {
-        -1.f, -1.f, 1.f,
-         1.f, -1.f, 1.f,
-         1.f,  1.f, 1.f,
-        -1.f,  1.f, 1.f,
+        // positions          
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-        -1.f, -1.f, -1.f,
-         1.f, -1.f, -1.f,
-         1.f,  1.f, -1.f,
-        -1.f,  1.f, -1.f,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
     };
-    constexpr std::array<unsigned, 36> indices
-    {
-        0, 1, 4,
-        0, 4, 3,
-
-        5, 4, 7,
-        5, 7, 6,
-
-        4, 0, 3,
-        4, 3, 7,
-
-        1, 5, 6,
-        1, 6, 4,
-
-        0, 1, 5,
-        0, 5, 4,
-
-        3, 4, 6,
-        3, 6, 7
-    };
-    m_skyVAO.m_vbo.Upload(vertices);
-    m_skyVAO.MakeEBO()->Upload(indices);
+    m_skyVAO.m_vbo.Upload(skyboxVertices);
 }
 
 SkyRenderer::SkyRenderer() noexcept
@@ -68,7 +80,7 @@ SkyRenderer::SkyRenderer() noexcept
     , m_starTex("res/sunMoon.png",2,1)
     , m_skyVAO({ { 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0} })
     , m_skyShader("res/shaders/sky.vert", "res/shaders/sky.frag")
-    , m_skyTex("res/skybox/day","jpg")
+    , m_skyTex("res/skybox/realistic","jpg")
 {
     LoadStars();
     LoadSkybox();
@@ -82,6 +94,9 @@ void SkyRenderer::SetCameraRotateProject(const glm::mat4& rotProj) noexcept
     //    glm::sin(m_time * glm::pi<float>() * 2.f),-1.f,1.f) * 
     const auto rot = glm::rotate(m_time * glm::pi<float>() * 2.f, glm::vec3(0, 0, 1));
     m_starShader.SetMatrix("aRotProj", glm::value_ptr(rotProj * rot));
+
+    m_skyShader.Bind();
+    m_skyShader.SetMatrix("aRotProj", glm::value_ptr(rotProj));
 }
 
 void SkyRenderer::SetTime(float t) noexcept
@@ -154,11 +169,21 @@ void SkyRenderer::Display()
 {
     glDepthMask(GL_FALSE);
     //glDepthFunc(GL_LESS);
+
+    // Render skybox
+    m_skyShader.Bind();
+    m_skyTex.Bind();
+    m_skyVAO.Bind();
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawElements(GL_TRIANGLES, m_skyVAO.m_ebo->ElementCount(), GL_UNSIGNED_INT, 0);
+
+    // Render stars
     m_starShader.Bind();
     m_starTex.Bind();
     //m_skybox.Bind();
     m_starVAO.Bind();
     glDrawElements(GL_TRIANGLES, m_starVAO.m_ebo->ElementCount(), GL_UNSIGNED_INT, 0);
+    
     m_starVAO.Unbind();
     glDepthMask(GL_TRUE);
 }

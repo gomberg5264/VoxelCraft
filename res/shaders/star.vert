@@ -14,7 +14,7 @@ void main()
     uv = aUV;
     texIndex = aTexIndex;
 
-    gl_Position = aRotProj * vec4(aPos ,1.0f);
-    
+    vec4 pos = aRotProj * vec4(aPos ,1.0f);
+    gl_Position = pos.xyww;
     //gl_Position = vec4(aPos.xy,-1.0f ,1.0f);
 }

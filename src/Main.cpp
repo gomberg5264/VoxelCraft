@@ -171,8 +171,8 @@ private:
         // Render contents to the screen
         m_window.Clear();
 
-        m_skyRenderer.Display();
         m_chunkRenderer.Display();
+        m_skyRenderer.Display();
 
         // TODO: Make a player renderer/entity renderer
         m_playerMesh->Draw(*m_camera);

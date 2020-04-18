@@ -18,3 +18,13 @@ I have no plans for using other build systems as that is not the focus of the pr
 
 ### Credits
 * Textures taken from [here](https://soartex.net/downloads/)
+* Skybox images taken from [here](https://opengameart.org/content/cloudy-skyboxes)
+
+### Notable resources
+I'll list resources here that I've referred to a lot during development, thought it would be nice to see it again in the future:
+* [Hazel Game engine](https://github.com/thecherno/hazel). Looked at structure and graphics implementation.
+* [Open-builder](https://github.com/Hopson97/open-builder). One of the inspirations that made me start this project. I've looked at the graphics implementation. 
+* [Learn OpenGL](http://learnopengl.com/). I've worked with OpenGL [before](https://github.com/antjowie/Empires) but it was quite a while ago. I've used this site as a refresher and copied quite a lot of implementations from it (such as shaders).
+* [OpenGL tutorial](http://www.opengl-tutorial.org/). Referred to it a bit when writing a instance based renderer.
+* [DocsGL](http://docs.gl/). Nice documentation for OpenGL since reading wiki and specs is more tiring.
+* [Gaffer On Games](https://gafferongames.com/tags/networking/). Learned about networking for development. This was a very nice primer about networking.
