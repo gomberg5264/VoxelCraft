@@ -6,9 +6,7 @@
 
 Texture::Texture(const char* path)
 {
-    unsigned& tex = m_ID;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+    Bind();
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
@@ -39,16 +37,9 @@ Texture::Texture(const char* path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-Texture::~Texture()
-{
-    glDeleteTextures(1, &m_ID);
-}
-
 TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
 {
-    unsigned& tex = m_ID;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+    Bind();
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
@@ -107,7 +98,15 @@ TextureAtlas::TextureAtlas(const char* path, unsigned x, unsigned y)
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-TextureAtlas::~TextureAtlas()
+TextureCubemap::TextureCubemap(const char* dir, const char* extension)
 {
-    glDeleteTextures(1, &m_ID);
+    const std::string image[6]
+    {
+        dir + std::string("right.") + extension,
+        dir + std::string("left.") + extension,
+        dir + std::string("top.") + extension,
+        dir + std::string("bottom.") + extension,
+        dir + std::string("back.") + extension,
+        dir + std::string("front.") + extension
+    };
 }
