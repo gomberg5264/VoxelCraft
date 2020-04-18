@@ -86,6 +86,12 @@ VAO::~VAO()
     if (m_id != 0) glDeleteVertexArrays(1, &m_id);
 }
 
+std::unique_ptr<EBO>& VAO::MakeEBO()
+{
+    m_ebo = std::make_unique<EBO>();
+    return m_ebo;
+}
+
 void VAO::Bind() const
 {
     glBindVertexArray(m_id);

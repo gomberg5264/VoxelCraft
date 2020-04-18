@@ -6,45 +6,82 @@
 
 #include "glm/gtx/gradient_paint.hpp"
 
-SkyRenderer::SkyRenderer() noexcept
-    : m_time(0.f)
-    , m_vao({{ 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
-             { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
-             { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
-             { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) }})
-    , m_shader("res/shaders/sky.vert", "res/shaders/sky.frag")
-    , m_texture("res/sunMoon.png",2,1)
+void SkyRenderer::LoadStars()
 {
-    m_shader.Bind();
-     
-    m_vao.Bind();
     // Fill VBO
     constexpr float distance = 10.f;
     // X is positive since sun rises from east
     // We could make this generic if we define in the transform class which axis represents which axis (fe x = east)
-    auto sun = Primitive::Face::MakeBuffer(BlockFace::Left, distance, 0, 0 , 0).vertices;
-    auto moon = Primitive::Face::MakeBuffer(BlockFace::Right, -distance, 0,  0, 1).vertices;
+    auto sun = Primitive::Face::MakeBuffer(BlockFace::Left, distance, 0, 0, 0).vertices;
+    auto moon = Primitive::Face::MakeBuffer(BlockFace::Right, -distance, 0, 0, 1).vertices;
     sun.insert(std::end(sun), std::begin(moon), std::end(moon));
-    m_vao.m_vbo.Bind();
-    m_vao.m_vbo.Upload(sun);
-    m_vao.m_vbo.Unbind();
+    
+    m_starVAO.m_vbo.Upload(sun);
 
     // Fill EBO
-    m_vao.m_ebo = std::make_unique<EBO>();
-    m_vao.m_ebo->Bind();
-    m_vao.m_ebo->Upload(Primitive::Face::MakeIndices(2));    
-    
-    m_vao.Unbind();
+    m_starVAO.MakeEBO()->Upload(Primitive::Face::MakeIndices(2));
+    m_starVAO.Unbind();
+}
+
+void SkyRenderer::LoadSkybox()
+{
+    constexpr std::array<float, 8 * 3> vertices
+    {
+        -1.f, -1.f, 1.f,
+         1.f, -1.f, 1.f,
+         1.f,  1.f, 1.f,
+        -1.f,  1.f, 1.f,
+
+        -1.f, -1.f, -1.f,
+         1.f, -1.f, -1.f,
+         1.f,  1.f, -1.f,
+        -1.f,  1.f, -1.f,
+    };
+    constexpr std::array<unsigned, 36> indices
+    {
+        0, 1, 4,
+        0, 4, 3,
+
+        5, 4, 7,
+        5, 7, 6,
+
+        4, 0, 3,
+        4, 3, 7,
+
+        1, 5, 6,
+        1, 6, 4,
+
+        0, 1, 5,
+        0, 5, 4,
+
+        3, 4, 6,
+        3, 6, 7
+    };
+    m_skyVAO.m_vbo.Upload(vertices);
+    m_skyVAO.MakeEBO()->Upload(indices);
+}
+
+SkyRenderer::SkyRenderer() noexcept
+    : m_time(0.f)
+    , m_starVAO(Primitive::Face::MakeVBO())
+    , m_starShader("res/shaders/star.vert", "res/shaders/star.frag")
+    , m_starTex("res/sunMoon.png",2,1)
+    , m_skyVAO({ { 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0} })
+    , m_skyShader("res/shaders/sky.vert", "res/shaders/sky.frag")
+    , m_skyTex("res/skybox/day","jpg")
+{
+    LoadStars();
+    LoadSkybox();
 }
 
 void SkyRenderer::SetCameraRotateProject(const glm::mat4& rotProj) noexcept
 {
-    m_shader.Bind();
+    m_starShader.Bind();
 
     //const float angle = Math::InverseLerp(
     //    glm::sin(m_time * glm::pi<float>() * 2.f),-1.f,1.f) * 
     const auto rot = glm::rotate(m_time * glm::pi<float>() * 2.f, glm::vec3(0, 0, 1));
-    m_shader.SetMatrix("aRotProj", glm::value_ptr(rotProj * rot));
+    m_starShader.SetMatrix("aRotProj", glm::value_ptr(rotProj * rot));
 }
 
 void SkyRenderer::SetTime(float t) noexcept
@@ -76,8 +113,7 @@ glm::vec3 SkyRenderer::GetLightDir() const noexcept
 
     // If y is negative it means that moon is rising so we flip the direction
     if (y <= 0.f) lightDir *= -1.f;
-    //std::cout << lightDir.x << '\n';
-    //std::cout << glm::dot(-lightDir, glm::vec3(1, 0, 0)) << '\n';
+
     return lightDir;
 }
 
@@ -118,10 +154,11 @@ void SkyRenderer::Display()
 {
     glDepthMask(GL_FALSE);
     //glDepthFunc(GL_LESS);
-    m_shader.Bind();
-    m_texture.Bind();
-    m_vao.Bind();
-    glDrawElements(GL_TRIANGLES, m_vao.m_ebo->ElementCount(), GL_UNSIGNED_INT, 0);
-    m_vao.Unbind();
+    m_starShader.Bind();
+    m_starTex.Bind();
+    //m_skybox.Bind();
+    m_starVAO.Bind();
+    glDrawElements(GL_TRIANGLES, m_starVAO.m_ebo->ElementCount(), GL_UNSIGNED_INT, 0);
+    m_starVAO.Unbind();
     glDepthMask(GL_TRUE);
 }

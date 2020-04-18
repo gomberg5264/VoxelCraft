@@ -35,9 +35,16 @@ public:
     void Display();
 
 private:
+    void LoadStars();
+    void LoadSkybox();
+
     float m_time;
 
-    VAO m_vao;
-    Shader m_shader;
-    TextureAtlas m_texture;
+    VAO m_starVAO;
+    Shader m_starShader;
+    TextureAtlas m_starTex;
+
+    VAO m_skyVAO;
+    Shader m_skyShader;
+    TextureCubemap m_skyTex;
 };

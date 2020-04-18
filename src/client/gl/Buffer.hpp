@@ -57,6 +57,7 @@ public:
     template<typename T>
     void Upload(const T& attributes) noexcept
     {
+        Bind();
         glBufferData(
             GL_ARRAY_BUFFER,
             attributes.size() * sizeof(*attributes.begin()),
@@ -84,6 +85,7 @@ public:
     template<typename T>
     void Upload(const T& indices) noexcept
     {
+        Bind();
         m_elementCount = indices.size();
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
@@ -118,6 +120,8 @@ public:
     VAO(VBO&& vbo) noexcept;
     VAO(VAO&& vao) noexcept;
     ~VAO() noexcept;
+
+    std::unique_ptr<EBO>& MakeEBO();
 
     /**
      * This only binds the VAO. 

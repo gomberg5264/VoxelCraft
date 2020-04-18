@@ -1,4 +1,5 @@
 #pragma once
+#include "client/gl/Buffer.hpp"
 #include "common/BlockData.hpp"
 
 namespace Primitive
@@ -42,6 +43,13 @@ namespace Primitive
 
         Buffer MakeBuffer(BlockFace dir, float x, float y, float z, unsigned texIndex);
         std::vector<unsigned> MakeIndices(unsigned faceCount);
-
+        inline VBO MakeVBO() 
+        {
+            return { 
+                { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
+                { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
+                { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
+                { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) } };
+        };
     }
 }
