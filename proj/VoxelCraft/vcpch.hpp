@@ -27,6 +27,8 @@
 #include <glm/ext.hpp>
 
 #include <SFML/Window.hpp>
+#include <SFML/Network.hpp>
+#include <SFML/System.hpp>
 
 // proj
 //#include "utils/Singleton.hpp"

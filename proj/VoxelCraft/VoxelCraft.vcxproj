@@ -126,9 +126,12 @@
     <ClCompile Include="client\gl\PlayerRenderer.cpp" />
     <ClCompile Include="client\gl\Window.cpp" />
     <ClCompile Include="client\gl\Buffer.cpp" />
-    <ClCompile Include="common\Engine.cpp" />
+    <ClCompile Include="common\Application.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="common\Player.cpp" />
     <ClCompile Include="client\gl\Shader.cpp" />
+    <ClCompile Include="common\Timer.cpp" />
+    <ClCompile Include="server\Server.cpp" />
     <ClCompile Include="vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -148,11 +151,13 @@
     <ClInclude Include="client\Camera.hpp" />
     <ClInclude Include="client\gl\ChunkRenderer.hpp" />
     <ClInclude Include="client\gl\Primitive.hpp" />
-    <ClInclude Include="common\Engine.hpp" />
+    <ClInclude Include="common\Application.hpp" />
     <ClInclude Include="client\graphics\Renderable.hpp" />
     <ClInclude Include="client\gl\Shader.hpp" />
     <ClInclude Include="common\Player.hpp" />
+    <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
+    <ClInclude Include="server\Server.hpp" />
     <ClInclude Include="utils\Math.hpp" />
     <ClInclude Include="utils\NonCopyable.hpp" />
     <ClInclude Include="utils\Singleton.hpp" />
