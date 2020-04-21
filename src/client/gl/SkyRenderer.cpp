@@ -124,7 +124,7 @@ glm::vec3 SkyRenderer::GetLightDir() const noexcept
     const float y = glm::sin(period);
     
     glm::vec3 lightDir = glm::vec3(0) - glm::vec3(x, y, 0);
-    assert(glm::distance(lightDir) == 1 && "light dir is not normalized but should be, check x and y values");
+    assert(glm::length(lightDir) == 1 && "light dir is not normalized but should be, check x and y values");
 
     // If y is negative it means that moon is rising so we flip the direction
     if (y <= 0.f) lightDir *= -1.f;
