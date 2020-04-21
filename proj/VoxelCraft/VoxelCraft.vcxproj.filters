@@ -15,120 +15,117 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp">
+    <ClCompile Include="client\gl\SkyRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vcpch.cpp">
+    <ClCompile Include="client\gl\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="deps\glad\src\glad.c">
+    <ClCompile Include="common\Chunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\Shader.cpp">
+    <ClCompile Include="client\ChunkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\Primitive.cpp">
+    <ClCompile Include="client\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\Engine.cpp">
+    <ClCompile Include="client\gl\ChunkRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\Buffer.cpp">
+    <ClCompile Include="client\gl\Primitive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\ChunkManager.cpp">
+    <ClCompile Include="client\gl\PlayerRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\Player.cpp">
+    <ClCompile Include="client\gl\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\Window.cpp">
+    <ClCompile Include="client\gl\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\Camera.cpp">
+    <ClCompile Include="common\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\Chunk.cpp">
+    <ClCompile Include="common\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\Texture.cpp">
+    <ClCompile Include="client\gl\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\ChunkRenderer.cpp">
+    <ClCompile Include="vcpch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\gl\PlayerRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\gl\SkyRenderer.cpp">
+    <ClCompile Include="..\..\deps\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\vcpch.hpp">
+    <ClInclude Include="client\gl\SkyRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\graphics\Buffer.hpp">
+    <ClInclude Include="client\gl\Texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\graphics\Renderable.hpp">
+    <ClInclude Include="common\BlockData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\Shader.hpp">
+    <ClInclude Include="common\Chunk.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\Primitive.hpp">
+    <ClInclude Include="client\ChunkManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\Singleton.hpp">
+    <ClInclude Include="client\gl\PlayerRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Engine.hpp">
+    <ClInclude Include="client\gl\Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\Buffer.hpp">
+    <ClInclude Include="client\gl\Buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\NonCopyable.hpp">
+    <ClInclude Include="client\graphics\Buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\ChunkManager.hpp">
+    <ClInclude Include="client\Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Player.hpp">
+    <ClInclude Include="client\gl\ChunkRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Transform.hpp">
+    <ClInclude Include="client\gl\Primitive.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\Window.hpp">
+    <ClInclude Include="common\Engine.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\Camera.hpp">
+    <ClInclude Include="client\graphics\Renderable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Chunk.hpp">
+    <ClInclude Include="client\gl\Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\BlockData.hpp">
+    <ClInclude Include="common\Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\Math.hpp">
+    <ClInclude Include="common\Transform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\Texture.hpp">
+    <ClInclude Include="utils\Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\SkyRenderer.hpp">
+    <ClInclude Include="utils\NonCopyable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\ChunkRenderer.hpp">
+    <ClInclude Include="utils\Singleton.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\client\gl\PlayerRenderer.hpp">
+    <ClInclude Include="utils\Timeline.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\Timeline.hpp">
+    <ClInclude Include="vcpch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

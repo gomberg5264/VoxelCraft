@@ -1,38 +1,14 @@
 #include "vcpch.hpp"
 #include "client/gl/Buffer.hpp"
 
-constexpr Buffer::Buffer(Type type) noexcept
-    : m_type(type)
-    , m_id(0)
-{
-    glGenBuffers(1, &m_id);
-}
-
-Buffer::~Buffer() noexcept
-{
-    if (m_id != 0)
-        glDeleteBuffers(1, &m_id);
-}
-
-Buffer::Buffer(Buffer&& rhs) noexcept
-    : m_type(rhs.m_type)
-    , m_id(std::exchange(rhs.m_id, 0))
+VBO::VBO(const std::vector<VBO::Element>& elements) noexcept
+    : m_elements(elements)
 {
 }
 
-void Buffer::Bind() const noexcept
-{
-    glBindBuffer(static_cast<GLenum>(m_type), m_id);
-}
-
-void Buffer::Unbind() const noexcept
-{
-    glBindBuffer(static_cast<GLenum>(m_type), 0);
-}
-
-VBO::VBO(const std::initializer_list<VBO::Element>& elements) noexcept
-    : Buffer(Type::Vertex)
-    , m_elements(elements)
+VBO::VBO(VBO&& rhs) noexcept
+    : Buffer(std::move(rhs))
+    , m_elements(rhs.m_elements)
 {
 }
 
@@ -56,8 +32,7 @@ void VBO::Setup()
 }
 
 EBO::EBO() noexcept
-    : Buffer(Type::Element)
-    , m_elementCount(0)
+    : m_elementCount(0)
 {
 }
 

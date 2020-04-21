@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\SFML\include;$(SolutionDir)deps\glm\include;$(SolutionDir)deps\glad\include;$(SolutionDir)deps\stb_image\;$(SolutionDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\SFML\include\;$(SolutionDir)deps\glm\include\;$(SolutionDir)deps\glad\include\;$(SolutionDir)deps\stb_image\;$(SolutionDir)proj\VoxelCraft\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;UNICODE;SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

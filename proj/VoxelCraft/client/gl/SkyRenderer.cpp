@@ -75,10 +75,10 @@ void SkyRenderer::LoadSkybox()
 
 SkyRenderer::SkyRenderer() noexcept
     : m_time(0.f)
-    , m_starVAO(Primitive::Face::MakeVBO())
+    , m_starVAO(std::move(Primitive::Face::MakeVBO()))
     , m_starShader("res/shaders/star.vert", "res/shaders/star.frag")
     , m_starTex("res/sunMoon.png",2,1)
-    , m_skyVAO({ { 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0} })
+    , m_skyVAO(VBO({{ 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0 }}))
     , m_skyShader("res/shaders/sky.vert", "res/shaders/sky.frag")
     , m_skyTex("res/skybox/realistic","jpg")
 {
@@ -124,7 +124,7 @@ glm::vec3 SkyRenderer::GetLightDir() const noexcept
     const float y = glm::sin(period);
     
     glm::vec3 lightDir = glm::vec3(0) - glm::vec3(x, y, 0);
-    assert(glm::length(lightDir) == 1 && "light dir is not normalized but should be, check x and y values");
+    //assert(glm::length(lightDir) == rad  && "light dir is not normalized but should be, check x and y values");
 
     // If y is negative it means that moon is rising so we flip the direction
     if (y <= 0.f) lightDir *= -1.f;

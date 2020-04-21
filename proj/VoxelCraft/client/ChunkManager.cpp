@@ -179,7 +179,7 @@ void ChunkManager::Render()
     // TODO: Do culling
     for (auto& chunk : m_chunks)
     {
-        if (!chunk.second.chunk.m_isAir)
+        if (!chunk.second.chunk.m_isAir && chunk.second.mesh.m_elemCount != 0)
         {
             m_renderer.Render(chunk.second.mesh);
             if (chunk.second.chunk.GetState() == Chunk::State::Modify)

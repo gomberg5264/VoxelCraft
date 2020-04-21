@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "proj\Game\Game.vcxproj", "{9B3610E8-4ADB-473C-AF61-CDC57E4CE33C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoxelCraft", "VoxelCraft.vcxproj", "{6BA9DC47-5B47-44D0-8820-412908DC27FF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoxelCraft", "proj\VoxelCraft\VoxelCraft.vcxproj", "{6BA9DC47-5B47-44D0-8820-412908DC27FF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Headless", "proj\Headless\Headless.vcxproj", "{B99B1554-8D53-4C3B-9EF1-26FD6A6DB4C5}"
 EndProject

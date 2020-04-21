@@ -5,13 +5,7 @@
 #include "client/gl/ChunkRenderer.hpp"
 
 ChunkMesh::ChunkMesh() 
-    : m_vao(
-        {
-            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 0u * sizeof(float) },
-            { 1, 3, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 3u * sizeof(float) },
-            { 2, 2, GL_FLOAT, GL_TRUE,  sizeof(Primitive::Face::Vertex), 6u * sizeof(float) },
-            { 3, 1, GL_FLOAT, GL_FALSE, sizeof(Primitive::Face::Vertex), 8u * sizeof(float) },
-        })
+    : m_vao(Primitive::Face::MakeVBO())
     , m_elemCount(0)
 {
 }
@@ -62,6 +56,19 @@ bool IsVisible(BlockFace dir, int x, int y, int z, const Chunk& chunk)
 void ChunkMesh::Generate(const Chunk& chunk)
 {
     if (chunk.m_isAir) return;
+    // If surrounded by other chunks and they are not air
+    if (chunk.m_neighbors.count == 6)
+    {
+        bool enclosed = true;
+        for (int i = 0; i < 6; i++)
+            if (chunk.m_neighbors.neighbor.m[i]->m_isAir) enclosed = false;
+
+        if (enclosed)
+        {
+            m_elemCount = 0;
+            return;
+        }
+    }
 
     Primitive::Face::Buffer mesh;
 
@@ -96,10 +103,13 @@ void ChunkMesh::Generate(const Chunk& chunk)
             }
 
     // Upload to the gpu
-    m_vao.m_vbo.Bind();
-    m_vao.m_vbo.Upload(mesh.vertices);
-    m_elemCount = mesh.vertices.size();
-    m_vao.m_vbo.Unbind();
+    //if (mesh.vertices.size() != 0) <-- This check should be redundant since we check if it is enclosed by neighbors early
+    {
+        m_vao.m_vbo.Bind();
+        m_vao.m_vbo.Upload(mesh.vertices);
+        m_elemCount = mesh.vertices.size();
+        m_vao.m_vbo.Unbind();
+    }
 }
 
 ChunkRenderer::ChunkRenderer()

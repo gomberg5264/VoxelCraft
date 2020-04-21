@@ -9,24 +9,18 @@
  * TODO: Should be const but not sure how to make it work with
  * assignment operator
  */
+template <GLenum bufferType>
 class Buffer : public NonCopyable
 {
 public:
-    enum class Type
-    {
-        Vertex = GL_ARRAY_BUFFER,
-        Element = GL_ELEMENT_ARRAY_BUFFER
-    };
-
-    constexpr Buffer(Type type) noexcept;
-    Buffer(Buffer&& rhs) noexcept;
-    ~Buffer() noexcept;
+    constexpr Buffer() noexcept : m_id(0) { glGenBuffers(1, &m_id); }
+    Buffer(Buffer&& rhs) noexcept : m_id(std::exchange(rhs.m_id, 0)) {}
+    ~Buffer() noexcept { if (m_id != 0) glDeleteBuffers(1, &m_id); }
     
-    void Bind() const noexcept;
-    void Unbind() const noexcept;
+    void Bind() const noexcept { glBindBuffer(bufferType, m_id); }
+    void Unbind() const noexcept{ glBindBuffer(bufferType, 0); }
 
 private:
-    const Type m_type;
     unsigned m_id;
 };
 
@@ -34,7 +28,7 @@ class VAO;
 /**
  * A wrapper for a buffer object
  */
-class VBO : public Buffer
+class VBO : public Buffer< GL_ARRAY_BUFFER>
 {
     friend VAO;
 public:
@@ -48,7 +42,8 @@ public:
         unsigned offset;
     };
 
-    VBO(const std::initializer_list<VBO::Element>& elements) noexcept;
+    VBO(const std::vector<VBO::Element>& elements) noexcept;
+    VBO(VBO&& rhs) noexcept;
 
     /**
      * Assumes a vector but we use begin so that we can also
@@ -74,10 +69,14 @@ private:
      */
     void Setup();
     
-    const std::initializer_list<Element> m_elements;
+    /**
+     * Using initizalizer lists did some very weird things with move constructor
+     * https://tristanbrindle.com/posts/beware-copies-initializer-list
+     */
+    const std::vector<Element> m_elements;
 };
 
-class EBO : public Buffer
+class EBO : public Buffer<GL_ELEMENT_ARRAY_BUFFER>
 {
 public:
     EBO() noexcept;

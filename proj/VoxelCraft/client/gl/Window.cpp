@@ -1,6 +1,7 @@
 #include "vcpch.hpp"
 #include "client/gl/Window.hpp"
 
+
 void APIENTRY glDebugOutput(GLenum source,
     GLenum type,
     GLuint id,
