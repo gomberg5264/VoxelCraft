@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#include "utils/Bitmask.hpp"
+
 /**
 * This header contains the event base class that all events inherit from.
 */
@@ -18,12 +20,16 @@ enum class EventType
     WindowClose,
 };
 
+/**
+ * http://blog.bitwigglers.org/using-enum-classes-as-type-safe-bitmasks/
+ */
 enum class EventCategory
 {
     None = 0,
     Application = Bit(0), // Application events are program related events such as shutdown
-    Net = Bit(1)
+    Net = Bit(1) // Netcode packets such as handshakes, connect, movement.
 };
+ENABLE_BITMASK_OPERATORS(EventCategory)
 
 /**
  * These defines generate lookup functions for events
@@ -36,7 +42,7 @@ enum class EventCategory
     virtual const char* GetName() const override { return #eventType; }
 
 #define EVENT_CLASS_CATEGORY(eventCategory) \
-    virtual int GetCategoryFlags() const override { return EventCategory::eventCategory; }
+    virtual int GetCategoryFlags() const override { return eventCategory; }
 
 /**
     * Events are used to exchange information between systems. For example, 

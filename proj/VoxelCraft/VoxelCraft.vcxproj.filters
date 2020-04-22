@@ -161,6 +161,9 @@
     <ClInclude Include="utils\Observer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Bitmask.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="props\BuildSettings.props" />

@@ -163,6 +163,7 @@
     <ClInclude Include="net\Client.hpp" />
     <ClInclude Include="net\packet\Packet.hpp" />
     <ClInclude Include="net\Server.hpp" />
+    <ClInclude Include="utils\Bitmask.hpp" />
     <ClInclude Include="utils\Math.hpp" />
     <ClInclude Include="utils\NonCopyable.hpp" />
     <ClInclude Include="utils\Observer.hpp" />

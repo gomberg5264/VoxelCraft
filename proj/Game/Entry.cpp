@@ -50,6 +50,13 @@ private:
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
 
+    virtual void OnNotify(Event& event) override final
+    {
+        // Filter catagories we are not interested in
+        if(!event.IsInCategory(EventCategory::Application & EventCategory::Net))
+        EventDispatcher dispatch(event);
+    }
+
     virtual void OnUpdate() override final
     {
         // Process events

@@ -36,7 +36,7 @@ public:
 /**
  * The user can define some runtime stuff with this class
  */
-class Layer
+class Layer : public Subscriber<Event>
 {
 public:
     void Init(Application& app);

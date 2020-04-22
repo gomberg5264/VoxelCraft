@@ -69,7 +69,8 @@ void Application::Run() noexcept
 
 void Layer::Init(Application& app)
 {
-    m_app = &app; 
+    m_app = &app;
+    m_app->Subscribe(*this);
     OnInit();
 }
 
