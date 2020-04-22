@@ -155,6 +155,12 @@
     <ClInclude Include="net\packet\Packet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="common\event\Event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Observer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="props\BuildSettings.props" />

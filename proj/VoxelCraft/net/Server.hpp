@@ -17,9 +17,17 @@ public:
         unsigned short port;
     };
 
+    struct User
+    {
+        std::string name;
+        sf::IpAddress address;
+        unsigned short port;
+    };
+
     /**
      * Host the server with the given config
-     * Make sure that the engine has been 
+     * Make sure that the engine has been constructed before
+     * (which should happen automatically)
      */
     bool Run(Config config);
 

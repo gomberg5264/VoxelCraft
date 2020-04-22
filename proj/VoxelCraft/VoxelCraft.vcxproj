@@ -156,6 +156,7 @@
     <ClInclude Include="common\Application.hpp" />
     <ClInclude Include="client\graphics\Renderable.hpp" />
     <ClInclude Include="client\gl\Shader.hpp" />
+    <ClInclude Include="common\event\Event.hpp" />
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="net\Server.hpp" />
     <ClInclude Include="utils\Math.hpp" />
     <ClInclude Include="utils\NonCopyable.hpp" />
+    <ClInclude Include="utils\Observer.hpp" />
     <ClInclude Include="utils\Singleton.hpp" />
     <ClInclude Include="utils\Timeline.hpp" />
     <ClInclude Include="vcpch.hpp" />
