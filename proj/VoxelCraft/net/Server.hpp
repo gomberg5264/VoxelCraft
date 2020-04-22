@@ -1,5 +1,6 @@
 #pragma once
 #include "net/packet/Packet.hpp"
+#include "net/Address.hpp"
 #include "utils/Observer.hpp"
 // TODO: Change to network event
 #include "common/event/Event.hpp"
@@ -16,12 +17,6 @@
 class Server
 {
 public:
-    struct Address
-    {
-        sf::IpAddress ip;
-        unsigned short port;
-    };
-
     struct Config
     {
         Address address;
@@ -46,7 +41,8 @@ public:
     void PollEvents(Publisher<Event>& event);
 
 private:
-    void Send(DataPacket&& data);
+    void Send(User& user, DataPacket&& data);
+    void SendAll(DataPacket&& data);
     const User* GetUser(const Address& address) const;
 
     bool m_isHosting;
@@ -55,14 +51,3 @@ private:
     
     std::vector<User> m_users;
 };
-
-std::ostream& operator<<(std::ostream& os, const Server::Address& address)
-{
-    os << address.ip.toString() << ':' << address.port;
-    return os;
-}
-
-bool operator==(const Server::Address& lhs, const Server::Address& rhs)
-{
-    return lhs.ip == rhs.ip && lhs.port == rhs.port;
-}

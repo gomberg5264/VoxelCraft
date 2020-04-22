@@ -173,6 +173,9 @@
     <ClInclude Include="net\packet\ConnectPacket.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\Address.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="props\BuildSettings.props" />

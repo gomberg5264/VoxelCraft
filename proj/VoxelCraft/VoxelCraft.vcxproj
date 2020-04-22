@@ -162,6 +162,7 @@
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
+    <ClInclude Include="net\Address.hpp" />
     <ClInclude Include="net\Client.hpp" />
     <ClInclude Include="net\packet\ConnectPacket.hpp" />
     <ClInclude Include="net\packet\Packet.hpp" />

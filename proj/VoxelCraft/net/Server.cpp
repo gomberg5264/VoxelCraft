@@ -5,6 +5,7 @@
 #include "common/Application.hpp"
 
 Server::Server()
+    : m_isHosting(false)
 {
     m_socket.setBlocking(false);
 }
@@ -26,11 +27,17 @@ bool Server::Host(Config config)
 
 void Server::Close()
 {
-    Send(ShutdownPacket());
+    SendAll(ShutdownPacket());
     m_isHosting = false;
 }
 
-void Server::Send(DataPacket&& data)
+void Server::Send(User& user, DataPacket&& data)
+{
+    auto packet = data.Build();
+    m_socket.send(packet, user.address.ip, user.address.port);
+}
+
+void Server::SendAll(DataPacket&& data)
 {
     // Build the packet
     auto packet = data.Build();
@@ -65,20 +72,32 @@ void Server::PollEvents(Publisher<Event>& event)
     
     while (m_socket.receive(packet, sender.ip, sender.port) != sf::Socket::NotReady)
     {
-        const User* user = GetUser(sender);
-        // First contact with this address
-        if (!user)
+        auto type = VerifyPacket(packet);
+        if (type != PacketType::Unrelated)
         {
-            // TODO: Handle handshake
-            std::cout << "First contact from " << sender;
-            User user;
-            user.address = sender;
-            m_users.push_back(user);
-        }
-        else
-        {
-            // TODO: handle the events here
-            std::cout << "Received data from " << user->address;
+            const User* user = GetUser(sender);
+    
+            // First contact with this address
+            if (!user)
+            {
+    
+                // Add user
+                auto request = ExtractPacket<JoinRequestPacket>(packet);
+                User user;
+                user.address = sender;
+                user.name = request.GetName();
+                m_users.push_back(user);
+    
+                std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
+
+                // Send handshake
+                Send(m_users.back(), JoinReturnPacket(JoinReturnPacket::Status::Accepted));
+            }
+            else
+            {
+                // TODO: handle the events here
+                std::cout << "Received data from " << user->address;
+            }
         }
     }
 }
