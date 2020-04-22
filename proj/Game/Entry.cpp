@@ -61,14 +61,14 @@ private:
             if (event.type == sf::Event::Closed)
             {
                 m_window.GetWindow().close();
-                m_run = false;
+                Exit();
             }
 
             // Escape key: exit
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
             {
                 m_window.GetWindow().close();
-                m_run = false;
+                Exit();
             }
 
             // Resize event: adjust the viewport

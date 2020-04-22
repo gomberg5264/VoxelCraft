@@ -84,9 +84,7 @@ class EventDispatcher
 {
 public:
     EventDispatcher(Event& event)
-        : m_event(event)
-    {
-    }
+        : m_event(event) {}
 
     /**
         * Dispatches the event if the function type corresponds with T

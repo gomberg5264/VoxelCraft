@@ -59,10 +59,21 @@ void Application::Run() noexcept
 
     Core::time.Reset();
 
-    layer->OnInit();
-    while (layer->m_run)
+    layer->Init(*this);
+    while (!layer->ShouldExit())
     {
         Core::time.Update();
-        layer->OnUpdate();
+        layer->Update();
     }
+}
+
+void Layer::Init(Application& app)
+{
+    m_app = &app; 
+    OnInit();
+}
+
+void Layer::Update()
+{
+    OnUpdate();
 }

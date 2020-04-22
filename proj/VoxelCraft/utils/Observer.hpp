@@ -21,7 +21,6 @@
  * into preventing such a situation.
  */
 
-
 template <typename T> class Subscriber;
 /**
  * A publisher holds a list of subscribers. 
@@ -50,7 +49,7 @@ public:
     inline void Unsubscribe(Subscriber<T>& sub)
     {
         m_subscribers.erase(std::remove_if(m_subscribers.begin(), m_subscribers.end(),
-            [&sub](const Subscriber<T>& match) { return &sub == &match; }));
+            [&sub](const std::reference_wrapper<Subscriber<T>>& match) { return &sub == &match.get(); }));
     }
 
     inline void Notify(T&& value)
