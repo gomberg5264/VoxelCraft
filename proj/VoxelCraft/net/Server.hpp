@@ -1,36 +1,68 @@
 #pragma once
+#include "net/packet/Packet.hpp"
+#include "utils/Observer.hpp"
+// TODO: Change to network event
+#include "common/event/Event.hpp"
+
+
+#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/UdpSocket.hpp>
+
+#include <vector>
 
 /**
- * The server is where the actual game logic is executed in.
- * Even when you play single player, you still host the server on 
- * your machine while connecting to yourself. 
- *
- * The server is designed as a client model server with client prediction.
+ * The server will handle packets and forward them to the application
  */
 class Server
 {
 public:
+    struct Address
+    {
+        sf::IpAddress ip;
+        unsigned short port;
+    };
 
     struct Config
     {
-        sf::IpAddress address;
-        unsigned short port;
+        Address address;
     };
 
     struct User
     {
         std::string name;
-        sf::IpAddress address;
-        unsigned short port;
+        Address address;
     };
+
+    Server();
 
     /**
      * Host the server with the given config
      * Make sure that the engine has been constructed before
      * (which should happen automatically)
      */
-    bool Run(Config config);
+    bool Host(Config config);
+    void Close();
+
+    void PollEvents(Publisher<Event>& event);
 
 private:
+    void Send(DataPacket&& data);
+    const User* GetUser(const Address& address) const;
+
+    bool m_isHosting;
+    sf::UdpSocket m_socket;
     Config m_config;
+    
+    std::vector<User> m_users;
 };
+
+std::ostream& operator<<(std::ostream& os, const Server::Address& address)
+{
+    os << address.ip.toString() << ':' << address.port;
+    return os;
+}
+
+bool operator==(const Server::Address& lhs, const Server::Address& rhs)
+{
+    return lhs.ip == rhs.ip && lhs.port == rhs.port;
+}

@@ -1,7 +1,7 @@
 #pragma once
-#include "utils/Singleton.hpp"
+#include <SFML/System/Clock.hpp>
 
-class Timer : public Singleton<Timer>
+class Timer
 {
 public:
     float Elapsed() noexcept;

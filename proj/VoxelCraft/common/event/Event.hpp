@@ -1,16 +1,9 @@
 #pragma once
-#include <string>
-#include <sstream>
-
 #include "utils/Bitmask.hpp"
-
-/**
-* This header contains the event base class that all events inherit from.
-*/
+#include <sstream>
 
 /**
  * returns and unsigned which bit is set to true at bit+1
- * TODO: Move this to a core header file.
  */
 inline unsigned constexpr Bit(unsigned bit) { return 1 << bit; }
 
@@ -37,11 +30,11 @@ enum class EventCategory : unsigned
 };
 ENABLE_BITMASK_OPERATORS(EventCategory)
 
+
 /**
  * These defines generate lookup functions for events
  * All derived classes should call them
  */
-
 #define EVENT_CLASS_TYPE(eventType) \
     static EventType GetStaticType() { return eventType; } \
     virtual EventType GetEventType() const override { return GetStaticType(); } \
@@ -50,17 +43,18 @@ ENABLE_BITMASK_OPERATORS(EventCategory)
 #define EVENT_CLASS_CATEGORY(eventCategory) \
     virtual EventCategory GetCategoryFlags() const override { return eventCategory; }
 
+
 /**
-    * Events are used to exchange information between systems. For example, 
-    * the window class is responsible for shutting down the system so it needs 
-    * to communicate with the engine. The window class also receives input commands
-    * which the input manager needs. Or what about the net code? Players need to 
-    * receive packets as well. 
-    *
-    * To decouple these systems, we use an observer pattern. 
-    * See the Observer.hpp in utils for more details or check out this site:
-    * https://refactoring.guru/design-patterns/observer
-    */
+ * Events are used to exchange information between systems. For example,
+ * the window class is responsible for shutting down the system so it needs
+ * to communicate with the engine. The window class also receives input commands
+ * which the input manager needs. Or what about the net code? Players need to
+ * receive packets as well.
+ *
+ * To decouple these systems, we use an observer pattern.
+ * See the Observer.hpp in utils for more details or check out this site:
+ * https://refactoring.guru/design-patterns/observer
+ */
 class Event
 {
 public:
@@ -71,7 +65,7 @@ public:
 
     inline bool IsInCategory(EventCategory category) const
     {
-        return (GetCategoryFlags() & category) != EventCategory::None;
+        return static_cast<unsigned>(GetCategoryFlags() & category) != 0;
     }
 
     inline bool IsHandled() { return m_handled; }
@@ -87,22 +81,22 @@ private:
  */
 #define BIND(fn) std::bind(&fn, this, std::placeholders::_1)
 
-/**
- * When getting a generic event, we need some way to check it's type.
- * The event dispatcher does that for you. 
- * 
- * You pass the requested type as a template argument and pass the event 
- * object in the constructor. You dispatch the event for every function object. 
- *  
- * It will check the type and call the function if the type is the same as T 
- * and if it is already handled. Being handled means that the event won't continue
- * down whatever chain you implement.
- */
+ /**
+  * When getting a generic event, we need some way to check it's type.
+  * The event dispatcher does that for you.
+  *
+  * You pass the requested type as a template argument and pass the event
+  * object in the constructor. You dispatch the event for every function object.
+  *
+  * It will check the type and call the function if the type is the same as T
+  * and if it is already handled. Being handled means that the event won't continue
+  * down whatever chain you implement.
+  */
 class EventDispatcher
 {
 public:
     EventDispatcher(Event& event)
-        : m_event(event) 
+        : m_event(event)
     {
     }
 
@@ -127,8 +121,3 @@ public:
 private:
     Event& m_event;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Event& e)
-{
-    return os << e.ToString();
-}

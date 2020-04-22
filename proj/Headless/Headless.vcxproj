@@ -119,6 +119,11 @@
   <ItemGroup>
     <ClCompile Include="Entry.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VoxelCraft\VoxelCraft.vcxproj">
+      <Project>{6ba9dc47-5b47-44d0-8820-412908dc27ff}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

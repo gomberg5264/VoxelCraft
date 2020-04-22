@@ -1,11 +1,31 @@
+#include "common/Application.hpp"
+#include "net/Server.hpp"
+
 #include <iostream>
 
-/**
- * Note: a main should not be defined in the project since VoxelCraft already has one
- */
-int main()
+class Headless : public Layer
 {
-    std::cout << "Has yet to be created!\nPress enter to close...";
-    std::cin.get();
-    return 0;
+private:
+    virtual void OnInit() override final
+    {
+        Server server;
+        Server::Config conf;
+        conf.address = sf::IpAddress::LocalHost;
+        conf.port = 25565;
+
+        server.Run(conf);
+    }
+
+
+    virtual void OnUpdate() override final
+    {
+    }
+    virtual void OnNotify(Event& event) override final
+    {
+    }
+};
+
+std::unique_ptr<Layer> CreateApplication()
+{
+    return std::make_unique<Headless>();
 }
