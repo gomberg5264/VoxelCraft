@@ -4,27 +4,27 @@
 // This should not be included but we use it for projection matrix for the time being
 #include "common/Chunk.hpp"
 
-Camera::Camera(sf::Window& window)
+Camera::Camera(const Window& window)
     : m_window(window)
 {
 }
 
-FreelookCamera::FreelookCamera(sf::Window& window)
+FreelookCamera::FreelookCamera(const Window& window)
     : Camera(window)
-    , m_oldPos(sf::Mouse::getPosition(window))
+    , m_oldPos(window.GetMousePos())
 {
 }
 
 void FreelookCamera::Update(float dt)
 {
-    if (!m_window.hasFocus())
+    if (!m_window.HasFocus())
         return;
 
     // Rotation
     glm::fvec3 forward(0, 0, -1);
     {
-        const auto pos = sf::Mouse::getPosition(m_window);
-        const sf::Vector2i center = static_cast<sf::Vector2i>(m_window.getSize()) / 2;
+        const auto pos = m_window.GetMousePos();
+        const sf::Vector2i center = static_cast<sf::Vector2i>(m_window.GetSize()) / 2;
         sf::Vector2f delta = static_cast<sf::Vector2f>(pos - m_oldPos) * m_sensitivity;
         delta.y = -delta.y;
 
@@ -35,7 +35,7 @@ void FreelookCamera::Update(float dt)
         forward.y = sin(glm::radians(m_euler.x));
         forward.z = sin(glm::radians(m_euler.y)) * cos(glm::radians(m_euler.x));
 
-        sf::Mouse::setPosition(center, m_window);
+        m_window.SetMousePos(center);
         m_oldPos = center;
     }
 
@@ -64,7 +64,7 @@ void FreelookCamera::Update(float dt)
 
 glm::mat4 Camera::GetProjection() const
 {
-    return glm::perspective<float>(glm::radians(45.f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, chunkDimension.x * 32.f);
+    return glm::perspective<float>(glm::radians(45.f), (float)m_window.GetSize().x / (float)m_window.GetSize().y, 0.1f, chunkDimension.x * 32.f);
 }
 
 glm::mat4 Camera::GetView() const

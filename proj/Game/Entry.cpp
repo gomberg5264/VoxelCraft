@@ -24,12 +24,12 @@ private:
     virtual void OnInit() override final
     {
         sf::Clock time;
-        m_window.GetWindow().setMouseCursorVisible(false);
+        m_window.SetCursorVisible(false);
 
         // Setup camera
         // ---
         {
-            m_camera = std::make_unique<FreelookCamera>(m_window.GetWindow());
+            m_camera = std::make_unique<FreelookCamera>(m_window);
             m_camera->m_eye = glm::vec3(0, 20, 10);
             m_camera->m_target = m_camera->m_eye + Transform::Forward();
             auto* cast = static_cast<FreelookCamera*>(m_camera.get());
@@ -52,36 +52,31 @@ private:
 
     virtual void OnNotify(Event& event) override final
     {
+        std::cout << event.GetName() << '\n';
+
         // Filter catagories we are not interested in
-        if(!event.IsInCategory(EventCategory::Application & EventCategory::Net))
-        EventDispatcher dispatch(event);
+        if (!event.IsInCategory(~EventCategory::None)) return;
+        
+        EventDispatcher e(event);
+        
+        if (e.Dispatch<WindowCloseEvent>([&](Event& e) { Exit(); })) return;
+        //if (e.Dispatch<WindowResizeEvent>([&](Event& e) { Exit(); })) return;
+
+        if (e.Dispatch<KeyPressEvent>([&](KeyPressEvent& e)
+            {
+                if (e.GetKeyCode() == sf::Keyboard::Escape)
+                {
+                    m_window.Close();
+                    Exit();
+                }
+            })) return;
+        //if (e.Dispatch<>([&](Event& e) { Exit(); })) return;
     }
 
     virtual void OnUpdate() override final
     {
         // Process events
-        // TODO: We may want to forward these events
-        sf::Event event;
-        while (m_window.GetWindow().pollEvent(event))
-        {
-            // Close window: exit
-            if (event.type == sf::Event::Closed)
-            {
-                m_window.GetWindow().close();
-                Exit();
-            }
-
-            // Escape key: exit
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
-            {
-                m_window.GetWindow().close();
-                Exit();
-            }
-
-            // Resize event: adjust the viewport
-            if (event.type == sf::Event::Resized)
-                glViewport(0, 0, event.size.width, event.size.height);
-        }
+        m_window.PollEvents(GetApplication());
 
         // UPDATE
         // ---------------------

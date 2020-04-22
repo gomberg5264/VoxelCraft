@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <sstream>
 
 #include "utils/Bitmask.hpp"
 
@@ -17,17 +18,22 @@ enum class EventType
 {
     None = 0,
     
-    WindowClose,
+    WindowClose, WindowResize,
+
+    KeyPress, KeyRelease,
 };
 
 /**
  * http://blog.bitwigglers.org/using-enum-classes-as-type-safe-bitmasks/
  */
-enum class EventCategory
+enum class EventCategory : unsigned
 {
     None = 0,
-    Application = Bit(0), // Application events are program related events such as shutdown
-    Net = Bit(1) // Netcode packets such as handshakes, connect, movement.
+    Window = Bit(0), // Window events such as key presses, resize, closing
+    Net = Bit(1), // Netcode packets such as handshakes, connect, movement.
+
+    Input = Bit(2),    
+    Keyboard= Bit(3),
 };
 ENABLE_BITMASK_OPERATORS(EventCategory)
 
@@ -42,7 +48,7 @@ ENABLE_BITMASK_OPERATORS(EventCategory)
     virtual const char* GetName() const override { return #eventType; }
 
 #define EVENT_CLASS_CATEGORY(eventCategory) \
-    virtual int GetCategoryFlags() const override { return eventCategory; }
+    virtual EventCategory GetCategoryFlags() const override { return eventCategory; }
 
 /**
     * Events are used to exchange information between systems. For example, 
@@ -60,12 +66,12 @@ class Event
 public:
     virtual EventType GetEventType() const = 0;
     virtual const char* GetName() const = 0;
-    virtual int GetCategoryFlags() const = 0;
+    virtual EventCategory GetCategoryFlags() const = 0;
     virtual std::string ToString() const { return GetName(); }
 
     inline bool IsInCategory(EventCategory category) const
     {
-        return GetCategoryFlags() & static_cast<int>(category);
+        return (GetCategoryFlags() & category) != EventCategory::None;
     }
 
     inline bool IsHandled() { return m_handled; }
@@ -74,6 +80,12 @@ public:
 private:
     bool m_handled = false;
 };
+
+/**
+ * Call this macro in the dispatch function in EventDispatcher
+ * if you want to bind a member function in the func call
+ */
+#define BIND(fn) std::bind(&fn, this, std::placeholders::_1)
 
 /**
  * When getting a generic event, we need some way to check it's type.
@@ -90,15 +102,20 @@ class EventDispatcher
 {
 public:
     EventDispatcher(Event& event)
-        : m_event(event) {}
+        : m_event(event) 
+    {
+    }
 
     /**
-        * Dispatches the event if the function type corresponds with T
-        * Returns wether the event type is the same as the function type
-        */
+     * Dispatches the event if the function type corresponds with T
+     * Returns wether the event type is the same as the function type
+     *
+     * func is expected to take an event
+     */
     template <typename T, typename F>
     bool Dispatch(const F& func)
     {
+        static_assert(std::is_base_of<Event, T>::value, "T is not derived from event");
         if (m_event.GetEventType() == T::GetStaticType())
         {
             if (!m_event.IsHandled()) func(static_cast<T&>(m_event));

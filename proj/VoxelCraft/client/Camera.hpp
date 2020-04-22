@@ -1,9 +1,10 @@
 #pragma once
+#include "client/gl/Window.hpp"
 
 class Camera
 {
 public:
-    Camera(sf::Window& window);
+    Camera(const Window& window);
 
     virtual void Update(float dt) = 0;
 
@@ -13,13 +14,13 @@ public:
 
     glm::fvec3 m_target{ 0,0,1 };
     glm::fvec3 m_eye{ 0 };
-    sf::Window& m_window;
+    const Window& m_window;
 };
 
 class FreelookCamera : public Camera
 {
 public:
-    FreelookCamera(sf::Window& window);
+    FreelookCamera(const Window& window);
     
     virtual void Update(float dt) override final;
 

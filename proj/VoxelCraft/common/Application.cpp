@@ -45,16 +45,12 @@ void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
     }
 }
 
-Application::Application()
+void Application::Run() noexcept
 {
     // Set up block types
     const auto atlasX = 2;
     const auto atlasY = 2;
     RegisterBlockTypes(atlasX, atlasY);
-}
-
-void Application::Run() noexcept
-{
     auto layer = CreateApplication();
 
     Core::time.Reset();

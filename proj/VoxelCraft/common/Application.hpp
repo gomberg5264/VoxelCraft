@@ -28,8 +28,6 @@ namespace Core
 class Application : public Publisher<Event>
 {
 public:
-    Application();
-    
     void Run() noexcept;
 };
 

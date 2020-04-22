@@ -94,6 +94,11 @@ Window::Window(Config config)
     printf("Constructing Window DONE\n");
 }
 
+void Window::Close()
+{
+    m_window.close();
+}
+
 void Window::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -104,12 +109,65 @@ void Window::Display()
     m_window.display();
 }
 
+void Window::PollEvents(Publisher<Event>& publisher)
+{
+    sf::Event event;
+    while (m_window.pollEvent(event))
+    {
+        switch (event.type)
+        {
+        case sf::Event::Closed:
+            publisher.Notify(WindowCloseEvent());
+            break;
+        
+        case sf::Event::Resized:
+            glViewport(0, 0, event.size.width, event.size.height);
+            publisher.Notify(WindowResizeEvent(event.size.width, event.size.height));
+            break;
+        
+        case sf::Event::KeyPressed:
+            publisher.Notify(KeyPressEvent(event.key.code));
+            break;
+
+        case sf::Event::KeyReleased:
+            publisher.Notify(KeyReleaseEvent(event.key.code));
+            break;
+
+        default:
+            static bool called = false;
+            if(!called) std::cout << "Unknown window event generated " << event.type << ". This message will be hidden\n";
+            called = true;
+            break;
+        }
+    }
+}
+
 sf::Vector2u Window::GetSize() const
 {
     return m_window.getSize();
 }
 
-sf::Window& Window::GetWindow()
+sf::Vector2i Window::GetMousePos() const
 {
-    return m_window;
+    return sf::Mouse::getPosition(m_window);
+}
+
+bool Window::HasFocus() const
+{
+    return m_window.hasFocus();
+}
+
+void Window::SetCursorGrabbed(bool state)
+{
+    m_window.setMouseCursorGrabbed(state);
+}
+
+void Window::SetCursorVisible(bool state)
+{
+    m_window.setMouseCursorVisible(state);
+}
+
+void Window::SetMousePos(const sf::Vector2i& pos) const
+{
+    sf::Mouse::setPosition(pos, m_window);
 }

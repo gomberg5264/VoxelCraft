@@ -1,9 +1,13 @@
 #pragma once
 #include <string>
 
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Window.hpp>
+#include "utils/Observer.hpp"
+#include "common/event/WindowEvent.hpp"
+#include "common/event/InputEvent.hpp"
 
+/**
+ * The window sets up a render context and forwards input and window events
+ */
 class Window
 {
 public:
@@ -16,16 +20,22 @@ public:
     };
 
     Window(Config config = {});
+
+    void SetCursorGrabbed(bool state);
+    void SetCursorVisible(bool state);
+    /**
+     * pos From top left corner
+     */
+    void SetMousePos(const sf::Vector2i& pos) const;
+
     sf::Vector2u GetSize() const;
+    sf::Vector2i GetMousePos() const;
+    bool HasFocus() const;
 
-    // For event handling and stuff, renderer should actually
-    // be renamed to graphics since it now is responsible for graphics
-    // and it should forward window events to the engine so that they can be
-    // handled correctly, but for now I just pass the window
-    sf::Window& GetWindow();
-
+    void Close();
     void Clear();
     void Display();
+    void PollEvents(Publisher<Event>& publisher);
 
 private:
     sf::Window m_window;
