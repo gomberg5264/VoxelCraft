@@ -176,6 +176,9 @@
     <ClInclude Include="net\Address.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="common\event\NetEvent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="props\BuildSettings.props" />

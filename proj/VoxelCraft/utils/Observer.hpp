@@ -52,7 +52,19 @@ public:
             [&sub](const std::reference_wrapper<Subscriber<T>>& match) { return &sub == &match.get(); }));
     }
 
+    /**
+     * TODO: look into std::forward cuz I think that may solve the duplication
+     * 
+     * I don't think the code below is ever valid since OnNotify takes a reference
+     * and should never take a rvalue
+     */
     inline void Notify(T&& value)
+    {
+        for (auto& sub : m_subscribers)
+            sub.get().OnNotify(value);
+    }
+
+    inline void Notify(T& value)
     {
         for (auto& sub : m_subscribers)
             sub.get().OnNotify(value);

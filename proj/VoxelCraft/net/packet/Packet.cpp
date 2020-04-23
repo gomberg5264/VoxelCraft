@@ -1,7 +1,7 @@
 #include "vcpch.hpp"
 #include "net/packet/Packet.hpp"
 
-Packet DataPacket::Build()
+Packet PacketData::Build() const
 {
     Packet packet;
     packet << projectID << static_cast<int>(type);
@@ -9,7 +9,7 @@ Packet DataPacket::Build()
     return packet;
 }
 
-void DataPacket::Extract(Packet&& packet)
+void PacketData::Extract(Packet&& packet)
 {
     OnExtract(std::move(packet));
 }
@@ -22,7 +22,7 @@ PacketType VerifyPacket(Packet& packet)
     if (packet >> id >> type)
     {
         // Check if ID is right version
-        if (id == DataPacket::projectID)
+        if (id == PacketData::projectID)
         {
             return static_cast<PacketType>(type);
         }

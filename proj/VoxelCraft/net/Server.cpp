@@ -2,6 +2,7 @@
 #include "net/Server.hpp"
 #include "net/packet/ConnectPacket.hpp"
 
+#include "common/event/NetEvent.hpp"
 #include "common/Application.hpp"
 
 Server::Server()
@@ -31,13 +32,13 @@ void Server::Close()
     m_isHosting = false;
 }
 
-void Server::Send(User& user, DataPacket&& data)
+void Server::Send(User& user, const PacketData& data)
 {
     auto packet = data.Build();
     m_socket.send(packet, user.address.ip, user.address.port);
 }
 
-void Server::SendAll(DataPacket&& data)
+void Server::SendAll(PacketData&& data)
 {
     // Build the packet
     auto packet = data.Build();
@@ -65,7 +66,7 @@ const Server::User* Server::GetUser(const Address& address) const
     return nullptr;
 }
 
-void Server::PollEvents(Publisher<Event>& event)
+void Server::PollEvents(Publisher<Event>& publisher)
 {
     Packet packet;
     Address sender;
@@ -80,18 +81,25 @@ void Server::PollEvents(Publisher<Event>& event)
             // First contact with this address
             if (!user)
             {
-    
                 // Add user
-                auto request = ExtractPacket<JoinRequestPacket>(packet);
-                User user;
-                user.address = sender;
-                user.name = request.GetName();
-                m_users.push_back(user);
+                {
+                    auto request = ExtractPacket<JoinRequestPacket>(packet);
+                    publisher.Notify(NetReceivePacketEvent(request));
+
+                    User user;
+                    user.address = sender;
+                    user.name = request.GetName();
+                    m_users.push_back(user);
     
-                std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
+                    std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
+                }
 
                 // Send handshake
-                Send(m_users.back(), JoinReturnPacket(JoinReturnPacket::Status::Accepted));
+                {
+                    auto joinRet = JoinReturnPacket(JoinReturnPacket::Status::Accepted);
+                    publisher.Notify(NetSendPacketEvent(joinRet));
+                    Send(m_users.back(), joinRet);
+                }
             }
             else
             {

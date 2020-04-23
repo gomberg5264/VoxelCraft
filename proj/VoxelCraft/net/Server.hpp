@@ -38,11 +38,15 @@ public:
     bool Host(Config config);
     void Close();
 
-    void PollEvents(Publisher<Event>& event);
+    /**
+     * Handles all UDP packages that have arrived.
+     * Sends events to the publisher 
+     */
+    void PollEvents(Publisher<Event>& publisher);
 
 private:
-    void Send(User& user, DataPacket&& data);
-    void SendAll(DataPacket&& data);
+    void Send(User& user, const PacketData& data);
+    void SendAll(PacketData&& data);
     const User* GetUser(const Address& address) const;
 
     bool m_isHosting;

@@ -32,3 +32,16 @@ bool Client::Connect(Address serverAddres, const char* name)
     std::cout << "Received packet type :" << static_cast<int>(type) << '\n';
     return true;
 }
+
+void Client::HandleEvents(Event& event)
+{
+    //if(event.IsInCategory(EventCategory::))
+    EventDispatcher d(event);
+    d.Dispatch<NetReceivePacketEvent>([](NetReceivePacketEvent& rhs)
+        {
+        });
+
+    d.Dispatch<NetSendPacketEvent>([](NetSendPacketEvent& rhs)
+        {
+        });
+}

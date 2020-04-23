@@ -1,5 +1,6 @@
 #pragma once
 #include "net/Address.hpp"
+#include "common/event/NetEvent.hpp"
 
 #include <SFML/Network/UdpSocket.hpp>
 
@@ -17,6 +18,7 @@ public:
      * Attempts an connection
      */
     bool Connect(Address serverAddres, const char* name);
+    void HandleEvents(Event& event);
 
 private:
     sf::UdpSocket m_socket;

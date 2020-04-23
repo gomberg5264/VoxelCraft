@@ -158,6 +158,7 @@
     <ClInclude Include="client\gl\Shader.hpp" />
     <ClInclude Include="common\event\Event.hpp" />
     <ClInclude Include="common\event\InputEvent.hpp" />
+    <ClInclude Include="common\event\NetEvent.hpp" />
     <ClInclude Include="common\event\WindowEvent.hpp" />
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />

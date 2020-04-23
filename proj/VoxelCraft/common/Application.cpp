@@ -51,15 +51,29 @@ void Application::Run() noexcept
     const auto atlasX = 2;
     const auto atlasY = 2;
     RegisterBlockTypes(atlasX, atlasY);
-    auto layer = CreateApplication();
 
     Core::time.Reset();
 
-    layer->Init(*this);
-    while (!layer->ShouldExit())
+    CreateApplication(m_layers);
+
+    // Initialize layers
+    for (auto& layer : m_layers)
+    {
+        layer->Init(*this);
+    }
+
+    // TODO: Add uninitialize for layers
+    bool shouldExit = false;
+    while (!shouldExit)
     {
         Core::time.Update();
-        layer->Update();
+
+        // Initialize layers
+        for (auto& layer : m_layers)
+        {
+            layer->Update();
+            if (layer->ShouldExit()) shouldExit = true;
+        }
     }
 }
 

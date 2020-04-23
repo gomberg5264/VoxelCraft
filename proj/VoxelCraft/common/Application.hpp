@@ -4,6 +4,8 @@
 
 #include "utils/Observer.hpp"
 
+#include <vector>
+
 /**
  * A namespace for core modules that I want to access at many places
  * Not sure if this is the way to go though, I did this because it is nice
@@ -14,6 +16,8 @@ namespace Core
 {
     extern Timer time;
 }
+
+class Layer;
 
 /**
  * A simple framework that our project runs in
@@ -28,7 +32,12 @@ namespace Core
 class Application : public Publisher<Event>
 {
 public:
+    using Layers = std::vector<std::unique_ptr<Layer>>;
+
     void Run() noexcept;
+
+private:
+    Layers m_layers;
 };
 
 /**
@@ -52,4 +61,4 @@ private:
     bool m_shouldExit = false;
 };
 
-extern std::unique_ptr<Layer> CreateApplication();
+extern void CreateApplication(Application::Layers& layers);

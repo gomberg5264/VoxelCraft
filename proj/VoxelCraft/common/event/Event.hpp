@@ -12,6 +12,14 @@ enum class EventType
     None = 0,
     
     WindowClose, WindowResize,
+    
+    // I don't think that we need these events
+    // It may be more logical to have a gameplay event
+    // that the client listens to so that it can take that client data and create
+    // a package from it.
+    //
+    // I can't think of a system that needs to know about these events, but I will leave them in
+    NetSendPacket, NetReceivePacket, 
 
     KeyPress, KeyRelease,
 };
@@ -104,7 +112,7 @@ public:
      * Dispatches the event if the function type corresponds with T
      * Returns wether the event type is the same as the function type
      *
-     * func is expected to take an event
+     * func is expected to take an event reference and return void
      */
     template <typename T, typename F>
     bool Dispatch(const F& func)

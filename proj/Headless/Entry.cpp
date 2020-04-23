@@ -38,7 +38,6 @@ private:
         m_server.Host(conf);
     }
 
-
     virtual void OnUpdate() override final
     {
         m_server.PollEvents(GetApplication());
@@ -51,12 +50,12 @@ private:
 
 };
 
-std::unique_ptr<Layer> CreateApplication()
+void CreateApplication(Application::Layers& layers)
 {
     std::cout << "0 server 1 client\n";
 
     int i;
     std::cin >> i;
-    if (i == 0) return std::make_unique<Headless>();
-    return std::make_unique<Game>();
+    if (i == 0) layers.push_back(std::make_unique<Headless>());
+    layers.push_back(std::make_unique<Game>());
 }

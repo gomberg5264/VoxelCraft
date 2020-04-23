@@ -142,7 +142,7 @@ private:
     std::unique_ptr<Camera> m_camera;
 };
 
-std::unique_ptr<Layer> CreateApplication()
+void CreateApplication(Application::Layers& layers)
 {
-    return std::make_unique<Game>();
+    layers.push_back(std::make_unique<Game>());
 }

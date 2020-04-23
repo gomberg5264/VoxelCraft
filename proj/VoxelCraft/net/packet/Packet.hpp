@@ -21,19 +21,19 @@ enum class PacketType
  * DataPacket is the interface for that data that we put in 
  * a packet. 
  */
-struct DataPacket
+struct PacketData
 {
 public:
-    DataPacket(PacketType type) : type(type) {}
+    PacketData(PacketType type) : type(type) {}
 
     static const int projectID = 105;
     const PacketType type;
 
-    Packet Build();
+    Packet Build() const;
     void Extract(Packet&& packet);
 
 private:
-    virtual void OnBuild(Packet& packet) {};
+    virtual void OnBuild(Packet& packet) const {} ;
     virtual void OnExtract(Packet&& packet) {};
 };
 
@@ -52,7 +52,8 @@ PacketType VerifyPacket(Packet& packet);
 template <typename T>
 T ExtractPacket(Packet& packet)
 {
-    static_assert(std::is_base_of<DataPacket, T>::value, "T is not derived from DataPacket");
+    static_assert(std::is_base_of<PacketData, T>::value, "T is not derived from PacketData");
+    static_assert(std::is_default_constructible<T>::value, "T should be default constructable");
 
     T data;
     data.Extract(std::move(packet));
