@@ -51,8 +51,7 @@ private:
 
     virtual void OnDeinit() override final
     {
-        //if(m_game.joinable())
-        m_game.join();
+        if(m_game.joinable()) m_game.join();
     }
 
     std::thread m_game;
