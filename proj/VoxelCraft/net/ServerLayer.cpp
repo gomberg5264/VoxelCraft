@@ -1,9 +1,9 @@
 #include "vcpch.hpp"
 #include "net/ServerLayer.hpp"
 #include "net/packet/ConnectPacket.hpp"
+#include "net/packet/GameplayPacket.hpp"
 
 #include "common/event/NetEvent.hpp"
-
 
 void ServerLayer::OnUpdate()
 {
@@ -20,6 +20,10 @@ void ServerLayer::OnUpdate()
             // First contact with this address
             if (!user)
             {
+                if (type != PacketType::Connect)
+                {
+                    std::cout << sender << " tried to connect with the invalid packet: " << static_cast<int>(type) << ". How is this possible?\n";
+                }
                 // Add user
                 {
                     auto request = ExtractPacket<ConnectPacket>(packet);
@@ -40,8 +44,26 @@ void ServerLayer::OnUpdate()
             }
             else
             {
-                // TODO: handle the packets here
-                std::cout << "Received data from " << user->address;
+                switch (type)
+                {
+                case PacketType::Unrelated:
+                    break;
+                case PacketType::Connect:
+                    break;
+                case PacketType::ConnectResponse:
+                    break;
+                case PacketType::Disconnect:
+                    break;
+                case PacketType::Message:
+                {
+                    std::string msg;
+                    msg += '[' + user->name + "] " + ExtractPacket<MessagePacket>(packet).message;
+                    SendAll(MessagePacket(msg));
+                }
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
@@ -51,24 +73,27 @@ void ServerLayer::OnNotify(Event& event)
 {
     EventDispatcher d(event);
 
+    // Connection events
     d.Dispatch<NetHostEvent>([&](NetHostEvent& e)
         {
-            assert(m_isHosting && "Server is already hosting");
+            assert(!m_isHosting && "Server is already hosting");
             auto& config = e.config;
             m_config = config;
 
             if (m_socket.bind(config.address.port, config.address.ip) != sf::Socket::Done)
             {
                 std::cout << "Could not bind the server to " << config.address << "\n Aborting server...\n";
+                Publish(NetHostResponseEvent(NetHostResponseEvent::Status::Failed));
                 return;// false;
             }
 
             m_isHosting = true;
-            return;// true;
+            Publish(NetHostResponseEvent(NetHostResponseEvent::Status::Success));
         });
 
     d.Dispatch<NetShutdownEvent>([&](NetShutdownEvent&)
         {
+            std::cout << "Shutting down server\n";
             SendAll(ShutdownPacket());
             m_isHosting = false;
         });

@@ -16,7 +16,7 @@ enum class EventType
     WindowClose, WindowResize,
     
     NetConnect, NetConnectResponse, NetDisconnect,
-    NetHost, NetShutdown,
+    NetHost, NetHostResponse, NetShutdown,
     
     // Gamplay things
     NetMessage, 

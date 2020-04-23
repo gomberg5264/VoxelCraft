@@ -25,13 +25,11 @@ public:
         Address address;
     };
 
-
     ServerLayer();
 
+private:
     virtual void OnUpdate() override final;
     virtual void OnNotify(Event& event) override final;
-
-private:
 
     void Send(User& user, const PacketData& data);
     void SendAll(PacketData&& data);

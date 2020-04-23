@@ -68,6 +68,39 @@ private:
 
         Publish(NetHostEvent(conf));
     }
+
+    virtual void OnNotify(Event& e) override final
+    {
+        EventDispatcher d(e);
+        d.Dispatch<NetHostResponseEvent>([&](NetHostResponseEvent& e)
+            {
+                if (e.status == NetHostResponseEvent::Status::Success)
+                {
+                    m_t = std::thread([&]()
+                        {
+                            bool quit = false;
+                            while (!quit)
+                            {
+                                std::string msg;
+                                std::getline(std::cin, msg);
+
+                                if (msg == "/q")
+                                    quit = true;
+                                Publish(NetMessageEvent(msg));
+                            }
+                            Publish(NetShutdownEvent());
+                            Exit();
+                        });
+                }
+                else
+                {
+                    std::cout << "Could not start up server\n";
+                    Exit();
+                }
+            });
+    }
+
+    std::thread m_t;
 };
 
 void CreateApplication(Application::Layers& layers)

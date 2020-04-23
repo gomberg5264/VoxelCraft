@@ -58,6 +58,20 @@ public:
     EVENT_CLASS_TYPE(EventType::NetHost)
 };
 
+class NetHostResponseEvent : public NetEvent
+{
+public:
+    enum class Status
+    {
+        Success,
+        Failed
+    } status;
+
+    NetHostResponseEvent(Status status) : status(status) {}
+
+    EVENT_CLASS_TYPE(EventType::NetHostResponse)
+};
+
 class NetShutdownEvent : public NetEvent
 {
 public:
