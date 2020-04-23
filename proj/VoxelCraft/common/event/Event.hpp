@@ -19,7 +19,7 @@ enum class EventType
     NetHost, NetHostResponse, NetShutdown,
     
     // Gamplay things
-    NetMessage, 
+    NetMessage, NetPlayerMove, 
 
     KeyPress, KeyRelease,
 };

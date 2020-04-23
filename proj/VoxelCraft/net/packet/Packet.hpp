@@ -18,7 +18,9 @@ enum class PacketType
     Connect, ConnectResponse, 
     Disconnect,
 
+    // Gameplay
     Message,
+    PlayerMove,
 
     Shutdown,
 };

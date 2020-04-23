@@ -127,6 +127,8 @@
     <ClCompile Include="client\gl\Window.cpp" />
     <ClCompile Include="client\gl\Buffer.cpp" />
     <ClCompile Include="common\Application.cpp" />
+    <ClCompile Include="game\GameClientLayer.cpp" />
+    <ClCompile Include="game\GameServerLayer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="common\Player.cpp" />
     <ClCompile Include="client\gl\Shader.cpp" />
@@ -163,6 +165,8 @@
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
+    <ClInclude Include="game\GameClientLayer.hpp" />
+    <ClInclude Include="game\GameServerLayer.hpp" />
     <ClInclude Include="net\Address.hpp" />
     <ClInclude Include="net\ClientLayer.hpp" />
     <ClInclude Include="net\packet\ConnectPacket.hpp" />

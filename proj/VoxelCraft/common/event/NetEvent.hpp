@@ -86,3 +86,12 @@ public:
 
     EVENT_CLASS_TYPE(EventType::NetMessage)
 };
+
+class NetPlayerMove : public NetEvent
+{
+public:
+    NetPlayerMove(const glm::vec3& move) : move(move) {}
+    glm::vec3 move;
+    
+    EVENT_CLASS_TYPE(EventType::NetPlayerMove)
+};

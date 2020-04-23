@@ -15,3 +15,18 @@ private:
     virtual void OnBuild(Packet& packet) const { packet << message; };
     virtual void OnExtract(Packet&& packet) { packet >> message; };
 };
+
+class PlayerMovePacket : public PacketData
+{
+public:
+    PlayerMovePacket() : PacketData(PacketType::Message) {}
+    PlayerMovePacket(const std::string& message)
+        : PacketData(PacketType::Message)
+        , message(message) {}
+
+    std::string message;
+
+private:
+    virtual void OnBuild(Packet& packet) const { packet << message; };
+    virtual void OnExtract(Packet&& packet) { packet >> message; };
+};
