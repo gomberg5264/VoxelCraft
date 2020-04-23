@@ -131,9 +131,9 @@
     <ClCompile Include="common\Player.cpp" />
     <ClCompile Include="client\gl\Shader.cpp" />
     <ClCompile Include="common\Timer.cpp" />
-    <ClCompile Include="net\Client.cpp" />
+    <ClCompile Include="net\ClientLayer.cpp" />
     <ClCompile Include="net\packet\Packet.cpp" />
-    <ClCompile Include="net\Server.cpp" />
+    <ClCompile Include="net\ServerLayer.cpp" />
     <ClCompile Include="vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -164,10 +164,10 @@
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
     <ClInclude Include="net\Address.hpp" />
-    <ClInclude Include="net\Client.hpp" />
+    <ClInclude Include="net\ClientLayer.hpp" />
     <ClInclude Include="net\packet\ConnectPacket.hpp" />
     <ClInclude Include="net\packet\Packet.hpp" />
-    <ClInclude Include="net\Server.hpp" />
+    <ClInclude Include="net\ServerLayer.hpp" />
     <ClInclude Include="utils\Bitmask.hpp" />
     <ClInclude Include="utils\Math.hpp" />
     <ClInclude Include="utils\NonCopyable.hpp" />

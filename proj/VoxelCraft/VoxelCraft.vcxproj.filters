@@ -66,13 +66,13 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net\Server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\Client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="net\packet\Packet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ClientLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ServerLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,12 +146,6 @@
     <ClInclude Include="common\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\Server.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\Client.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="net\packet\Packet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -173,10 +167,16 @@
     <ClInclude Include="net\packet\ConnectPacket.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\Address.hpp">
+    <ClInclude Include="common\event\NetEvent.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\event\NetEvent.hpp">
+    <ClInclude Include="net\ServerLayer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\ClientLayer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\Address.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

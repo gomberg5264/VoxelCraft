@@ -41,7 +41,13 @@ private:
 };
 
 /**
- * The user can define some runtime stuff with this class
+ * A layer is a system that the application will execute
+ * You can hook into this behavior by overriding certain virtual functions
+ *
+ * OnInit
+ * OnUpdate
+ * OnNotify
+ *
  */
 class Layer : public Subscriber<Event>
 {
@@ -55,7 +61,7 @@ public:
 
 private:
     virtual void OnInit() {};
-    virtual void OnUpdate() = 0;
+    virtual void OnUpdate() {};
     
     Application* m_app;
     bool m_shouldExit = false;

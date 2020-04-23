@@ -1,21 +1,24 @@
 #include "vcpch.hpp"
 
-#include "net/Client.hpp"
+#include "net/ClientLayer.hpp"
 #include "packet/ConnectPacket.hpp"
 
-Client::Client()
+ClientLayer::ClientLayer()
 {
     m_socket.setBlocking(false);
 }
 
-bool Client::Connect(Address serverAddres, const char* name)
+void ClientLayer::Connect(NetConnectEvent& event)
 {
+    auto server = event.server;
+    auto name = event.name;
+    
     auto packet = JoinRequestPacket(name).Build();
     m_socket.bind(sf::Socket::AnyPort);
-    if (m_socket.send(packet, serverAddres.ip, serverAddres.port) != sf::Socket::Done)
+    if (m_socket.send(packet, server.ip, server.port) != sf::Socket::Done)
     {
         std::cout << "Can't send package, check internet connection\n";
-        return false;
+        return;// false;
     }
 
     m_socket.setBlocking(true);
@@ -25,23 +28,24 @@ bool Client::Connect(Address serverAddres, const char* name)
     if (m_socket.receive(packet, sender.ip, sender.port) != sf::Socket::Done)
     {
         std::cout << "Failed to receive packet\n";
-        return false;
+        return;// false;
     }
 
     auto type = VerifyPacket(packet);
     std::cout << "Received packet type :" << static_cast<int>(type) << '\n';
-    return true;
+    return;// true;
 }
 
-void Client::HandleEvents(Event& event)
+void ClientLayer::OnNotify(Event& event)
 {
-    //if(event.IsInCategory(EventCategory::))
     EventDispatcher d(event);
-    d.Dispatch<NetReceivePacketEvent>([](NetReceivePacketEvent& rhs)
-        {
-        });
 
-    d.Dispatch<NetSendPacketEvent>([](NetSendPacketEvent& rhs)
-        {
-        });
+    d.Dispatch<NetConnectEvent>(BIND(ClientLayer::Connect));
+    //d.Dispatch<NetDisconnectEvent>()
+
+
+    //d.Dispatch<NetReceivePacketEvent>([](NetReceivePacketEvent& e)
+    //    {
+
+    //    });
 }

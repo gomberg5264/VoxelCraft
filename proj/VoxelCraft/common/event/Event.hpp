@@ -1,6 +1,7 @@
 #pragma once
 #include "utils/Bitmask.hpp"
 #include <sstream>
+#include <functional>
 
 /**
  * returns and unsigned which bit is set to true at bit+1
@@ -13,13 +14,8 @@ enum class EventType
     
     WindowClose, WindowResize,
     
-    // I don't think that we need these events
-    // It may be more logical to have a gameplay event
-    // that the client listens to so that it can take that client data and create
-    // a package from it.
-    //
-    // I can't think of a system that needs to know about these events, but I will leave them in
-    NetSendPacket, NetReceivePacket, 
+    NetConnect, NetDisconnect,
+    NetHost, NetShutdown,
 
     KeyPress, KeyRelease,
 };
@@ -31,10 +27,12 @@ enum class EventCategory : unsigned
 {
     None = 0,
     Window = Bit(0), // Window events such as key presses, resize, closing
-    Net = Bit(1), // Netcode packets such as handshakes, connect, movement.
 
-    Input = Bit(2),    
-    Keyboard= Bit(3),
+    Gameplay = Bit(1), 
+    Net = Bit(2), // Netcode packets such as handshakes, connect, movement.
+
+    Input = Bit(3),
+    Keyboard= Bit(4),
 };
 ENABLE_BITMASK_OPERATORS(EventCategory)
 

@@ -41,12 +41,12 @@ public:
             sub.get().Unsubscribe();
     }
 
-    inline void Subscribe(Subscriber<T>& sub)
+    inline void AddSubscriber(Subscriber<T>& sub)
     {
         m_subscribers.push_back(sub);
         sub.OnSubscribe(*this);
     }
-    inline void Unsubscribe(Subscriber<T>& sub)
+    inline void RemoveSubscriber(Subscriber<T>& sub)
     {
         m_subscribers.erase(std::remove_if(m_subscribers.begin(), m_subscribers.end(),
             [&sub](const std::reference_wrapper<Subscriber<T>>& match) { return &sub == &match.get(); }));
@@ -79,13 +79,10 @@ private:
 template <typename T>
 class Subscriber
 {
+    friend Publisher<T>;
 public:
-    virtual ~Subscriber() { m_publisher->Unsubscribe(*this); }
+    virtual ~Subscriber() { Unsubscribe(); }
 
-    /**
-     * Called by the publisher when subscribing
-     */
-    inline void OnSubscribe(Publisher<T>& publisher) { m_publisher = &publisher; }
     /**
      * Unsubscribes from the publisher if it is registered to one
      */
@@ -93,7 +90,7 @@ public:
     {
         if (m_publisher)
         {
-            m_publisher->Unsubscribe(*this);
+            m_publisher->RemoveSubscriber(*this);
             m_publisher = nullptr;
         }
     }
@@ -107,8 +104,13 @@ public:
         assert(m_publisher != nullptr && "You first have to subscribe to a publisher");
         m_publisher->Notify(std::move(value));
     }
-    virtual void OnNotify(T& value) = 0;
+    virtual void OnNotify(T& value) {};
 
 private:
+    /**
+     * Called by the publisher when subscribing
+     */
+    inline void OnSubscribe(Publisher<T>& publisher) { m_publisher = &publisher; }
+
     Publisher<T>* m_publisher = nullptr;
 };

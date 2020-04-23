@@ -1,30 +1,50 @@
 #pragma once
 #include "common/event/Event.hpp"
+#include "net/Address.hpp"
+#include "net/ServerLayer.hpp"
 
-#include "net/packet/Packet.hpp"
-
-class NetPacketEvent : public Event
+class NetEvent : public Event
 {
 public:
-    NetPacketEvent(PacketData& packet) : m_packet(packet) {}
-    inline PacketData& GetPacketData() { return m_packet; }
-
     EVENT_CLASS_CATEGORY(EventCategory::Net)
-
-private:
-    PacketData& m_packet;
 };
 
-class NetSendPacketEvent : public NetPacketEvent
+class NetConnectEvent : public NetEvent
 {
 public:
-    using NetPacketEvent::NetPacketEvent;    
-    EVENT_CLASS_TYPE(EventType::NetSendPacket)
+    NetConnectEvent(Address server, const char* name) 
+        : server(server)
+        , name(name) {}
+
+    Address server;
+    const char* name;
+
+    EVENT_CLASS_TYPE(EventType::NetConnect)
 };
 
-class NetReceivePacketEvent : public NetPacketEvent
+class NetDisconnectEvent : public NetEvent
 {
 public:
-    using NetPacketEvent::NetPacketEvent;
-    EVENT_CLASS_TYPE(EventType::NetReceivePacket)
+    EVENT_CLASS_TYPE(EventType::NetDisconnect)
+};
+
+/**
+ * Using these kinds of events give us multiple ways to host a server or shut one down
+ * We could make it so advanced that we have an http server that we can send a request to.
+ * Our http server will then dispatch a NetHostEvent event so you can start a server from 
+ * a phone. It's really stupid but cool.
+ */
+class NetHostEvent : public NetEvent
+{
+public:
+    NetHostEvent(ServerLayer::Config conf) : config(conf) {}
+    ServerLayer::Config config;
+
+    EVENT_CLASS_TYPE(EventType::NetHost)
+};
+
+class NetShutdownEvent : public NetEvent
+{
+public:
+    EVENT_CLASS_TYPE(EventType::NetShutdown)
 };

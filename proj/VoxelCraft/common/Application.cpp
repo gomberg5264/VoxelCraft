@@ -5,6 +5,7 @@
 
 Timer Core::time;
 
+// TODO: Move to gameplay layer
 void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
 {
     // Register block types
@@ -47,6 +48,7 @@ void RegisterBlockTypes(unsigned atlasX, unsigned atlasY)
 
 void Application::Run() noexcept
 {
+    // TODO: Move to gameplay layer
     // Set up block types
     const auto atlasX = 2;
     const auto atlasY = 2;
@@ -57,10 +59,9 @@ void Application::Run() noexcept
     CreateApplication(m_layers);
 
     // Initialize layers
-    for (auto& layer : m_layers)
-    {
-        layer->Init(*this);
-    }
+    
+    for (auto& layer : m_layers) { AddSubscriber(*layer); }
+    for (auto& layer : m_layers) { layer->Init(*this); }
 
     // TODO: Add uninitialize for layers
     bool shouldExit = false;
@@ -80,7 +81,9 @@ void Application::Run() noexcept
 void Layer::Init(Application& app)
 {
     m_app = &app;
-    m_app->Subscribe(*this);
+    // Application registers subscribers to itself since a layer could 
+    // emit an event during initialization
+    //m_app->Subscribe(*this);
     OnInit();
 }
 
