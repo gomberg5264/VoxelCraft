@@ -5,6 +5,11 @@
 
 #include "common/event/NetEvent.hpp"
 
+std::string GenUserString(const std::string& name)
+{
+    return std::string("[") + name + "] ";
+}
+
 void ServerLayer::OnUpdate()
 {
     Packet packet;
@@ -46,22 +51,24 @@ void ServerLayer::OnUpdate()
             {
                 switch (type)
                 {
-                case PacketType::Unrelated:
-                    break;
-                case PacketType::Connect:
-                    break;
-                case PacketType::ConnectResponse:
-                    break;
+                //case PacketType::Unrelated:
+                //    break;
+                //case PacketType::Connect:
+                //    break;
+                //case PacketType::ConnectResponse:
+                //    break;
                 case PacketType::Disconnect:
                     break;
                 case PacketType::Message:
                 {
                     std::string msg;
-                    msg += '[' + user->name + "] " + ExtractPacket<MessagePacket>(packet).message;
+                    msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
+                    std::cout << msg << '\n';
                     SendAll(MessagePacket(msg));
                 }
                     break;
                 default:
+                    std::cout << "Received unknown packet type: " << static_cast<int>(type) << '\n';
                     break;
                 }
             }
@@ -88,6 +95,7 @@ void ServerLayer::OnNotify(Event& event)
             }
 
             m_isHosting = true;
+            std::cout << "Hosting server at " << config.address << '\n';
             Publish(NetHostResponseEvent(NetHostResponseEvent::Status::Success));
         });
 
@@ -96,6 +104,15 @@ void ServerLayer::OnNotify(Event& event)
             std::cout << "Shutting down server\n";
             SendAll(ShutdownPacket());
             m_isHosting = false;
+        });
+
+    // Gameplay events
+    d.Dispatch<NetMessageEvent>([&](NetMessageEvent& e)
+        {
+            std::string msg = GenUserString("server") + e.message;
+
+            std::cout << msg << '\n';
+            SendAll(MessagePacket(msg));
         });
 }
 

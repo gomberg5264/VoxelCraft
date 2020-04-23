@@ -18,22 +18,13 @@ void ClientLayer::Connect(NetConnectEvent& event)
     // Create a port to receive messages on
     if (m_socket.bind(sf::Socket::AnyPort) != sf::Socket::Done)
     {
-        std::cout << "Can't bind to a socket. There may be a problem with your drivers\n"; 
+        std::cout << "Can't bind to a socket. There may be a problem with your drivers\n"; return;
         Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
-        return;
     }
 
-    // Temp
-    m_connected = true;
-    if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
-    {
-        std::cout << "Can't send package, check internet connection\n"; 
-        Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
-        return;
-    }
     std::cout << "Attempting connection to " << m_server << '\n';
-    m_connected = false;
 
+    // Wait for server to return handshake
     Address sender;
     Packet packet;
     {
@@ -42,6 +33,19 @@ void ClientLayer::Connect(NetConnectEvent& event)
         int count = 0;
         Timer time;
         std::cout << "seconds: ";
+        auto connect = [&]()
+        {
+            m_connected = true;
+            if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
+            {
+                std::cout << "Can't send package, check internet connection\n";
+                Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
+                return;
+            }
+            m_connected = false;
+        };
+
+        connect();
         while (!responded)
         {
             time.Update();
@@ -50,12 +54,14 @@ void ClientLayer::Connect(NetConnectEvent& event)
             if (m_socket.receive(packet, sender.ip, sender.port) == sf::Socket::Done)
             {
                 // Verify sender
-                responded = sender == m_server;
+                responded = (sender == m_server);
             }
 
             // Print current time
             if (et > 1.f)
             {
+                // Send handshake to the given server
+                connect();
                 et -= 1.f;
                 count++;
                 std::cout << count << ' ';
@@ -66,6 +72,8 @@ void ClientLayer::Connect(NetConnectEvent& event)
 
         }
 
+        std::cout << '\n';
+
         if (!responded)
         {
             std::cout << "Timed out. No handshake response, the server may be offline\n"; 
@@ -74,6 +82,7 @@ void ClientLayer::Connect(NetConnectEvent& event)
         }
     }
 
+    // Verify if correct handshake type 
     auto type = VerifyPacket(packet);
     ConnectResponsePacket response = ExtractPacket<ConnectResponsePacket>(packet);
     if (response.type != PacketType::ConnectResponse)
@@ -83,6 +92,7 @@ void ClientLayer::Connect(NetConnectEvent& event)
         return;
     }
 
+    // Respond to server response
     if (response.GetStatus() != ConnectResponsePacket::Status::Accepted)
     {
         switch (response.GetStatus())
@@ -98,10 +108,16 @@ void ClientLayer::Connect(NetConnectEvent& event)
         }
     }
 
-    std::cout << "Joined server " << sender;
+    std::cout << "Joined server " << sender << '\n';
 
     m_connected = true;
     Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Success));
+}
+
+void ClientLayer::Disconnect()
+{
+    m_socket.unbind();
+    m_connected = false;
 }
 
 sf::Socket::Status ClientLayer::Send(const PacketData& data)
@@ -110,6 +126,19 @@ sf::Socket::Status ClientLayer::Send(const PacketData& data)
 
     auto p = data.Build();
     return m_socket.send(p, m_server.ip, m_server.port);
+}
+
+bool ClientLayer::Receive(Packet& packet, PacketType& type)
+{
+    assert(m_connected && "Client is not connected");
+    Address sender;
+    if (m_socket.receive(packet, sender.ip, sender.port) == sf::Socket::Done)
+    {
+        assert(sender == m_server);
+        type = VerifyPacket(packet);
+        return type != PacketType::Unrelated;
+    }
+    return false;
 }
 
 void ClientLayer::OnNotify(Event& event)
@@ -129,4 +158,37 @@ void ClientLayer::OnNotify(Event& event)
         {
             Send(MessagePacket(e.message));
         });
+}
+
+void ClientLayer::OnUpdate()
+{
+    Packet packet;
+    PacketType type;
+    while (Receive(packet, type))
+    {
+        switch (type)
+        {
+        //case PacketType::Unrelated:
+        //    break;
+        //case PacketType::Connect:
+        //    break;
+        //case PacketType::ConnectResponse:
+        //    break;
+        //case PacketType::Disconnect:
+        //    break;
+        case PacketType::Message:
+        {
+            MessagePacket p = ExtractPacket<MessagePacket>(packet);
+            std::cout << p.message << '\n';
+        }
+        break;
+        case PacketType::Shutdown:
+            std::cout << "Server has shut down\n";
+            Disconnect();
+
+            break;
+        default:
+            break;
+        }
+    }
 }

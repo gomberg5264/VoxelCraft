@@ -4,6 +4,7 @@
 class MessagePacket : public PacketData
 {
 public:
+    MessagePacket() : PacketData(PacketType::Message) {}
     MessagePacket(const std::string& message) 
         : PacketData(PacketType::Message) 
         , message(message) {}

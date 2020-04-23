@@ -24,6 +24,7 @@ private:
             {
                 if (e.status == NetConnectResponseEvent::Status::Success)
                 {
+                    std::cin.ignore();
                     m_game = std::thread([&]()
                         {
                             bool quit = false;
@@ -36,6 +37,7 @@ private:
                                     quit = true;
                                 Publish(NetMessageEvent(msg));
                             }
+                            Exit();
                         });
                 }
                 else
@@ -79,6 +81,7 @@ private:
                     m_t = std::thread([&]()
                         {
                             bool quit = false;
+                            std::cin.ignore();
                             while (!quit)
                             {
                                 std::string msg;
@@ -98,6 +101,11 @@ private:
                     Exit();
                 }
             });
+    }
+
+    virtual void OnDeinit() override final
+    {
+        if (m_t.joinable()) m_t.join();
     }
 
     std::thread m_t;
