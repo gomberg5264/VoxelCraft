@@ -166,6 +166,7 @@
     <ClInclude Include="net\Address.hpp" />
     <ClInclude Include="net\ClientLayer.hpp" />
     <ClInclude Include="net\packet\ConnectPacket.hpp" />
+    <ClInclude Include="net\packet\GameplayPacket.hpp" />
     <ClInclude Include="net\packet\Packet.hpp" />
     <ClInclude Include="net\ServerLayer.hpp" />
     <ClInclude Include="utils\Bitmask.hpp" />

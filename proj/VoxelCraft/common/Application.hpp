@@ -52,6 +52,8 @@ private:
 class Layer : public Subscriber<Event>
 {
 public:
+    virtual ~Layer() { OnDeinit(); }
+
     void Init(Application& app);
     void Update();
     
@@ -59,10 +61,12 @@ public:
     inline bool ShouldExit() { return m_shouldExit; }
     inline void Exit() { m_shouldExit = true; }
 
+
 private:
     virtual void OnInit() {};
     virtual void OnUpdate() {};
-    
+    virtual void OnDeinit() {};
+
     Application* m_app;
     bool m_shouldExit = false;
 };

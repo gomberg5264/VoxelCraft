@@ -16,15 +16,14 @@ class ClientLayer : public Layer
 public:
     ClientLayer();
 
-    /**
-     * Attempts an connection
-     */
-    //bool Connect(Address serverAddres, const char* name);
-    //virtual void OnInit() override final;
     virtual void OnNotify(Event& event) override final;
 
 private:
     void Connect(NetConnectEvent& event);
-    
+    sf::Socket::Status Send(const PacketData& data);
+
+    bool m_connected;
+    Address m_server;
+    std::string m_name;
     sf::UdpSocket m_socket;
 };

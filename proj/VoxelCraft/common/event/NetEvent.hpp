@@ -22,6 +22,21 @@ public:
     EVENT_CLASS_TYPE(EventType::NetConnect)
 };
 
+class NetConnectResponseEvent : public NetEvent
+{
+public:
+    enum class Status
+    {
+        Success,
+        Failed
+    } status;
+
+    NetConnectResponseEvent(Status status)
+        : status(status) {}
+
+    EVENT_CLASS_TYPE(EventType::NetConnectResponse)
+};
+
 class NetDisconnectEvent : public NetEvent
 {
 public:
@@ -47,4 +62,13 @@ class NetShutdownEvent : public NetEvent
 {
 public:
     EVENT_CLASS_TYPE(EventType::NetShutdown)
+};
+
+class NetMessageEvent : public NetEvent
+{
+public:
+    NetMessageEvent(const std::string& message) : message(message) {}
+    std::string message;
+
+    EVENT_CLASS_TYPE(EventType::NetMessage)
 };

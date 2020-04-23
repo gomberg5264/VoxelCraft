@@ -6,12 +6,12 @@
  * operations such as joining, leaving, kicking
  */
 
-class JoinRequestPacket : public PacketData
+class ConnectPacket : public PacketData
 {
 public: 
-    JoinRequestPacket() : PacketData(PacketType::JoinRequest) {};
-    JoinRequestPacket(const char* name)
-        : PacketData(PacketType::JoinRequest) 
+    ConnectPacket() : PacketData(PacketType::Connect) {};
+    ConnectPacket(const char* name)
+        : PacketData(PacketType::Connect)
         , m_name(name)
     {}
 
@@ -24,7 +24,7 @@ private:
     std::string m_name;
 };
 
-class JoinReturnPacket : public PacketData
+class ConnectResponsePacket : public PacketData
 {
 public:
     enum class Status 
@@ -33,9 +33,9 @@ public:
         Full
     };
 
-    JoinReturnPacket() : PacketData(PacketType::JoinReturn) {};
-    JoinReturnPacket(Status status)
-        : PacketData(PacketType::JoinReturn)
+    ConnectResponsePacket() : PacketData(PacketType::ConnectResponse) {};
+    ConnectResponsePacket(Status status)
+        : PacketData(PacketType::ConnectResponse)
         , m_status(status)
     {}
 
@@ -45,6 +45,12 @@ public:
 
 private:
     Status m_status;
+};
+
+class DisconnectPacket : public PacketData
+{
+public:
+    DisconnectPacket() : PacketData(PacketType::Disconnect) {};
 };
 
 class ShutdownPacket : public PacketData

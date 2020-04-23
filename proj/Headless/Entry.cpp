@@ -4,6 +4,7 @@
 #include "net/ClientLayer.hpp"
 
 #include <iostream>
+#include <thread>
 
 class Game : public Layer
 {
@@ -15,6 +16,46 @@ private:
         server.port = 25565;
         Publish(NetConnectEvent(server,"VoxelCraft"));
     }
+
+    virtual void OnNotify(Event& e) override final
+    {
+        EventDispatcher d(e);
+        d.Dispatch<NetConnectResponseEvent>([&](NetConnectResponseEvent& e)
+            {
+                if (e.status == NetConnectResponseEvent::Status::Success)
+                {
+                    m_game = std::thread([&]()
+                        {
+                            bool quit = false;
+                            while (!quit)
+                            {
+                                std::string msg;
+                                std::getline(std::cin, msg);
+
+                                if (msg == "/q")
+                                    quit = true;
+                                Publish(NetMessageEvent(msg));
+                            }
+                        });
+                }
+                else
+                {
+                    std::cout << "Retry...\n";
+                    Address server;
+                    server.ip = sf::IpAddress::LocalHost;
+                    server.port = 25565;
+                    Publish(NetConnectEvent(server, "VoxelCraft"));
+                }
+            });
+    }
+
+    virtual void OnDeinit() override final
+    {
+        //if(m_game.joinable())
+        m_game.join();
+    }
+
+    std::thread m_game;
 };
 
 class Headless : public Layer

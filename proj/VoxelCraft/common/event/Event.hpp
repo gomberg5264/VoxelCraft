@@ -1,5 +1,6 @@
 #pragma once
 #include "utils/Bitmask.hpp"
+
 #include <sstream>
 #include <functional>
 
@@ -14,8 +15,11 @@ enum class EventType
     
     WindowClose, WindowResize,
     
-    NetConnect, NetDisconnect,
+    NetConnect, NetConnectResponse, NetDisconnect,
     NetHost, NetShutdown,
+    
+    // Gamplay things
+    NetMessage, 
 
     KeyPress, KeyRelease,
 };

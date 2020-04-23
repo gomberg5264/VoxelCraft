@@ -4,6 +4,9 @@
 /**
  * I wrap the packet class already for if 
  * I want to encrypt/compress the data
+ *
+ * Packet format:
+ * ID -> type -> custom
  */
 class Packet : public sf::Packet
 {
@@ -12,8 +15,11 @@ class Packet : public sf::Packet
 enum class PacketType
 {
     Unrelated, // Unrelated packet, not interested in it 
-    JoinRequest, JoinReturn, 
-    LeaveRequest, LeaveReturn,
+    Connect, ConnectResponse, 
+    Disconnect,
+
+    Message,
+
     Shutdown,
 };
 
@@ -28,7 +34,7 @@ public:
 
     static const int projectID = 105;
     const PacketType type;
-
+    
     Packet Build() const;
     void Extract(Packet&& packet);
 

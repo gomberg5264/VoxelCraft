@@ -5,6 +5,75 @@
 #include "common/event/NetEvent.hpp"
 
 
+void ServerLayer::OnUpdate()
+{
+    Packet packet;
+    Address sender;
+
+    while (m_socket.receive(packet, sender.ip, sender.port) != sf::Socket::NotReady)
+    {
+        auto type = VerifyPacket(packet);
+        if (type != PacketType::Unrelated)
+        {
+            const User* user = GetUser(sender);
+
+            // First contact with this address
+            if (!user)
+            {
+                // Add user
+                {
+                    auto request = ExtractPacket<ConnectPacket>(packet);
+
+                    User user;
+                    user.address = sender;
+                    user.name = request.GetName();
+                    m_users.push_back(user);
+
+                    std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
+                }
+
+                // Send handshake
+                {
+                    auto joinRet = ConnectResponsePacket(ConnectResponsePacket::Status::Accepted);
+                    Send(m_users.back(), joinRet);
+                }
+            }
+            else
+            {
+                // TODO: handle the packets here
+                std::cout << "Received data from " << user->address;
+            }
+        }
+    }
+}
+
+void ServerLayer::OnNotify(Event& event)
+{
+    EventDispatcher d(event);
+
+    d.Dispatch<NetHostEvent>([&](NetHostEvent& e)
+        {
+            assert(m_isHosting && "Server is already hosting");
+            auto& config = e.config;
+            m_config = config;
+
+            if (m_socket.bind(config.address.port, config.address.ip) != sf::Socket::Done)
+            {
+                std::cout << "Could not bind the server to " << config.address << "\n Aborting server...\n";
+                return;// false;
+            }
+
+            m_isHosting = true;
+            return;// true;
+        });
+
+    d.Dispatch<NetShutdownEvent>([&](NetShutdownEvent&)
+        {
+            SendAll(ShutdownPacket());
+            m_isHosting = false;
+        });
+}
+
 ServerLayer::ServerLayer()
     : m_isHosting(false)
 {
@@ -43,75 +112,4 @@ const ServerLayer::User* ServerLayer::GetUser(const Address& address) const
         if (user.address == address)
             return &user;
     return nullptr;
-}
-
-void ServerLayer::OnUpdate()
-{
-    Packet packet;
-    Address sender;
-
-    while (m_socket.receive(packet, sender.ip, sender.port) != sf::Socket::NotReady)
-    {
-        auto type = VerifyPacket(packet);
-        if (type != PacketType::Unrelated)
-        {
-            const User* user = GetUser(sender);
-
-            // First contact with this address
-            if (!user)
-            {
-                // Add user
-                {
-                    auto request = ExtractPacket<JoinRequestPacket>(packet);
-                    //publisher.Notify(NetReceivePacketEvent(request));
-
-                    User user;
-                    user.address = sender;
-                    user.name = request.GetName();
-                    m_users.push_back(user);
-
-                    std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
-                }
-
-                // Send handshake
-                {
-                    auto joinRet = JoinReturnPacket(JoinReturnPacket::Status::Accepted);
-                    //publisher.Notify(NetSendPacketEvent(joinRet));
-                    Send(m_users.back(), joinRet);
-                }
-            }
-            else
-            {
-                // TODO: handle the events here
-                std::cout << "Received data from " << user->address;
-            }
-        }
-    }
-}
-
-void ServerLayer::OnNotify(Event& event)
-{
-    EventDispatcher d(event);
-    
-    d.Dispatch<NetHostEvent>([&](NetHostEvent & e)
-        {
-            assert(m_isHosting && "Server is already hosting");
-            auto& config = e.config;
-            m_config = config;
-
-            if (m_socket.bind(config.address.port, config.address.ip) != sf::Socket::Done)
-            {
-                std::cout << "Could not bind the server to " << config.address << "\n Aborting server...\n";
-                return;// false;
-            }
-
-            m_isHosting = true;
-            return;// true;
-        });
-
-    d.Dispatch<NetShutdownEvent>([&](NetShutdownEvent&)
-        {
-            SendAll(ShutdownPacket());
-            m_isHosting = false;
-        });
 }
