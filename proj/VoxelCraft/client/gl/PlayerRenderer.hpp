@@ -9,13 +9,13 @@
 class PlayerMesh
 {
 public:
-    PlayerMesh(Transform& transform);
+    PlayerMesh(const Transform& transform);
 
     void Draw(const Camera& camera);
 
 private:
     Shader m_shader;
 
-    Transform& m_transform;
+    const Transform& m_transform;
     VAO m_vao;
 };

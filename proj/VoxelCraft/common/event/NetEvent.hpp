@@ -1,6 +1,8 @@
 #pragma once
 #include "common/event/Event.hpp"
+
 #include "net/Address.hpp"
+#include "net/packet/Packet.hpp"
 #include "net/ServerLayer.hpp"
 
 class NetEvent : public Event
@@ -78,20 +80,20 @@ public:
     EVENT_CLASS_TYPE(EventType::NetShutdown)
 };
 
-class NetMessageEvent : public NetEvent
+class NetPacketSendEvent : public NetEvent
 {
 public:
-    NetMessageEvent(const std::string& message) : message(message) {}
-    std::string message;
+    NetPacketSendEvent(const Packet& packet) : packet(packet) {}
+    Packet packet;
 
-    EVENT_CLASS_TYPE(EventType::NetMessage)
+    EVENT_CLASS_TYPE(EventType::NetPacketSend)
 };
 
-//class NetPlayerMove : public NetEvent
-//{
-//public:
-//    NetPlayerMove(const glm::vec3& move) : move(move) {}
-//    glm::vec3 move;
-//    
-//    EVENT_CLASS_TYPE(EventType::NetPlayerMove)
-//};
+class NetPacketReceiveEvent : public NetEvent
+{
+public:
+    NetPacketReceiveEvent(const Packet& packet) : packet(packet) {}
+    Packet packet;
+
+    EVENT_CLASS_TYPE(EventType::NetPacketReceive)
+};

@@ -2,8 +2,12 @@
 #include <string>
 
 #include "utils/Observer.hpp"
+
 #include "common/event/WindowEvent.hpp"
 #include "common/event/InputEvent.hpp"
+
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Window.hpp>
 
 /**
  * The window sets up a render context and forwards input and window events

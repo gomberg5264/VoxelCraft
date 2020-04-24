@@ -116,26 +116,23 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="client\Camera.cpp" />
+    <ClCompile Include="client\ChunkManager.cpp" />
+    <ClCompile Include="client\gl\Buffer.cpp" />
+    <ClCompile Include="client\gl\ChunkRenderer.cpp" />
+    <ClCompile Include="client\gl\PlayerRenderer.cpp" />
+    <ClCompile Include="client\gl\Primitive.cpp" />
+    <ClCompile Include="client\gl\Shader.cpp" />
     <ClCompile Include="client\gl\SkyRenderer.cpp" />
     <ClCompile Include="client\gl\Texture.cpp" />
-    <ClCompile Include="common\Chunk.cpp" />
-    <ClCompile Include="client\ChunkManager.cpp" />
-    <ClCompile Include="client\Camera.cpp" />
-    <ClCompile Include="client\gl\ChunkRenderer.cpp" />
-    <ClCompile Include="client\gl\Primitive.cpp" />
-    <ClCompile Include="client\gl\PlayerRenderer.cpp" />
     <ClCompile Include="client\gl\Window.cpp" />
-    <ClCompile Include="client\gl\Buffer.cpp" />
+    <ClCompile Include="common\Chunk.cpp" />
     <ClCompile Include="common\Application.cpp" />
-    <ClCompile Include="game\GameClientLayer.cpp" />
-    <ClCompile Include="game\GameServerLayer.cpp" />
+    <ClCompile Include="gameplay\GameModel.cpp" />
+    <ClCompile Include="gameplay\GameView.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="common\Player.cpp" />
-    <ClCompile Include="client\gl\Shader.cpp" />
     <ClCompile Include="common\Timer.cpp" />
-    <ClCompile Include="net\ClientLayer.cpp" />
-    <ClCompile Include="net\packet\Packet.cpp" />
-    <ClCompile Include="net\ServerLayer.cpp" />
     <ClCompile Include="vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -143,21 +140,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client\Camera.hpp" />
+    <ClInclude Include="client\ChunkManager.hpp" />
+    <ClInclude Include="client\gl\Buffer.hpp" />
+    <ClInclude Include="client\gl\ChunkRenderer.hpp" />
+    <ClInclude Include="client\gl\PlayerRenderer.hpp" />
+    <ClInclude Include="client\gl\Primitive.hpp" />
+    <ClInclude Include="client\gl\Shader.hpp" />
     <ClInclude Include="client\gl\SkyRenderer.hpp" />
     <ClInclude Include="client\gl\Texture.hpp" />
+    <ClInclude Include="client\gl\Window.hpp" />
     <ClInclude Include="common\BlockData.hpp" />
     <ClInclude Include="common\Chunk.hpp" />
-    <ClInclude Include="client\ChunkManager.hpp" />
-    <ClInclude Include="client\gl\PlayerRenderer.hpp" />
-    <ClInclude Include="client\gl\Window.hpp" />
-    <ClInclude Include="client\gl\Buffer.hpp" />
     <ClInclude Include="client\graphics\Buffer.hpp" />
-    <ClInclude Include="client\Camera.hpp" />
-    <ClInclude Include="client\gl\ChunkRenderer.hpp" />
-    <ClInclude Include="client\gl\Primitive.hpp" />
     <ClInclude Include="common\Application.hpp" />
     <ClInclude Include="client\graphics\Renderable.hpp" />
-    <ClInclude Include="client\gl\Shader.hpp" />
     <ClInclude Include="common\event\Event.hpp" />
     <ClInclude Include="common\event\InputEvent.hpp" />
     <ClInclude Include="common\event\NetEvent.hpp" />
@@ -165,14 +162,10 @@
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
-    <ClInclude Include="game\GameClientLayer.hpp" />
-    <ClInclude Include="game\GameServerLayer.hpp" />
-    <ClInclude Include="net\Address.hpp" />
-    <ClInclude Include="net\ClientLayer.hpp" />
-    <ClInclude Include="net\packet\ConnectPacket.hpp" />
-    <ClInclude Include="net\packet\GameplayPacket.hpp" />
-    <ClInclude Include="net\packet\Packet.hpp" />
-    <ClInclude Include="net\ServerLayer.hpp" />
+    <ClInclude Include="gameplay\Command.hpp" />
+    <ClInclude Include="gameplay\GameLayer.hpp" />
+    <ClInclude Include="gameplay\GameModel.hpp" />
+    <ClInclude Include="gameplay\GameView.hpp" />
     <ClInclude Include="utils\Bitmask.hpp" />
     <ClInclude Include="utils\Helper.hpp" />
     <ClInclude Include="utils\Math.hpp" />

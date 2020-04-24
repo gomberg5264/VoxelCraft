@@ -15,11 +15,11 @@ enum class EventType
     
     WindowClose, WindowResize,
     
+    // These are standard events that all games may use
     NetConnect, NetConnectResponse, NetDisconnect,
     NetHost, NetHostResponse, NetShutdown,
-    
-    // Gamplay things
-    NetMessage, NetPlayerMove, 
+    // There are generic net events
+    NetPacketSend, NetPacketReceive,
 
     KeyPress, KeyRelease,
 };

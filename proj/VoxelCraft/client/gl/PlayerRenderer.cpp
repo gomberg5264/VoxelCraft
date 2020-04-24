@@ -1,7 +1,7 @@
 #include "vcpch.hpp"
 #include "PlayerRenderer.hpp"
 
-PlayerMesh::PlayerMesh(Transform& transform)
+PlayerMesh::PlayerMesh(const Transform& transform)
     : m_shader("res/shaders/face.vert", "res/shaders/face.frag")
     , m_transform(transform)
     , m_vao(Primitive::Face::MakeVBO())

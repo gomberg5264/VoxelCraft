@@ -46,8 +46,8 @@ void ServerLayer::OnUpdate()
 
                 // Send handshake
                 {
-                    auto joinRet = ConnectResponsePacket(ConnectResponsePacket::Status::Accepted);
-                    Send(m_users.back(), joinRet);
+                    //auto joinRet = ConnectResponsePacket(ConnectResponsePacket::Status::Accepted);
+                    //Send(m_users.back(), joinRet);
                 }
             }
             break;

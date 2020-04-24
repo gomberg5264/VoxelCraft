@@ -24,28 +24,3 @@ public:
     glm::vec3 m_scale{ 1 };
     glm::vec3 m_euler{ 0 };
 };
-
-Packet& operator<<(Packet& packet, const Transform& t)
-{
-    packet << t.m_pos << t.m_scale << t.m_euler;
-    return packet;
-}
-
-Packet& operator>>(Packet& packet, Transform& t)
-{
-    packet >> t.m_pos >> t.m_scale >> t.m_euler;
-    
-    return packet;
-}
-
-Packet& operator<<(Packet& packet, const glm::vec3& vec)
-{
-    packet << vec.x << vec.y << vec.z;
-    return packet;
-}
-
-Packet& operator>>(Packet& packet, glm::vec3& vec)
-{
-    packet >> vec.x >> vec.y >> vec.z;
-    return packet;
-}
