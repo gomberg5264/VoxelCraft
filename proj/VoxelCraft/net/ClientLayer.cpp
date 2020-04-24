@@ -12,13 +12,15 @@ ClientLayer::ClientLayer()
 
 void ClientLayer::Connect(NetConnectEvent& event)
 {
+    assert(!m_connected && "Client is already connected");
+
     m_server = event.server;
     m_name = event.name;
 
     // Create a port to receive messages on
     if (m_socket.bind(sf::Socket::AnyPort) != sf::Socket::Done)
     {
-        std::cout << "Can't bind to a socket. There may be a problem with your drivers\n"; return;
+        std::cout << "Can't bind to a socket. There may be a problem with your drivers or the port is already bound\n"; return;
         Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
     }
 
@@ -33,19 +35,14 @@ void ClientLayer::Connect(NetConnectEvent& event)
         int count = 0;
         Timer time;
         std::cout << "seconds: ";
-        auto connect = [&]()
+        
+        if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
         {
-            m_connected = true;
-            if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
-            {
-                std::cout << "Can't send package, check internet connection\n";
-                Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
-                return;
-            }
-            m_connected = false;
-        };
-
-        connect();
+            std::cout << "Can't send package, check internet connection\n";
+            Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
+            return;
+        }
+        
         while (!responded)
         {
             time.Update();
@@ -61,7 +58,12 @@ void ClientLayer::Connect(NetConnectEvent& event)
             if (et > 1.f)
             {
                 // Send handshake to the given server
-                connect();
+                if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
+                {
+                    std::cout << "Can't send package, check internet connection\n";
+                    Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
+                    return;
+                }
                 et -= 1.f;
                 count++;
                 std::cout << count << ' ';
@@ -122,8 +124,7 @@ void ClientLayer::Disconnect()
 
 sf::Socket::Status ClientLayer::Send(const PacketData& data)
 {
-    assert(m_connected && "Client isn't connected to a server");
-
+    //assert(m_connected && "Client isn't connected to a server");
     auto p = data.Build();
     return m_socket.send(p, m_server.ip, m_server.port);
 }

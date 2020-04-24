@@ -19,5 +19,5 @@
 
 void CreateApplication(Application::Layers& layers)
 {
-    layers.push_back(std::make_unique<Game>());
+    //layers.push_back(std::make_unique<Game>());
 }

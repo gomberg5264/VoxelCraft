@@ -3,6 +3,8 @@
 #include "net/ServerLayer.hpp"
 #include "net/ClientLayer.hpp"
 
+#include "utils/Helper.hpp"
+
 #include <iostream>
 #include <thread>
 
@@ -11,10 +13,15 @@ class Game : public Layer
 private:
     virtual void OnInit() override final
     {
+        std::cout << "Enter your name: ";
+        std::string name = GetLine();
+
         Address server;
-        server.ip = sf::IpAddress::LocalHost;
+        std::cout << "Enter server IP address (empty assumes localhost): ";
+        std::string ip = GetLine();
+        server.ip = ip.empty() ? sf::IpAddress::LocalHost : ip;
         server.port = 25565;
-        Publish(NetConnectEvent(server,"VoxelCraft"));
+        Publish(NetConnectEvent(server,name.c_str()));
     }
 
     virtual void OnNotify(Event& e) override final
@@ -24,14 +31,12 @@ private:
             {
                 if (e.status == NetConnectResponseEvent::Status::Success)
                 {
-                    std::cin.ignore();
                     m_game = std::thread([&]()
                         {
                             bool quit = false;
                             while (!quit)
                             {
-                                std::string msg;
-                                std::getline(std::cin, msg);
+                                std::string msg = GetLine();
 
                                 if (msg == "/q")
                                     quit = true;
@@ -42,17 +47,19 @@ private:
                 }
                 else
                 {
-                    std::cout << "Retry...\n";
-                    Address server;
-                    server.ip = sf::IpAddress::LocalHost;
-                    server.port = 25565;
-                    Publish(NetConnectEvent(server, "VoxelCraft"));
+                    std::cout << "Connection failed...\n";
+                    std::cout << "Want to try again (y) ";
+                    if (GetLine() == "y")
+                        OnInit();
+                    else
+                        Exit();
                 }
             });
     }
 
     virtual void OnDeinit() override final
     {
+        std::cout << "Exiting application\n";
         if(m_game.joinable()) m_game.join();
     }
 
@@ -81,11 +88,9 @@ private:
                     m_t = std::thread([&]()
                         {
                             bool quit = false;
-                            std::cin.ignore();
                             while (!quit)
                             {
-                                std::string msg;
-                                std::getline(std::cin, msg);
+                                std::string msg = GetLine();
 
                                 if (msg == "/q")
                                     quit = true;
@@ -117,6 +122,7 @@ void CreateApplication(Application::Layers& layers)
 
     int i;
     std::cin >> i;
+    std::cin.ignore();
     if (i == 0)
     {
         layers.push_back(std::make_unique<ServerLayer>());
