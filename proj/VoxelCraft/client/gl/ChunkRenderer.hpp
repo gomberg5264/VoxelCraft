@@ -3,6 +3,8 @@
 #include "client/gl/Primitive.hpp"
 #include "client/gl/Shader.hpp"
 
+class Chunk;
+
 /**
  * Fills the VAO based on the Chunk data. 
  */

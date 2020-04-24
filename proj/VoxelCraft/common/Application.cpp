@@ -6,6 +6,9 @@ Timer Core::time;
 
 void Application::Run() noexcept
 {
+
+
+
     Core::time.Reset();
     CreateApplication(m_layers);
 

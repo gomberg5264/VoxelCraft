@@ -1,6 +1,7 @@
 #include "common/Application.hpp"
 #include "gameplay/GameLayer.hpp"
 
+
 //// TODO: This is a client engine instance. Move it to a dedicated file
 //class Game : public Engine
 //{
@@ -79,7 +80,7 @@
 //        m_window.Display();
 //    }
 //
-//    std::unique_ptr<ChunkManager> m_chunkManager;
+//    std::unique_ptr<ClientChunkManager> m_chunkManager;
 //    ChunkRenderer m_chunkRenderer;
 //    SkyRenderer m_skyRenderer;
 //

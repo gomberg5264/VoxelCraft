@@ -97,7 +97,8 @@ void ChunkManager::AddChunk(const glm::ivec3& pos)
 {
     if (m_chunks.count(pos) == 0)
     {
-        GenerateChunk(m_chunks[pos]);
+        m_chunks.emplace(pos, pos);
+        GenerateChunk(m_chunks.at(pos));
 
         if (m_addCb) m_addCb(m_chunks.at(pos));
     }
@@ -147,12 +148,12 @@ void ChunkManager::GenerateChunk(Chunk& chunk)
     // Check surrounding neighbors
     constexpr glm::ivec3 offset[6]
     {
-        glm::ivec3(0,chunkDimension.y,0),
-        glm::ivec3(-chunkDimension.x, 0,0),
-        glm::ivec3(0,0,chunkDimension.z),
-        glm::ivec3(0,-chunkDimension.y,0),
-        glm::ivec3(chunkDimension.x, 0,0),
-        glm::ivec3(0,0,-chunkDimension.z),
+        glm::ivec3(0,int(chunkDimension.y),0),
+        glm::ivec3(-int(chunkDimension.x), 0,0),
+        glm::ivec3(0,0,int(chunkDimension.z)),
+        glm::ivec3(0,-int(chunkDimension.y),0),
+        glm::ivec3(int(chunkDimension.x), 0,0),
+        glm::ivec3(0,0,-int(chunkDimension.z)),
     };
 
     //Chunk* top;

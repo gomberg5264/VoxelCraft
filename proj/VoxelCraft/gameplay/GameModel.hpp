@@ -1,6 +1,7 @@
 #pragma once
 #include "common/Application.hpp"
 #include "common/Player.hpp"
+#include "common/Chunk.hpp"
 
 #include <vector>
 
@@ -14,8 +15,6 @@ public:
     GameModel();
 	void Update();
 
-    void LoadChunk(const glm::vec3& pos);
-    void RemoveChunk(const glm::vec3& pos);
-
+    ChunkManager m_chunks;
 	std::vector<Player> m_players;
 };

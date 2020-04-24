@@ -2,6 +2,10 @@
 #include "client/gl/Buffer.hpp"
 #include "common/BlockData.hpp"
 
+#include <glad/glad.h>
+
+#include <vector>
+
 namespace Primitive
 {
     namespace Face

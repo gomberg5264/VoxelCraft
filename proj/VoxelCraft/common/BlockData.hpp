@@ -1,6 +1,8 @@
 #pragma once
 #include "utils/Singleton.hpp"
 
+#include <unordered_map>
+
 enum class BlockType
 {
     Air,

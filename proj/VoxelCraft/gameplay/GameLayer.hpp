@@ -37,7 +37,7 @@ private:
         }
 
         // Create chunk manager
-        //m_chunkManager = std::make_unique<ChunkManager>(m_chunkRenderer);
+        //m_chunkManager = std::make_unique<ClientChunkManager>(m_chunkRenderer);
         //m_chunkManager->SetRadius(10.f * chunkDimension.x);
         //
         //m_chunkRenderer.SetSkyLightColor(glm::vec3(1));
@@ -82,15 +82,16 @@ private:
         m_model.Update();
 
         m_window.Clear();
-        m_view.Update(m_model,*m_camera);
+        m_view.Draw(m_model,*m_camera);
         m_window.Display();
     }
+
+    Window m_window;
+    std::unique_ptr<FreelookCamera> m_camera;
 
     GameModel m_model;
     GameView m_view;
 
-    Window m_window;
-    std::unique_ptr<FreelookCamera> m_camera;
 };
 
 

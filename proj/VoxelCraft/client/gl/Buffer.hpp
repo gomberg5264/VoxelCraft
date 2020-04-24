@@ -1,6 +1,11 @@
 #pragma once
 #include "utils/NonCopyable.hpp"
 
+#include <glad/glad.h>
+
+#include <vector>
+#include <memory>
+
 /**
  * Buffer is the base object for any OpenGL buffers.
  * It defines a constructor and move operators.
@@ -28,7 +33,7 @@ class VAO;
 /**
  * A wrapper for a buffer object
  */
-class VBO : public Buffer< GL_ARRAY_BUFFER>
+class VBO : public Buffer<GL_ARRAY_BUFFER>
 {
     friend VAO;
 public:

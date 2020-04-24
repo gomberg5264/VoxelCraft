@@ -2,6 +2,9 @@
 #include "BlockData.hpp"
 
 #include <functional>
+#include <glm/gtx/hash.hpp>
+#include <glm/glm.hpp>
+#include <unordered_map>
 
 constexpr glm::uvec3 chunkDimension { 16,16, 16};
 constexpr auto chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
