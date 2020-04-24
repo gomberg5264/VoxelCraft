@@ -1,7 +1,7 @@
 #include "vcpch.hpp"
-#include "ChunkManager.hpp"
+#include "client/ClientChunkManager.hpp"
 
-void ChunkManager::LoadChunk(ChunkManager::ChunkMapValue& value)
+void ClientChunkManager::LoadChunk(ClientChunkManager::ChunkMapValue& value)
 {
     value.chunk.Generate();
     value.chunk.MarkModify();
@@ -10,7 +10,7 @@ void ChunkManager::LoadChunk(ChunkManager::ChunkMapValue& value)
     m_renderer.RegisterEBOToVAO(value.mesh.m_vao);
 }
 
-void ChunkManager::SetPos(const glm::vec3& pos) noexcept
+void ClientChunkManager::SetPos(const glm::vec3& pos) noexcept
 {
     m_pos = pos;
 
@@ -30,7 +30,7 @@ void ChunkManager::SetPos(const glm::vec3& pos) noexcept
     }
 }
 
-void ChunkManager::Update()
+void ClientChunkManager::Update()
 {
     // Remove out of bounds chunks
     // ---
@@ -174,7 +174,7 @@ void ChunkManager::Update()
     }
 }
 
-void ChunkManager::Render()
+void ClientChunkManager::Render()
 {
     // TODO: Do culling
     for (auto& chunk : m_chunks)

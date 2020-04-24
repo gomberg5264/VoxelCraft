@@ -4,6 +4,7 @@
 Chunk::Chunk(const glm::ivec3& pos)
     : m_isAir(true)
     , m_pos(pos)
+    , m_state(State::New)
 {
     // Pos should be multiple of 16
     assert(pos.x % chunkDimension.x == 0);
@@ -90,4 +91,91 @@ void Chunk::Generate() noexcept
     }
 
     m_isAir = isAirOnly;
+}
+
+void ChunkManager::AddChunk(const glm::ivec3& pos)
+{
+    if (m_chunks.count(pos) == 0)
+    {
+        GenerateChunk(m_chunks[pos]);
+
+        if (m_addCb) m_addCb(m_chunks.at(pos));
+    }
+}
+
+void ChunkManager::RemoveChunk(const glm::ivec3& pos)
+{
+    if (m_chunks.count(pos) == 1)
+    {
+        Chunk& chunk = m_chunks.at(pos);
+        for (int i = 0; i < 6; i++)
+        {
+            auto* neighbor = chunk.m_neighbors.neighbor.m[i];
+            if (neighbor)
+            {
+                chunk.m_neighbors.neighbor.m[i] = nullptr;
+                chunk.m_neighbors.count--;
+             
+                neighbor->m_neighbors.neighbor.m[(i + 3) % 6] = nullptr;
+                neighbor->m_neighbors.count--;
+                neighbor->MarkModify();
+            }
+        }
+
+        if (chunk.m_neighbors.count != 0)
+            std::cout << "ERROR: Neighbor count isn't zero. There is a memory leak!\n";
+
+        if (m_addCb) m_removeCb(m_chunks.at(pos));
+        m_chunks.erase(pos);
+    }
+}
+
+void ChunkManager::Update()
+{
+    for (auto& chunk : m_chunks)
+    {
+        if (chunk.second.GetState() != Chunk::State::Done)
+        {
+            GenerateChunk(chunk.second);
+            if (m_modifyCb) m_modifyCb(chunk.second);
+        }
+    }
+}
+
+void ChunkManager::GenerateChunk(Chunk& chunk)
+{
+    // Check surrounding neighbors
+    constexpr glm::ivec3 offset[6]
+    {
+        glm::ivec3(0,chunkDimension.y,0),
+        glm::ivec3(-chunkDimension.x, 0,0),
+        glm::ivec3(0,0,chunkDimension.z),
+        glm::ivec3(0,-chunkDimension.y,0),
+        glm::ivec3(chunkDimension.x, 0,0),
+        glm::ivec3(0,0,-chunkDimension.z),
+    };
+
+    //Chunk* top;
+    //Chunk* left;
+    //Chunk* front;
+    //Chunk* bottom;
+    //Chunk* right;
+    //Chunk* back;
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (m_chunks.count(offset[i] + chunk.GetPos()) != 0)
+        {
+            Chunk& neighbor = m_chunks.at(offset[i] + chunk.GetPos());
+
+            chunk.m_neighbors.neighbor.m[i] = &neighbor;
+            chunk.m_neighbors.count++;
+            neighbor.m_neighbors.neighbor.m[(i + 3) % 6] = &chunk;
+            neighbor.m_neighbors.count++;
+            neighbor.MarkModify();
+        }
+    }
+
+    chunk.Generate();
+    chunk.MarkDone();
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include "BlockData.hpp"
 
+#include <functional>
+
 constexpr glm::uvec3 chunkDimension { 16,16, 16};
 constexpr auto chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z };
 
@@ -80,4 +82,30 @@ private:
     
     BlockArray m_blocks;
     State m_state = State::New;
+};
+
+/**
+ * A generic interface for the chunk manager
+ */
+class ChunkManager
+{
+public:
+    using ChunkMap = std::unordered_map<glm::ivec3, Chunk>;
+    using ChunkAddCallback = std::function<void(Chunk&)>;
+    using ChunkRemoveCallback = std::function<void(Chunk&)>;
+    using ChunkModifyCallback = std::function<void(Chunk&)>;
+
+    void AddChunk(const glm::ivec3& pos);
+    void RemoveChunk(const glm::ivec3& pos);
+    
+    void Update();
+
+    ChunkAddCallback m_addCb;
+    ChunkRemoveCallback m_removeCb;
+    ChunkModifyCallback m_modifyCb;
+
+private:
+    void GenerateChunk(Chunk& chunk);
+
+    ChunkMap m_chunks;
 };

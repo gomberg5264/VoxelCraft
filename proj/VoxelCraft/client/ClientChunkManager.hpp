@@ -9,14 +9,14 @@
 class ChunkRenderer;
 
 /**
- * A ChunkManager loads multiple chunks in memory based on conditions
+ * A ClientChunkManager loads multiple chunks in memory based on conditions
  * There can be multiple types of chunk managers
  * One for the player, this chunk manager would load chunks in a circle
  * One for the server, it would get a collection of chunks that it will keep track of
  *
  * TODO You probably want to abstract this since it is different for the client and server
  */
-class ChunkManager
+class ClientChunkManager
 {
 public:
     struct ChunkMapValue : public NonCopyable
@@ -35,7 +35,7 @@ public:
      * Reference to chunk renderer is needed to register buffers
      * for new chunks
      */
-    ChunkManager(ChunkRenderer& renderer) noexcept
+    ClientChunkManager(ChunkRenderer& renderer) noexcept
         : m_radius(0)
         , m_pos(0)
         , m_renderer(renderer) {}

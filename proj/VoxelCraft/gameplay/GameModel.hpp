@@ -4,7 +4,6 @@
 
 #include <vector>
 
-
 /**
  * All the data that should be shared among the machine is contained in the
  * GameModel class. 
