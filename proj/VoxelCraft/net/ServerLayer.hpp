@@ -32,6 +32,7 @@ private:
     virtual void OnNotify(Event& event) override final;
 
     void Send(User& user, const PacketData& data);
+    void SendAllBut(User& user, const PacketData& data);
     void SendAll(PacketData&& data);
     const User* GetUser(const Address& address) const;
 

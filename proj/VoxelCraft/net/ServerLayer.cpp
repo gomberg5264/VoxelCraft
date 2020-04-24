@@ -22,9 +22,12 @@ void ServerLayer::OnUpdate()
         {
             const User* user = GetUser(sender);
 
-            // First contact with this address
-            if (!user)
+            switch (type)
             {
+            case PacketType::Connect:
+            {
+            // First contact with this address
+            //if (!user)
                 if (type != PacketType::Connect)
                 {
                     std::cout << sender << " tried to connect with the invalid packet: " << static_cast<int>(type) << ". How is this possible?\n";
@@ -33,12 +36,12 @@ void ServerLayer::OnUpdate()
                 {
                     auto request = ExtractPacket<ConnectPacket>(packet);
 
-                    User user;
-                    user.address = sender;
-                    user.name = request.GetName();
-                    m_users.push_back(user);
+                    User newUser;
+                    newUser.address = sender;
+                    newUser.name = request.GetName();
+                    m_users.push_back(newUser);
 
-                    std::cout << "First contact from " << user.name << '(' << user.address << ")\n";
+                    std::cout << "First contact from " << newUser.name << '(' << newUser.address << ")\n";
                 }
 
                 // Send handshake
@@ -47,31 +50,24 @@ void ServerLayer::OnUpdate()
                     Send(m_users.back(), joinRet);
                 }
             }
-            else
+            break;
+        
+            case PacketType::Disconnect:
+            break;
+            
+            case PacketType::Message:
             {
-                switch (type)
-                {
-                //case PacketType::Unrelated:
-                //    break;
-                //case PacketType::Connect:
-                //    break;
-                //case PacketType::ConnectResponse:
-                //    break;
-                case PacketType::Disconnect:
-                    break;
-                case PacketType::Message:
-                {
-                    std::string msg;
-                    msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
-                    std::cout << msg << '\n';
-                    SendAll(MessagePacket(msg));
-                }
-                    break;
-                default:
-                    std::cout << "Received unknown packet type: " << static_cast<int>(type) << '\n';
-                    break;
-                }
+                std::string msg;
+                msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
+                std::cout << msg << '\n';
+                SendAll(MessagePacket(msg));
             }
+            break;
+            
+            default:
+                std::cout << "Received unknown packet type: " << static_cast<int>(type) << '\n';
+                break;
+            }   
         }
     }
 }
@@ -98,7 +94,6 @@ void ServerLayer::OnNotify(Event& event)
             std::cout << "Hosting server at " << config.address << '\n';
             Publish(NetHostResponseEvent(NetHostResponseEvent::Status::Success));
         });
-
     d.Dispatch<NetShutdownEvent>([&](NetShutdownEvent&)
         {
             std::cout << "Shutting down server\n";
@@ -127,6 +122,23 @@ void ServerLayer::Send(User& user, const PacketData& data)
     auto packet = data.Build();
     m_socket.send(packet, user.address.ip, user.address.port);
 }
+
+void ServerLayer::SendAllBut(User& user, const PacketData& data)
+{
+    // Build the packet
+    auto packet = data.Build();
+
+    for (const auto& u : m_users)
+    {
+        if(u.name != user.name)
+        if (m_socket.send(packet, u.address.ip, u.address.port) != sf::Socket::Done)
+        {
+            std::cout << "There was an issue sending data to " << u.name << '\n';
+        }
+    }
+}
+
+
 
 void ServerLayer::SendAll(PacketData&& data)
 {
