@@ -34,11 +34,11 @@ public:
     const PacketType type;
     
     Packet Build() const;
-    void Extract(Packet&& packet);
+    void Extract(Packet& packet);
 
 private:
     virtual void OnBuild(Packet& packet) const {} ;
-    virtual void OnExtract(Packet&& packet) {};
+    virtual void OnExtract(Packet& packet) {};
 };
 
 class GameplayPacket : public PacketData
@@ -66,6 +66,6 @@ T ExtractPacket(Packet& packet)
     static_assert(std::is_default_constructible<T>::value, "T should be default constructable");
 
     T data;
-    data.Extract(std::move(packet));
+    data.Extract(packet);
     return data;
 }

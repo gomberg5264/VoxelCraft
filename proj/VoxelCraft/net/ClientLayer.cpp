@@ -35,7 +35,7 @@ void ClientLayer::Connect(NetConnectEvent& event)
         Timer time;
         std::cout << "seconds: ";
         
-        if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
+        if (Send(ConnectPacket(m_name.c_str()).Build()) != sf::Socket::Done)
         {
             std::cout << "Can't send package, check internet connection\n";
             Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
@@ -57,7 +57,7 @@ void ClientLayer::Connect(NetConnectEvent& event)
             if (et > 1.f)
             {
                 // Send handshake to the given server
-                if (Send(ConnectPacket(m_name.c_str())) != sf::Socket::Done)
+                if (Send(ConnectPacket(m_name.c_str()).Build()) != sf::Socket::Done)
                 {
                     std::cout << "Can't send package, check internet connection\n";
                     Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
@@ -121,11 +121,10 @@ void ClientLayer::Disconnect()
     m_connected = false;
 }
 
-sf::Socket::Status ClientLayer::Send(const PacketData& data)
+sf::Socket::Status ClientLayer::Send(Packet packet)
 {
     //assert(m_connected && "Client isn't connected to a server");
-    auto p = data.Build();
-    return m_socket.send(p, m_server.ip, m_server.port);
+    return m_socket.send(packet, m_server.ip, m_server.port);
 }
 
 bool ClientLayer::Receive(Packet& packet, PacketType& type)
@@ -149,14 +148,15 @@ void ClientLayer::OnNotify(Event& event)
     d.Dispatch<NetConnectEvent>(BIND(ClientLayer::Connect));
     d.Dispatch<NetDisconnectEvent>([&](Event&)
         {   
-            Send(DisconnectPacket());
+            Send(DisconnectPacket().Build());
             m_socket.unbind();
         });
-    //// Gameplay events
-    //d.Dispatch<NetMessageEvent>([&](NetMessageEvent& e)
-    //    {
-    //        Send(MessagePacket(e.message));
-    //    });
+
+    // Gameplay events
+    d.Dispatch<NetClientPacketSendEvent>([&](NetClientPacketSendEvent& e)
+        {
+            Send(e.packet);
+        });
 }
 
 void ClientLayer::OnUpdate()

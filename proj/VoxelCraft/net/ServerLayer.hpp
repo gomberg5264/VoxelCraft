@@ -42,3 +42,8 @@ private:
     
     std::vector<User> m_users;
 };
+
+inline std::string GenUserString(const std::string& name)
+{
+    return std::string("[") + name + "] ";
+}

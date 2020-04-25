@@ -182,9 +182,6 @@
     <ClInclude Include="client\Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Command.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\ChunkStrategy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -203,7 +200,7 @@
     <ClInclude Include="net\ServerLayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\GameplayPacket.hpp">
+    <ClInclude Include="gameplay\GamePacket.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

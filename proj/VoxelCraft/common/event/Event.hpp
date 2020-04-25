@@ -18,8 +18,10 @@ enum class EventType
     // These are standard events that all games may use
     NetConnect, NetConnectResponse, NetDisconnect,
     NetHost, NetHostResponse, NetShutdown,
+    
     // There are generic net events
-    NetPacketSend, NetPacketReceive,
+    NetClientPacketSend, NetClientPacketReceive,
+    NetServerPacketSend, NetServerPacketReceive,
 
     KeyPress, KeyRelease,
 };

@@ -19,7 +19,7 @@ public:
     inline const std::string& GetName() const { return m_name; }
 
     virtual void OnBuild(Packet& packet) const override final { packet << m_name; }
-    virtual void OnExtract(Packet&& packet) override final { packet >> m_name; }
+    virtual void OnExtract(Packet& packet) override final { packet >> m_name; }
 
 private:
     std::string m_name;
@@ -45,7 +45,7 @@ public:
     { 
         packet << static_cast<int>(m_status); 
     }
-    virtual void OnExtract(Packet&& packet) override final 
+    virtual void OnExtract(Packet& packet) override final 
     { 
         int i; 
         packet >> i; 

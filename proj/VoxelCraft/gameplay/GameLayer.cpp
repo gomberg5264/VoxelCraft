@@ -1,9 +1,14 @@
 #include "vcpch.hpp"
 #include "gameplay/GameLayer.hpp"
+#include "gameplay/GamePacket.hpp"
 
-void GameClientLayer::OnInit()
+#include "net/ClientLayer.hpp"
+#include "net/ServerLayer.hpp"
+
+#include "utils/Helper.hpp"
+
+void GameClientLayer::InitGame()
 {
-    sf::Clock time;
     m_window.SetCursorVisible(false);
 
     // Setup camera
@@ -28,18 +33,60 @@ void GameClientLayer::OnInit()
     {
         m_view.RemoveChunk(chunk);
     };
+}
 
+void GameClientLayer::OnInit()
+{
+    //std::cout << "1 host 2 join\n";
+
+    //int i;
+    //std::cin >> i;
+    //std::cin.ignore();
+    //if (i == 1)
+    //{
+    //    GetApplication().AddLayer(std::make_unique<ServerLayer>());
+    //    ServerLayer::Config conf;
+    //    conf.address.ip = sf::IpAddress::LocalHost;
+    //    conf.address.port = 25565;
+
+    //    Publish(NetHostEvent(conf));
+    //}
+
+    GetApplication().AddLayer(std::make_unique<ClientLayer>());
+    std::cout << "Enter your name: ";
+    std::string name = GetLine();
+
+    Address server;
+    std::cout << "Enter server IP address (empty assumes localhost): ";
+    std::string ip = GetLine();
+    server.ip = ip.empty() ? sf::IpAddress::LocalHost : ip;
+    server.port = 25565;
+    Publish(NetConnectEvent(server,name.c_str()));
+
+    sf::Clock time;
+    InitGame();
     std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
+
+    // TEMP: Create a tread so that we can send messages
+    m_console = std::thread([&]()
+    {
+        bool quit = false;
+        while (!quit)
+        {
+            std::string msg = GetLine();
+            // The network protocol will handle this event
+            Publish(NetClientPacketSendEvent(GameMessagePacket(msg.c_str()).Build()));
+        }
+        Publish(NetDisconnectEvent());
+        Exit();
+    });
 }
 
 void GameClientLayer::OnNotify(Event& event)
-
 {
     EventDispatcher d(event);
 
     if (d.Dispatch<WindowCloseEvent>([&](Event& e) { Exit(); })) return;
-    //if (d.Dispatch<WindowResizeEvent>([&](Event& d) { Exit(); })) return;
-
     if (d.Dispatch<KeyPressEvent>([&](KeyPressEvent& e)
         {
             if (e.GetKeyCode() == sf::Keyboard::Escape)
@@ -48,11 +95,26 @@ void GameClientLayer::OnNotify(Event& event)
                 Exit();
             }
         })) return;
+
+    if (d.Dispatch<NetClientPacketReceiveEvent>([&](NetClientPacketReceiveEvent& e)
+        {
+            GamePacketType type;
+            e.packet >> type;
+            
+            switch (type)
+            {
+            case GamePacketType::Message:
+            {
+                auto msg= ExtractPacket<GameMessagePacket>(e.packet);
+                std::cout << msg.message << '\n';
+            }
+            break;
+            }
+        })) return;
 }
 
 void GameClientLayer::OnUpdate()
 {
-    //m_controller.Update(m_model);
     m_window.PollEvents(GetApplication());
 
     // Temp, this should be generated in view based on player orientation
@@ -66,4 +128,42 @@ void GameClientLayer::OnUpdate()
     m_window.Clear();
     m_view.Draw(m_model, *m_camera);
     m_window.Display();
+}
+
+void GameServerLayer::OnInit()
+{
+    GetApplication().AddLayer(std::make_unique<ServerLayer>());
+    ServerLayer::Config conf;
+    conf.address.ip = sf::IpAddress::LocalHost;
+    conf.address.port = 25565;
+
+    Publish(NetHostEvent(conf));
+}
+
+void GameServerLayer::OnNotify(Event& event)
+{
+    EventDispatcher d(event);
+
+    if (d.Dispatch<NetServerPacketReceiveEvent>([&](NetServerPacketReceiveEvent& e)
+        {
+            GamePacketType type;
+            e.packet >> type;
+
+            switch (type)
+            {
+            case GamePacketType::Message:
+            {
+                std::string msg;
+                msg = GenUserString(e.user.name) + ExtractPacket<GameMessagePacket>(e.packet).message;
+                std::cout << msg << '\n';
+                
+                Publish(NetServerPacketSendEvent(GameMessagePacket(msg.c_str()).Build()));
+            }
+            break;
+            }
+        })) return;
+}
+
+void GameServerLayer::OnUpdate()
+{
 }

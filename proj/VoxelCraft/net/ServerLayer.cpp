@@ -4,11 +4,6 @@
 
 #include "common/event/NetEvent.hpp"
 
-std::string GenUserString(const std::string& name)
-{
-    return std::string("[") + name + "] ";
-}
-
 void ServerLayer::OnUpdate()
 {
     Packet packet;
@@ -57,11 +52,7 @@ void ServerLayer::OnUpdate()
             
             case PacketType::Gameplay:
             {
-                Publish(NetPacketReceiveEvent(packet));
-                //std::string msg;
-                //msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
-                //std::cout << msg << '\n';
-                //SendAll(MessagePacket(msg));
+                Publish(NetServerPacketReceiveEvent(packet,*user));
             }
             break;
             
@@ -102,7 +93,7 @@ void ServerLayer::OnNotify(Event& event)
             m_isHosting = false;
         });
 
-    d.Dispatch<NetPacketSendEvent>([&](NetPacketSendEvent& e)
+    d.Dispatch<NetServerPacketSendEvent>([&](NetServerPacketSendEvent& e)
         {
             SendAll(e.packet);
         });

@@ -1,5 +1,7 @@
 #include "common/Application.hpp"
 
+#include "gameplay/GameLayer.hpp"
+
 #include "net/ServerLayer.hpp"
 #include "net/ClientLayer.hpp"
 
@@ -13,15 +15,6 @@
 //private:
 //    virtual void OnInit() override final
 //    {
-//        std::cout << "Enter your name: ";
-//        std::string name = GetLine();
-//
-//        Address server;
-//        std::cout << "Enter server IP address (empty assumes localhost): ";
-//        std::string ip = GetLine();
-//        server.ip = ip.empty() ? sf::IpAddress::LocalHost : ip;
-//        server.port = 25565;
-//        Publish(NetConnectEvent(server,name.c_str()));
 //    }
 //
 //    virtual void OnNotify(Event& e) override final
@@ -43,11 +36,6 @@
 //private:
 //    virtual void OnInit() override final
 //    {
-//        ServerLayer::Config conf;
-//        conf.address.ip = sf::IpAddress::LocalHost;
-//        conf.address.port = 25565;
-//
-//        Publish(NetHostEvent(conf));
 //    }
 //
 //    virtual void OnNotify(Event& e) override final
@@ -87,25 +75,8 @@
 //
 //    std::thread m_t;
 //};
-//
-//void CreateApplication(Application::Layers& layers)
-//{
-//    std::cout << "0 server 1 client\n";
-//
-//    int i;
-//    std::cin >> i;
-//    std::cin.ignore();
-//    if (i == 0)
-//    {
-//        layers.push_back(std::make_unique<ServerLayer>());
-//        layers.push_back(std::make_unique<Headless>());
-//    }
-//    else
-//    {
-//        layers.push_back(std::make_unique<ClientLayer>());
-//        layers.push_back(std::make_unique<Game>());
-//    }
-//}
 
 void CreateApplication(Application::Layers& layers)
-{}
+{
+    layers.push_back(std::make_unique<GameServerLayer>());
+}

@@ -166,14 +166,13 @@
     <ClInclude Include="common\Player.hpp" />
     <ClInclude Include="common\Timer.hpp" />
     <ClInclude Include="common\Transform.hpp" />
-    <ClInclude Include="gameplay\Command.hpp" />
     <ClInclude Include="gameplay\GameLayer.hpp" />
     <ClInclude Include="gameplay\GameModel.hpp" />
     <ClInclude Include="gameplay\GameView.hpp" />
     <ClInclude Include="net\Address.hpp" />
     <ClInclude Include="net\ClientLayer.hpp" />
     <ClInclude Include="net\packet\ConnectPacket.hpp" />
-    <ClInclude Include="gameplay\GameplayPacket.hpp" />
+    <ClInclude Include="gameplay\GamePacket.hpp" />
     <ClInclude Include="net\packet\Packet.hpp" />
     <ClInclude Include="net\ServerLayer.hpp" />
     <ClInclude Include="utils\Bitmask.hpp" />

@@ -80,20 +80,41 @@ public:
     EVENT_CLASS_TYPE(EventType::NetShutdown)
 };
 
-class NetPacketSendEvent : public NetEvent
+class NetClientPacketSendEvent : public NetEvent
 {
 public:
-    NetPacketSendEvent(const Packet& packet) : packet(packet) {}
+    NetClientPacketSendEvent(const Packet& packet) : packet(packet) {}
     Packet packet;
 
-    EVENT_CLASS_TYPE(EventType::NetPacketSend)
+    EVENT_CLASS_TYPE(EventType::NetClientPacketSend)
 };
 
-class NetPacketReceiveEvent : public NetEvent
+class NetClientPacketReceiveEvent : public NetEvent
 {
 public:
-    NetPacketReceiveEvent(const Packet& packet) : packet(packet) {}
+    NetClientPacketReceiveEvent(const Packet& packet) : packet(packet) {}
     Packet packet;
 
-    EVENT_CLASS_TYPE(EventType::NetPacketReceive)
+    EVENT_CLASS_TYPE(EventType::NetClientPacketReceive)
+};
+
+class NetServerPacketSendEvent : public NetEvent
+{
+public:
+    NetServerPacketSendEvent(const Packet& packet) : packet(packet) {}
+    Packet packet;
+    
+    EVENT_CLASS_TYPE(EventType::NetServerPacketSend)
+};
+
+class NetServerPacketReceiveEvent : public NetEvent
+{
+public:
+    NetServerPacketReceiveEvent(const Packet& packet, ServerLayer::User user) 
+        : packet(packet) 
+        , user(user) {}
+    Packet packet;
+    ServerLayer::User user;
+
+    EVENT_CLASS_TYPE(EventType::NetServerPacketReceive)
 };

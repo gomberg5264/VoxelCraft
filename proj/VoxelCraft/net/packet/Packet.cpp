@@ -9,9 +9,9 @@ Packet PacketData::Build() const
     return packet;
 }
 
-void PacketData::Extract(Packet&& packet)
+void PacketData::Extract(Packet& packet)
 {
-    OnExtract(std::move(packet));
+    OnExtract(packet);
 }
 
 PacketType VerifyPacket(Packet& packet)

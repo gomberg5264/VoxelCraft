@@ -23,7 +23,7 @@ private:
     void Connect(NetConnectEvent& event);
     void Disconnect();
 
-    sf::Socket::Status Send(const PacketData& data);
+    sf::Socket::Status Send(Packet packet);
     /**
      * Helper function to receive a packet
      * It verifies if the packet is from the server
