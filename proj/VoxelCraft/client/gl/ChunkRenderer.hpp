@@ -34,8 +34,8 @@ public:
     ChunkRenderer();
 
     /**
-     * Since the VAO uses the EBO inside ChunkRenderer, we make sure that 
-     * VAO is bound to that EBO with this function
+     * Since the EBO is the same for every chunk, we need only one
+     * copy of it on the gpu, so we bind every vao to that ebo
      */
     void RegisterEBOToVAO(const VAO& vao);
 

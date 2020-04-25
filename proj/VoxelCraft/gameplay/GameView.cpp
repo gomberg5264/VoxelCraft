@@ -5,23 +5,25 @@
 #include "common/Application.hpp"
 #include "client/gl/PlayerRenderer.hpp"
 
-void GameView::AddChunkCB(Chunk& chunk)
+void GameView::AddChunk(Chunk& chunk)
 {
+    if (m_chunkMeshes.count(chunk.GetPos()) != 0)
+        return;
+
     // TODO: check if we have to generate the mesh
-    auto& val = m_chunks[chunk.GetPos()];
-    val.chunk = &chunk;
-    val.mesh.Generate(chunk);
+    m_chunkMeshes.emplace(chunk.GetPos(), ChunkMesh());
+    auto& val = m_chunkMeshes.at(chunk.GetPos());
+    val.Generate(chunk);
+
+    m_chunkRenderer.RegisterEBOToVAO(val.m_vao);
 }
 
-void GameView::RemoveChunkCB(Chunk& chunk)
+void GameView::RemoveChunk(Chunk& chunk)
 {
-    m_chunks.erase(chunk.GetPos());
-}
+    if (m_chunkMeshes.count(chunk.GetPos()) == 0)
+        return;
 
-void GameView::ModifyChunkCB(Chunk& chunk)
-{
-    // TODO: check if mesh needs to be generated
-    m_chunks.at(chunk.GetPos()).mesh.Generate(chunk);
+    m_chunkMeshes.erase(chunk.GetPos());
 }
 
 void GameView::Draw(const GameModel& model, const Camera& camera)
@@ -29,50 +31,56 @@ void GameView::Draw(const GameModel& model, const Camera& camera)
     constexpr float dayDur = 1.f / 8.0f;
     const float time = Core::time.Total() * dayDur;
 
-    // TODO: Not have this generate every frame
-    //std::vector<PlayerMesh> meshses;
-        //meshses.emplace_back(PlayerMesh(player.m_transform));
-
-    // RENDERING
-    // ---------------------
-    // Make draw requests to renderers
-    //m_chunkManager->Render();
-
-    // Set up renderers state
-    // Update sky renderer by passing current time
-    m_skyRenderer.SetTime(std::fmod(time, 1.f));
-
-    // Set up ligting for renderers
-    m_chunkRenderer.SetSkyIntensity(m_skyRenderer.GetSkyAmbient());
-    m_chunkRenderer.SetSkyLightDirection(m_skyRenderer.GetLightDir());
-    m_chunkRenderer.SetSkyLightColor(m_skyRenderer.GetColor());
-    m_chunkRenderer.SetDiffuseIntensity(m_skyRenderer.GetIntensity());
-
-    // Set up camera matrices
-    m_skyRenderer.SetCameraRotateProject(camera.GetProjection() * camera.GetRotation());
-    m_chunkRenderer.SetVP(camera.GetProjection() * camera.GetView());
-
-    // Render contents to the screen
-    //m_window.Clear();
-
-    for (const auto& player : model.m_players)
-        PlayerMesh(player.m_transform).Draw(camera);
-
-    // TODO: Render only on certain condition
-    // TODO: Do culling
-    for (const auto& chunk : m_chunks)
+    // -- Update chunk meshes
     {
-        if (!chunk.second.chunk->m_isAir && chunk.second.mesh.m_elemCount != 0)
+        for (const auto& chunk : model.m_chunks.GetModifiedChunks())
         {
-            m_chunkRenderer.Render(chunk.second.mesh);
+            // We only save chunks with a mesh, an air chunk could now have a mesh
+            if (m_chunkMeshes.count(chunk.get().GetPos()) == 0)
+                m_chunkMeshes.insert(std::make_pair(chunk.get().GetPos(), ChunkMesh()));
+            
+            if (chunk.get().m_isAir)
+                m_chunkMeshes.erase(chunk.get().GetPos());
+            else
+                m_chunkMeshes.at(chunk.get().GetPos()).Generate(chunk);
         }
     }
 
-    m_chunkRenderer.Display();
-    m_skyRenderer.Display();
+    // -- Make draw requests to renderers -- 
+    {
+        for (const auto& player : model.m_players)
+            PlayerMesh(player.m_transform).Draw(camera);
 
-    // TODO: Make a player renderer/entity renderer
-    //m_playerMesh->Draw(camera);
+        // TODO: Render only on certain condition
+        // TODO: Do culling
+        for (const auto& chunk : m_chunkMeshes)
+        {
+            if (chunk.second.m_elemCount != 0)
+            {
+                m_chunkRenderer.Render(chunk.second);
+            }
+        }
+    }
 
-    //m_window.Display();
+    // -- Set up renderers state --
+    {
+        // Update sky renderer by passing current time
+        m_skyRenderer.SetTime(std::fmod(time, 1.f));
+
+        // Set up ligting for renderers
+        m_chunkRenderer.SetSkyIntensity(m_skyRenderer.GetSkyAmbient());
+        m_chunkRenderer.SetSkyLightDirection(m_skyRenderer.GetLightDir());
+        m_chunkRenderer.SetSkyLightColor(m_skyRenderer.GetColor());
+        m_chunkRenderer.SetDiffuseIntensity(m_skyRenderer.GetIntensity());
+
+        // Set up camera matrices
+        m_skyRenderer.SetCameraRotateProject(camera.GetProjection() * camera.GetRotation());
+        m_chunkRenderer.SetVP(camera.GetProjection() * camera.GetView());
+    }
+
+    // -- Render contents to the screen --
+    {
+        m_chunkRenderer.Display();
+        m_skyRenderer.Display();
+    }
 }

@@ -13,8 +13,8 @@ class GameModel
 {
 public:
     GameModel();
-	void Update();
+    void Update();
 
-    ChunkManager m_chunks;
-	std::vector<Player> m_players;
+    ChunkContainer m_chunks;
+    std::vector<Player> m_players;
 };

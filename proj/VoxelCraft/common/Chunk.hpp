@@ -15,13 +15,6 @@ constexpr auto chunkSize{ chunkDimension.x * chunkDimension.y * chunkDimension.z
 class Chunk
 {
 public:
-    enum class State
-    {
-        New,
-        Modify,
-        Done,
-    };
-
     struct Neighbors
     {
         Neighbors()
@@ -70,13 +63,10 @@ public:
 
     inline glm::ivec3 GetPos() const noexcept { return m_pos; }
     
-    inline void MarkModify() noexcept { m_state = State::Modify; }
-    inline void MarkDone() noexcept { m_state = State::Done; }
-    inline State GetState() const noexcept { return m_state; }
-
     inline const BlockArray& GetBlockArray() const noexcept { return m_blocks; }
 
     // Used for optimization by the renderer
+    bool m_modified;
     bool m_isAir;
     Neighbors m_neighbors;
 
@@ -84,31 +74,24 @@ private:
     const glm::ivec3 m_pos;
     
     BlockArray m_blocks;
-    State m_state = State::New;
 };
 
-/**
- * A generic interface for the chunk manager
- */
-class ChunkManager
+class ChunkContainer
 {
 public:
     using ChunkMap = std::unordered_map<glm::ivec3, Chunk>;
-    using ChunkAddCallback = std::function<void(Chunk&)>;
-    using ChunkRemoveCallback = std::function<void(Chunk&)>;
-    using ChunkModifyCallback = std::function<void(Chunk&)>;
-
-    void AddChunk(const glm::ivec3& pos);
-    void RemoveChunk(const glm::ivec3& pos);
     
-    void Update();
+    Chunk& AddChunk(glm::ivec3 pos);
+    // True if chunk existed
+    bool RemoveChunk(glm::ivec3 pos);
 
-    ChunkAddCallback m_addCb;
-    ChunkRemoveCallback m_removeCb;
-    ChunkModifyCallback m_modifyCb;
+    void Update();
+    const std::vector<std::reference_wrapper<Chunk>>& GetModifiedChunks() const;
+    ChunkMap& GetChunks();
 
 private:
     void GenerateChunk(Chunk& chunk);
 
+    std::vector<std::reference_wrapper<Chunk>> m_modifiedChunks;
     ChunkMap m_chunks;
 };

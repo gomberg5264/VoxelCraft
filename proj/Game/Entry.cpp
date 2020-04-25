@@ -80,7 +80,7 @@
 //        m_window.Display();
 //    }
 //
-//    std::unique_ptr<ClientChunkManager> m_chunkManager;
+//    std::unique_ptr<ChunkStrategy> m_chunkManager;
 //    ChunkRenderer m_chunkRenderer;
 //    SkyRenderer m_skyRenderer;
 //

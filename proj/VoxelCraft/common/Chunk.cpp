@@ -4,7 +4,6 @@
 Chunk::Chunk(const glm::ivec3& pos)
     : m_isAir(true)
     , m_pos(pos)
-    , m_state(State::New)
 {
     // Pos should be multiple of 16
     assert(pos.x % chunkDimension.x == 0);
@@ -93,18 +92,19 @@ void Chunk::Generate() noexcept
     m_isAir = isAirOnly;
 }
 
-void ChunkManager::AddChunk(const glm::ivec3& pos)
+Chunk& ChunkContainer::AddChunk(glm::ivec3 pos)
 {
+    pos -= (pos % glm::ivec3(chunkDimension));
+
     if (m_chunks.count(pos) == 0)
     {
         m_chunks.emplace(pos, pos);
         GenerateChunk(m_chunks.at(pos));
-
-        if (m_addCb) m_addCb(m_chunks.at(pos));
     }
+    return m_chunks.at(pos);
 }
 
-void ChunkManager::RemoveChunk(const glm::ivec3& pos)
+bool ChunkContainer::RemoveChunk(glm::ivec3 pos)
 {
     if (m_chunks.count(pos) == 1)
     {
@@ -119,31 +119,42 @@ void ChunkManager::RemoveChunk(const glm::ivec3& pos)
              
                 neighbor->m_neighbors.neighbor.m[(i + 3) % 6] = nullptr;
                 neighbor->m_neighbors.count--;
-                neighbor->MarkModify();
+                m_modifiedChunks.push_back(*neighbor);
             }
         }
 
         if (chunk.m_neighbors.count != 0)
             std::cout << "ERROR: Neighbor count isn't zero. There is a memory leak!\n";
 
-        if (m_addCb) m_removeCb(m_chunks.at(pos));
+        m_modifiedChunks.erase(std::find_if(std::begin(m_modifiedChunks), std::end(m_modifiedChunks),
+            [pos](const Chunk& c) { return c.GetPos() == c.GetPos(); }));
         m_chunks.erase(pos);
+        return true;
     }
+    return false;
 }
 
-void ChunkManager::Update()
+void ChunkContainer::Update()
 {
-    for (auto& chunk : m_chunks)
+    m_modifiedChunks.clear();
+
+    for (auto& chunk : m_modifiedChunks)
     {
-        if (chunk.second.GetState() != Chunk::State::Done)
-        {
-            GenerateChunk(chunk.second);
-            if (m_modifyCb) m_modifyCb(chunk.second);
-        }
+        chunk.get().Generate();
     }
 }
 
-void ChunkManager::GenerateChunk(Chunk& chunk)
+const std::vector<std::reference_wrapper<Chunk>>& ChunkContainer::GetModifiedChunks() const
+{
+    return m_modifiedChunks;
+}
+
+ChunkContainer::ChunkMap& ChunkContainer::GetChunks()
+{
+    return m_chunks;
+}
+
+void ChunkContainer::GenerateChunk(Chunk& chunk)
 {
     // Check surrounding neighbors
     constexpr glm::ivec3 offset[6]
@@ -173,10 +184,12 @@ void ChunkManager::GenerateChunk(Chunk& chunk)
             chunk.m_neighbors.count++;
             neighbor.m_neighbors.neighbor.m[(i + 3) % 6] = &chunk;
             neighbor.m_neighbors.count++;
-            neighbor.MarkModify();
+            m_modifiedChunks.push_back(neighbor);
         }
     }
 
+    if (chunk.m_neighbors.count == 6)
+        std::cout << "Fully encapsulated!\n";
+
     chunk.Generate();
-    chunk.MarkDone();
 }
