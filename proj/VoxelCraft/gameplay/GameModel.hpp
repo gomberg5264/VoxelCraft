@@ -15,6 +15,6 @@ public:
     GameModel();
     void Update();
 
-    ChunkContainer m_chunks;
+    ChunkManager m_chunks;
     std::vector<Player> m_players;
 };

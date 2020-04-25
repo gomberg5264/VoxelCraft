@@ -92,7 +92,7 @@ void Chunk::Generate() noexcept
     m_isAir = isAirOnly;
 }
 
-Chunk& ChunkContainer::AddChunk(glm::ivec3 pos)
+void ChunkManager::AddChunk(glm::ivec3 pos)
 {
     pos -= (pos % glm::ivec3(chunkDimension));
 
@@ -100,11 +100,13 @@ Chunk& ChunkContainer::AddChunk(glm::ivec3 pos)
     {
         m_chunks.emplace(pos, pos);
         GenerateChunk(m_chunks.at(pos));
+
+        if(m_addCB) m_addCB(m_chunks.at(pos));
     }
-    return m_chunks.at(pos);
+    //return m_chunks.at(pos);
 }
 
-bool ChunkContainer::RemoveChunk(glm::ivec3 pos)
+void ChunkManager::RemoveChunk(glm::ivec3 pos)
 {
     if (m_chunks.count(pos) == 1)
     {
@@ -128,13 +130,13 @@ bool ChunkContainer::RemoveChunk(glm::ivec3 pos)
 
         m_modifiedChunks.erase(std::find_if(std::begin(m_modifiedChunks), std::end(m_modifiedChunks),
             [pos](const Chunk& c) { return c.GetPos() == c.GetPos(); }));
+        
+        if (m_removeCB) m_removeCB(m_chunks.at(pos));
         m_chunks.erase(pos);
-        return true;
     }
-    return false;
 }
 
-void ChunkContainer::Update()
+void ChunkManager::Update()
 {
     m_modifiedChunks.clear();
 
@@ -144,17 +146,17 @@ void ChunkContainer::Update()
     }
 }
 
-const std::vector<std::reference_wrapper<Chunk>>& ChunkContainer::GetModifiedChunks() const
+const std::vector<std::reference_wrapper<Chunk>>& ChunkManager::GetModifiedChunks() const
 {
     return m_modifiedChunks;
 }
 
-ChunkContainer::ChunkMap& ChunkContainer::GetChunks()
+ChunkManager::ChunkMap& ChunkManager::GetChunks()
 {
     return m_chunks;
 }
 
-void ChunkContainer::GenerateChunk(Chunk& chunk)
+void ChunkManager::GenerateChunk(Chunk& chunk)
 {
     // Check surrounding neighbors
     constexpr glm::ivec3 offset[6]

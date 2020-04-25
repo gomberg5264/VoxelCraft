@@ -8,11 +8,12 @@
 
 #include "client/gl/Window.hpp"
 #include "client/Camera.hpp"
+#include "client/ChunkStrategy.hpp"
 
 #include <SFML/Window/Keyboard.hpp>
 
 #include <memory>
-
+#include <iostream>
 
 /**
  * Handles the data that goes to the GameModel
@@ -48,6 +49,17 @@ private:
 
         m_model.m_players.push_back(Player());
         m_model.m_players.push_back(Player());
+        //m_strategy.SetRadius(10);
+
+        m_model.m_chunks.m_addCB = [&](Chunk& chunk)
+        {
+            m_view.AddChunk(chunk);
+            std::cout << "Added\n";
+        };
+        m_model.m_chunks.m_removeCB = [&](Chunk& chunk)
+        {
+            m_view.RemoveChunk(chunk);
+        };
 
         std::printf("Init time: %.2f\n", time.getElapsedTime().asSeconds());
     }
@@ -80,7 +92,9 @@ private:
         m_camera->Update(Core::time.Elapsed());
 
         m_model.Update();
-        m_view.AddChunk(m_model.m_chunks.AddChunk(m_camera->m_eye));
+        m_strat.SetPos(m_camera.get()->m_eye);
+        m_strat.Update(m_model.m_chunks);
+        //m_model.m_chunks.AddChunk(m_camera->m_eye);
 
         m_window.Clear();
         m_view.Draw(m_model,*m_camera);
@@ -90,6 +104,7 @@ private:
     Window m_window;
     std::unique_ptr<FreelookCamera> m_camera;
 
+    ChunkStrategy m_strat;
     GameModel m_model;
     GameView m_view;
 };

@@ -69,7 +69,7 @@
     <ClCompile Include="client\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\ClientChunkManager.cpp">
+    <ClCompile Include="client\ChunkStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,7 +173,7 @@
     <ClInclude Include="gameplay\Command.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="client\ClientChunkManager.hpp">
+    <ClInclude Include="client\ChunkStrategy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

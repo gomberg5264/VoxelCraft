@@ -1,35 +1,33 @@
 #include "vcpch.hpp"
-//#include "client/ClientChunkManager.hpp"
-//
-//void ChunkStrategy::LoadChunk(ChunkStrategy::ChunkMapValue& value)
-//{
-//    value.chunk.Generate();
-//    value.chunk.MarkModify();
-//    value.mesh.Generate(value.chunk);
-//
-//    m_renderer.RegisterEBOToVAO(value.mesh.m_vao);
-//}
-//
-//void ChunkStrategy::SetPos(const glm::vec3& pos) noexcept
-//{
-//    m_pos = pos;
-//
-//    // Load the center chunk
-//    // Check for chunk in center
-//    glm::ivec3 center = glm::ivec3(m_pos);
-//    center.x -= center.x % chunkDimension.x;
-//    center.y -= center.y % chunkDimension.y;
-//    center.z -= center.z % chunkDimension.z;
-//
-//    //auto& center = m_chunks.at(pos);
-//    if (m_chunks.count(center) == 0)
-//    {
-//        m_chunks.emplace(center ,center);
-//        LoadChunk(m_chunks.at(center));
-//        m_chunksNotFilled.push_back(m_chunks.at(center));
-//    }
-//}
-//
+#include "client/ChunkStrategy.hpp"
+
+void ChunkStrategy::SetPos(const glm::vec3& pos) noexcept
+{
+    m_pos = pos;
+
+    //// Load the center chunk
+    //// Check for chunk in center
+    //glm::ivec3 center = glm::ivec3(m_pos);
+    //center.x -= center.x % chunkDimension.x;
+    //center.y -= center.y % chunkDimension.y;
+    //center.z -= center.z % chunkDimension.z;
+
+    //if (m_chunks.count(center) == 0)
+    //{
+    //    m_chunks.emplace(center ,center);
+    //    LoadChunk(m_chunks.at(center));
+    //    m_chunksNotFilled.push_back(m_chunks.at(center));
+    //}
+}
+
+void ChunkStrategy::Update(ChunkManager& chunks)
+{
+    for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 2; y++)
+            for(int z = 0; z < 4; z++)
+                chunks.AddChunk(glm::ivec3(m_pos) + glm::ivec3(chunkDimension) * glm::ivec3(x - 2, -y, z - 2));
+}
+
 //void ChunkStrategy::Update()
 //{
 //    // Remove out of bounds chunks
@@ -154,11 +152,11 @@
 //
 //        // Remove chunks from edge list if their neighbors are full
 //        // Also regenreate them since we can cull based on adjacent faces
-//        m_chunksNotFilled.remove_if([](std::reference_wrapper<ChunkMapValue>& value) 
+//        m_chunksNotFilled.remove_if([](std::reference_wrapper<Chunk>& value) 
 //            {
-//                if (value.get().chunk.m_neighbors.count == 6)
+//                if (value.get().m_neighbors.count == 6)
 //                {
-//                    value.get().chunk.MarkModify();
+//                    value.get().MarkModify();
 //                    return true; 
 //                }
 //                return false;
@@ -171,22 +169,5 @@
 //        //    std::cout << m_chunks.size() << " Chunks" << std::endl;
 //        //    frameCount = 0;
 //        //}
-//    }
-//}
-//
-//void ChunkStrategy::Render()
-//{
-//    // TODO: Do culling
-//    for (auto& chunk : m_chunks)
-//    {
-//        if (!chunk.second.chunk.m_isAir && chunk.second.mesh.m_elemCount != 0)
-//        {
-//            m_renderer.Render(chunk.second.mesh);
-//            if (chunk.second.chunk.GetState() == Chunk::State::Modify)
-//            {
-//                chunk.second.mesh.Generate(chunk.second.chunk);
-//                chunk.second.chunk.MarkDone();
-//            }
-//        }
 //    }
 //}

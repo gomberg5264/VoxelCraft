@@ -76,19 +76,23 @@ private:
     BlockArray m_blocks;
 };
 
-class ChunkContainer
+class ChunkManager
 {
 public:
     using ChunkMap = std::unordered_map<glm::ivec3, Chunk>;
+    using ChunkCB = std::function<void(Chunk&)>;
     
-    Chunk& AddChunk(glm::ivec3 pos);
+    void AddChunk(glm::ivec3 pos);
     // True if chunk existed
-    bool RemoveChunk(glm::ivec3 pos);
+    void RemoveChunk(glm::ivec3 pos);
 
     void Update();
     const std::vector<std::reference_wrapper<Chunk>>& GetModifiedChunks() const;
     ChunkMap& GetChunks();
 
+
+    ChunkCB m_addCB;
+    ChunkCB m_removeCB;
 private:
     void GenerateChunk(Chunk& chunk);
 

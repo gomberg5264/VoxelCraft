@@ -80,6 +80,9 @@ void GameView::Draw(const GameModel& model, const Camera& camera)
 
     // -- Render contents to the screen --
     {
+        for (const auto& player : model.m_players)
+            PlayerMesh(player.m_transform).Draw(camera);
+
         m_chunkRenderer.Display();
         m_skyRenderer.Display();
     }

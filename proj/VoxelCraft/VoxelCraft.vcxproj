@@ -117,7 +117,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="client\Camera.cpp" />
-    <ClCompile Include="client\ClientChunkManager.cpp" />
+    <ClCompile Include="client\ChunkStrategy.cpp" />
     <ClCompile Include="client\gl\Buffer.cpp" />
     <ClCompile Include="client\gl\ChunkRenderer.cpp" />
     <ClCompile Include="client\gl\PlayerRenderer.cpp" />
@@ -141,7 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\Camera.hpp" />
-    <ClInclude Include="client\ClientChunkManager.hpp" />
+    <ClInclude Include="client\ChunkStrategy.hpp" />
     <ClInclude Include="client\gl\Buffer.hpp" />
     <ClInclude Include="client\gl\ChunkRenderer.hpp" />
     <ClInclude Include="client\gl\PlayerRenderer.hpp" />
