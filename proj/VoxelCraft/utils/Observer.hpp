@@ -49,7 +49,15 @@ public:
     inline void RemoveSubscriber(Subscriber<T>& sub)
     {
         m_subscribers.erase(std::remove_if(m_subscribers.begin(), m_subscribers.end(),
-            [&sub](const std::reference_wrapper<Subscriber<T>>& match) { return &sub == &match.get(); }));
+            [&sub](const std::reference_wrapper<Subscriber<T>>& match) 
+            {
+                if (&sub == &match.get())
+                {
+                    sub.m_publisher = nullptr;
+                    return true; 
+                }
+                return false;
+            }));
     }
 
     /**

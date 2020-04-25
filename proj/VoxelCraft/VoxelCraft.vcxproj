@@ -128,11 +128,15 @@
     <ClCompile Include="client\gl\Window.cpp" />
     <ClCompile Include="common\Chunk.cpp" />
     <ClCompile Include="common\Application.cpp" />
+    <ClCompile Include="gameplay\GameLayer.cpp" />
     <ClCompile Include="gameplay\GameModel.cpp" />
     <ClCompile Include="gameplay\GameView.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="common\Player.cpp" />
     <ClCompile Include="common\Timer.cpp" />
+    <ClCompile Include="net\ClientLayer.cpp" />
+    <ClCompile Include="net\packet\Packet.cpp" />
+    <ClCompile Include="net\ServerLayer.cpp" />
     <ClCompile Include="vcpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -166,6 +170,12 @@
     <ClInclude Include="gameplay\GameLayer.hpp" />
     <ClInclude Include="gameplay\GameModel.hpp" />
     <ClInclude Include="gameplay\GameView.hpp" />
+    <ClInclude Include="net\Address.hpp" />
+    <ClInclude Include="net\ClientLayer.hpp" />
+    <ClInclude Include="net\packet\ConnectPacket.hpp" />
+    <ClInclude Include="gameplay\GameplayPacket.hpp" />
+    <ClInclude Include="net\packet\Packet.hpp" />
+    <ClInclude Include="net\ServerLayer.hpp" />
     <ClInclude Include="utils\Bitmask.hpp" />
     <ClInclude Include="utils\Helper.hpp" />
     <ClInclude Include="utils\Math.hpp" />

@@ -48,9 +48,6 @@ GameModel::GameModel()
     const auto atlasX = 2;
     const auto atlasY = 2;
     RegisterBlockTypes(atlasX, atlasY);
-
-    m_players.emplace_back();
-    m_players.emplace_back();
 }
 
 void GameModel::Update()

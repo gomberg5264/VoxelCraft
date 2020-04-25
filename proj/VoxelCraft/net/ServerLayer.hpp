@@ -31,9 +31,9 @@ private:
     virtual void OnUpdate() override final;
     virtual void OnNotify(Event& event) override final;
 
-    void Send(User& user, const PacketData& data);
-    void SendAllBut(User& user, const PacketData& data);
-    void SendAll(PacketData&& data);
+    void Send(User& user, const Packet& packet);
+    void SendAllBut(User& user, const Packet& packet);
+    void SendAll(const Packet& packet);
     const User* GetUser(const Address& address) const;
 
     bool m_isHosting;

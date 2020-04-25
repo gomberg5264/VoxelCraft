@@ -1,7 +1,6 @@
 #include "vcpch.hpp"
 #include "net/ServerLayer.hpp"
 #include "net/packet/ConnectPacket.hpp"
-#include "net/packet/GameplayPacket.hpp"
 
 #include "common/event/NetEvent.hpp"
 
@@ -32,6 +31,7 @@ void ServerLayer::OnUpdate()
                 {
                     std::cout << sender << " tried to connect with the invalid packet: " << static_cast<int>(type) << ". How is this possible?\n";
                 }
+
                 // Add user
                 {
                     auto request = ExtractPacket<ConnectPacket>(packet);
@@ -46,26 +46,27 @@ void ServerLayer::OnUpdate()
 
                 // Send handshake
                 {
-                    //auto joinRet = ConnectResponsePacket(ConnectResponsePacket::Status::Accepted);
-                    //Send(m_users.back(), joinRet);
+                    Send(m_users.back(), ConnectResponsePacket(ConnectResponsePacket::Status::Accepted).Build());
                 }
             }
             break;
         
             case PacketType::Disconnect:
-            break;
+                std::cout << "DISCONNECT EVENT NOT HANDLED YET\n";
+                break;
             
-            case PacketType::Message:
+            case PacketType::Gameplay:
             {
-                std::string msg;
-                msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
-                std::cout << msg << '\n';
-                SendAll(MessagePacket(msg));
+                Publish(NetPacketReceiveEvent(packet));
+                //std::string msg;
+                //msg = GenUserString(user->name) + ExtractPacket<MessagePacket>(packet).message;
+                //std::cout << msg << '\n';
+                //SendAll(MessagePacket(msg));
             }
             break;
             
             default:
-                std::cout << "Received unknown packet type: " << static_cast<int>(type) << '\n';
+                std::cout << "Received unhandled packet type " << (int)type << '\n';
                 break;
             }   
         }
@@ -97,18 +98,18 @@ void ServerLayer::OnNotify(Event& event)
     d.Dispatch<NetShutdownEvent>([&](NetShutdownEvent&)
         {
             std::cout << "Shutting down server\n";
-            SendAll(ShutdownPacket());
+            SendAll(ShutdownPacket().Build());
             m_isHosting = false;
         });
 
-    // Gameplay events
-    d.Dispatch<NetMessageEvent>([&](NetMessageEvent& e)
+    d.Dispatch<NetPacketSendEvent>([&](NetPacketSendEvent& e)
         {
-            std::string msg = GenUserString("server") + e.message;
-
-            std::cout << msg << '\n';
-            SendAll(MessagePacket(msg));
+            SendAll(e.packet);
         });
+    //d.Dispatch<NetPacketReceiveEvent>([&](NetPacketSendEvent& e)
+    //    {
+    //        SendAll(e.packet);
+    //    });
 }
 
 ServerLayer::ServerLayer()
@@ -117,34 +118,30 @@ ServerLayer::ServerLayer()
     m_socket.setBlocking(false);
 }
 
-void ServerLayer::Send(User& user, const PacketData& data)
+void ServerLayer::Send(User& user, const Packet& packet)
 {
-    auto packet = data.Build();
-    m_socket.send(packet, user.address.ip, user.address.port);
+    auto pack = packet;
+    m_socket.send(pack, user.address.ip, user.address.port);
 }
 
-void ServerLayer::SendAllBut(User& user, const PacketData& data)
+void ServerLayer::SendAllBut(User& user, const Packet& packet)
 {
     // Build the packet
-    auto packet = data.Build();
-
+    auto pack = packet;
     for (const auto& u : m_users)
     {
         if(u.name != user.name)
-        if (m_socket.send(packet, u.address.ip, u.address.port) != sf::Socket::Done)
+        if (m_socket.send(pack, u.address.ip, u.address.port) != sf::Socket::Done)
         {
             std::cout << "There was an issue sending data to " << u.name << '\n';
         }
     }
 }
 
-
-
-void ServerLayer::SendAll(PacketData&& data)
+void ServerLayer::SendAll(const Packet& packet)
 {
     // Build the packet
-    auto packet = data.Build();
-
+    auto pack = packet;
     for (const auto& user : m_users)
     {
         // NOTE: this function takes a reference to the packet
@@ -153,7 +150,7 @@ void ServerLayer::SendAll(PacketData&& data)
         // don't modify anything in the source code
         // (for the udp implementation that is)
         // So I don't think that I have to be worried about it
-        if (m_socket.send(packet, user.address.ip, user.address.port) != sf::Socket::Done)
+        if (m_socket.send(pack, user.address.ip, user.address.port) != sf::Socket::Done)
         {
             std::cout << "There was an issue sending data to " << user.name << '\n';
         }

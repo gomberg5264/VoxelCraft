@@ -16,13 +16,9 @@ enum class PacketType
 {
     Unrelated, // Unrelated packet, not interested in it 
     Connect, ConnectResponse, 
-    Disconnect,
-
-    // Gameplay
-    Message,
-    PlayerMove,
-
-    Shutdown,
+    Disconnect, Shutdown,
+    
+    Gameplay,
 };
 
 /**
@@ -43,6 +39,12 @@ public:
 private:
     virtual void OnBuild(Packet& packet) const {} ;
     virtual void OnExtract(Packet&& packet) {};
+};
+
+class GameplayPacket : public PacketData
+{
+public:
+    GameplayPacket() : PacketData(PacketType::Gameplay) {}
 };
 
 /**

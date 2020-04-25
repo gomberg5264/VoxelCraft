@@ -1,8 +1,7 @@
 #include "vcpch.hpp"
 
 #include "net/ClientLayer.hpp"
-#include "packet/ConnectPacket.hpp"
-#include "packet/GameplayPacket.hpp"
+#include "net/packet/ConnectPacket.hpp"
 
 ClientLayer::ClientLayer()
     : m_connected(false)
@@ -153,12 +152,11 @@ void ClientLayer::OnNotify(Event& event)
             Send(DisconnectPacket());
             m_socket.unbind();
         });
-
-    // Gameplay events
-    d.Dispatch<NetMessageEvent>([&](NetMessageEvent& e)
-        {
-            Send(MessagePacket(e.message));
-        });
+    //// Gameplay events
+    //d.Dispatch<NetMessageEvent>([&](NetMessageEvent& e)
+    //    {
+    //        Send(MessagePacket(e.message));
+    //    });
 }
 
 void ClientLayer::OnUpdate()
@@ -177,12 +175,12 @@ void ClientLayer::OnUpdate()
         //    break;
         //case PacketType::Disconnect:
         //    break;
-        case PacketType::Message:
-        {
-            MessagePacket p = ExtractPacket<MessagePacket>(packet);
-            std::cout << p.message << '\n';
-        }
-        break;
+        //case PacketType::Message:
+        //{
+        //    MessagePacket p = ExtractPacket<MessagePacket>(packet);
+        //    std::cout << p.message << '\n';
+        //}
+        //break;
         case PacketType::Shutdown:
             std::cout << "Server has shut down\n";
             Disconnect();

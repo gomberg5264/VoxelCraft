@@ -34,6 +34,8 @@ class Application : public Publisher<Event>
 public:
     using Layers = std::vector<std::unique_ptr<Layer>>;
 
+    void AddLayer(std::unique_ptr<Layer>&& layer);
+
     void Run() noexcept;
 
 private:
@@ -52,14 +54,17 @@ private:
 class Layer : public Subscriber<Event>
 {
 public:
-    virtual ~Layer() { OnDeinit(); }
+    virtual ~Layer() = default;
 
     void Init(Application& app);
+    void Deinit();
     void Update();
     
     inline Application& GetApplication() noexcept { return *m_app; }
-    inline bool ShouldExit() { return m_shouldExit; }
-    inline void Exit() { m_shouldExit = true; }
+    inline bool ShouldPop() noexcept { return m_shouldExit; }
+    inline bool ShouldExit() noexcept { return m_shouldExit; }
+    inline void Pop() noexcept { m_shouldPop = true; }
+    inline void Exit() noexcept { m_shouldExit = true; }
 
 
 private:
@@ -69,6 +74,7 @@ private:
 
     Application* m_app;
     bool m_shouldExit = false;
+    bool m_shouldPop = false;
 };
 
 extern void CreateApplication(Application::Layers& layers);
