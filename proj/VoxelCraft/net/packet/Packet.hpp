@@ -69,3 +69,27 @@ T ExtractPacket(Packet& packet)
     data.Extract(packet);
     return data;
 }
+
+// Overloads for packet
+template<typename T>
+inline Packet& operator<<(Packet& p, const std::vector<T>& t)
+{ 
+    p << t.size();
+    for (const auto& v : t)
+        p << t;
+    return p;
+}
+
+template<typename T>
+inline Packet& operator>>(Packet& p, std::vector<T>& t)
+{
+    unsigned size;
+    p >> size;
+    for (int i = 0; i < size; i++)
+    {
+        T val;
+        p >> val;
+        t.push_back(val);
+    }
+    return p;
+}

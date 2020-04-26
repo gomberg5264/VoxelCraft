@@ -3,7 +3,9 @@
 
 enum class GamePacketType : unsigned
 {
-    Message = 1, 
+    Join, 
+    
+    Message, 
 };
 
 inline Packet& operator<<(Packet& p, const GamePacketType& t)
@@ -44,17 +46,15 @@ struct GameMessagePacket : public GamePacket
     std::string message;
 };
 
-//class MessagePacket : public PacketData
-//{
-//public:
-//    MessagePacket() : PacketData(PacketType::Message) {}
-//    MessagePacket(const std::string& message) 
-//        : PacketData(PacketType::Message) 
-//        , message(message) {}
-//
-//    std::string message;
-//
-//private:
-//    virtual void OnBuild(Packet& packet) const { packet << message; };
-//    virtual void OnExtract(Packet& packet) { packet >> message; };
-//};
+// This packet will be send when a player has joined
+// It contains initial world state
+struct GameInitialPacket : public GamePacket
+{
+    GameInitialPacket() : GamePacket(GamePacketType::Join) {}
+
+    std::vector<Player> players;
+
+    virtual void OnBuild(Packet& packet) const { GamePacket::OnBuild(packet); packet << players; };
+    // NOTE: We don't call GamePacket::OnExtract since we extract manually to check the type
+    virtual void OnExtract(Packet& packet) { packet >> players; };
+};

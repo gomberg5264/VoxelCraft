@@ -2,6 +2,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "net/packet/Packet.hpp"
+
 class Transform
 {
 public:
@@ -24,3 +26,33 @@ public:
     glm::vec3 m_scale{ 1 };
     glm::vec3 m_euler{ 0 };
 };
+
+template<glm::length_t L, typename T>
+sf::Packet& operator<<(sf::Packet& p, const glm::vec<L, T>& v)
+{
+    for (int i = 0; i < L; i++)
+        p << v[i];
+    return p;
+}
+
+template<glm::length_t L, typename T>
+sf::Packet& operator>>(sf::Packet& p, glm::vec<L, T>& v)
+{
+    for (int i = 0; i < L; i++)
+    {
+        p >> v[i];
+    }
+    return p;
+}
+
+inline sf::Packet& operator<<(sf::Packet& p, const Transform& t)
+{
+    p << t.m_pos << t.m_scale << t.m_euler;
+    return p;
+}
+
+inline sf::Packet& operator>>(sf::Packet& p, Transform& t)
+{
+    p >> t.m_pos >> t.m_scale >> t.m_euler;
+    return p;
+}
