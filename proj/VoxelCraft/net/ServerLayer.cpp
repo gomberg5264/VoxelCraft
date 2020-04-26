@@ -42,12 +42,13 @@ void ServerLayer::OnUpdate()
                 // Send handshake
                 {
                     Send(m_users.back(), ConnectResponsePacket(ConnectResponsePacket::Status::Accepted).Build());
+                    Publish(NetJoinedEvent(m_users.back()));
                 }
             }
             break;
         
             case PacketType::Disconnect:
-                std::cout << "DISCONNECT EVENT NOT HANDLED YET\n";
+                std::cout << "DISCONNECT EVENT NOT HANDLED YET. Bye " + user->name << '\n';
                 break;
             
             case PacketType::Gameplay:

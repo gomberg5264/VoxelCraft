@@ -19,6 +19,9 @@ public:
     void AddChunk(Chunk& chunk);
     void RemoveChunk(Chunk& chunk);
     
+    // TEMP;
+    unsigned id;
+
     void Draw(const GameModel& model, const Camera& camera);
 
 private:

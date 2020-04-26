@@ -48,8 +48,8 @@ void GameView::Draw(const GameModel& model, const Camera& camera)
 
     // -- Make draw requests to renderers -- 
     {
-        for (const auto& player : model.m_players)
-            PlayerMesh(player.m_transform).Draw(camera);
+        //for (const auto& player : model.m_players)
+        //    PlayerMesh(player.m_transform).Draw(camera);
 
         // TODO: Render only on certain condition
         // TODO: Do culling
@@ -81,7 +81,10 @@ void GameView::Draw(const GameModel& model, const Camera& camera)
     // -- Render contents to the screen --
     {
         for (const auto& player : model.m_players)
-            PlayerMesh(player.m_transform).Draw(camera);
+        {
+            if(player.m_id != id)
+                PlayerMesh(player.m_transform).Draw(camera);
+        }
 
         m_chunkRenderer.Display();
         m_skyRenderer.Display();

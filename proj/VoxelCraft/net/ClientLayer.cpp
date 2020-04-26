@@ -41,7 +41,7 @@ void ClientLayer::Connect(NetConnectEvent& event)
             Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
             return;
         }
-        
+
         while (!responded)
         {
             time.Update();
@@ -81,6 +81,8 @@ void ClientLayer::Connect(NetConnectEvent& event)
             Publish(NetConnectResponseEvent(NetConnectResponseEvent::Status::Failed));
             return;
         }
+
+        std::cout << "Retrieved handshake\n";
     }
 
     // Verify if correct handshake type 
@@ -167,23 +169,14 @@ void ClientLayer::OnUpdate()
     {
         switch (type)
         {
-        //case PacketType::Unrelated:
-        //    break;
-        //case PacketType::Connect:
-        //    break;
-        //case PacketType::ConnectResponse:
-        //    break;
-        //case PacketType::Disconnect:
-        //    break;
-        //case PacketType::Message:
-        //{
-        //    MessagePacket p = ExtractPacket<MessagePacket>(packet);
-        //    std::cout << p.message << '\n';
-        //}
-        //break;
         case PacketType::Shutdown:
             std::cout << "Server has shut down\n";
             Disconnect();
+
+            break;
+        case PacketType::Gameplay:
+
+            Publish(NetClientPacketReceiveEvent(packet));
 
             break;
         default:

@@ -7,6 +7,8 @@ public:
     static const float serverTickRate;
     static const float fixedTickRate;
 
+    Timer();
+
     float Elapsed() noexcept;
     float ElapsedServer() noexcept;
     float ElapsedFixed() noexcept;

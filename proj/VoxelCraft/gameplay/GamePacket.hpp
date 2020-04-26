@@ -3,17 +3,17 @@
 
 enum class GamePacketType : unsigned
 {
-    Join, 
+    Initial, Join, 
     
-    Message, 
+    Move, Message,
 };
 
-inline Packet& operator<<(Packet& p, const GamePacketType& t)
+inline sf::Packet& operator<<(sf::Packet& p, const GamePacketType& t)
 {
     p << static_cast<unsigned>(t);
     return p;
 }
-inline Packet& operator>>(Packet& p, GamePacketType& t)
+inline sf::Packet& operator>>(sf::Packet& p, GamePacketType& t)
 {
     unsigned i;
     p >> i;
@@ -50,11 +50,44 @@ struct GameMessagePacket : public GamePacket
 // It contains initial world state
 struct GameInitialPacket : public GamePacket
 {
-    GameInitialPacket() : GamePacket(GamePacketType::Join) {}
-
+    GameInitialPacket() : GamePacket(GamePacketType::Initial) {}
+    
+    unsigned id;
     std::vector<Player> players;
 
-    virtual void OnBuild(Packet& packet) const { GamePacket::OnBuild(packet); packet << players; };
+    virtual void OnBuild(Packet& packet) const { GamePacket::OnBuild(packet); packet << id << players; };
     // NOTE: We don't call GamePacket::OnExtract since we extract manually to check the type
-    virtual void OnExtract(Packet& packet) { packet >> players; };
+    virtual void OnExtract(Packet& packet) { packet >> id >> players; };
+};
+
+struct GameJoinPacket : public GamePacket
+{
+    GameJoinPacket() : GamePacket(GamePacketType::Join) {}
+    GameJoinPacket(const Player& player) 
+        : GamePacket(GamePacketType::Join)
+        , player(player) {}
+
+    Player player;
+
+    virtual void OnBuild(Packet& packet) const { GamePacket::OnBuild(packet); packet << player; };
+    // NOTE: We don't call GamePacket::OnExtract since we extract manually to check the type
+    virtual void OnExtract(Packet& packet) { packet >> player; };
+};
+
+// TODO: Make this work on entities
+struct GameMovePacket : public GamePacket
+{
+    GameMovePacket() : GamePacket(GamePacketType::Move) {}
+
+    // TODO: We should probably send a move instead of the player since 
+    // we should not be modifying the player on client side
+    GameMovePacket(const Player& player)
+        : GamePacket(GamePacketType::Move)
+        , player(player) {}
+
+    Player player;
+
+    virtual void OnBuild(Packet& packet) const { GamePacket::OnBuild(packet); packet << player; };
+    // NOTE: We don't call GamePacket::OnExtract since we extract manually to check the type
+    virtual void OnExtract(Packet& packet) { packet >> player; };
 };

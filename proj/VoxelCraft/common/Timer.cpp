@@ -8,7 +8,12 @@ const float Timer::serverTickRate = 1.f / serverPeriod;
 const float Timer::fixedTickRate = 1.f / fixedPeriod;
 
 
-float Timer::Elapsed() noexcept 
+Timer::Timer()
+{
+    Reset();
+}
+
+float Timer::Elapsed() noexcept
 { 
     return m_elapsed;
 }

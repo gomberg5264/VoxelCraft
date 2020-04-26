@@ -72,18 +72,18 @@ T ExtractPacket(Packet& packet)
 
 // Overloads for packet
 template<typename T>
-inline Packet& operator<<(Packet& p, const std::vector<T>& t)
+inline sf::Packet& operator<<(sf::Packet& p, const std::vector<T>& t)
 { 
     p << t.size();
     for (const auto& v : t)
-        p << t;
+        p << v;
     return p;
 }
 
 template<typename T>
-inline Packet& operator>>(Packet& p, std::vector<T>& t)
+inline sf::Packet& operator>>(sf::Packet& p, std::vector<T>& t)
 {
-    unsigned size;
+    size_t size;
     p >> size;
     for (int i = 0; i < size; i++)
     {

@@ -6,7 +6,6 @@
  * These packets concern connection
  * operations such as joining, leaving, kicking
  */
-
 class ConnectPacket : public PacketData
 {
 public: 

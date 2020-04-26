@@ -59,7 +59,9 @@ void GameModel::Update()
     {
         auto& player = m_players[i];
 
-        player.m_transform.m_pos = glm::vec3(i * 5, 20, 20.f);
+        //player.m_transform.m_pos = glm::vec3(i * 5, 20, 20.f);
+
+
         player.m_transform.m_scale = glm::vec3(glm::sin(et), glm::cos(et), glm::sin(glm::cos(et))) * 10.f;
         player.m_transform.m_euler = player.m_transform.m_euler + glm::vec3(dt, dt * 3.f, dt * 1.5f);
     }

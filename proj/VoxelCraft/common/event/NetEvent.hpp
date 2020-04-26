@@ -14,7 +14,7 @@ public:
 class NetConnectEvent : public NetEvent
 {
 public:
-    NetConnectEvent(Address server, const char* name) 
+    NetConnectEvent(Address server, const char* name)
         : server(server)
         , name(name) {}
 
@@ -38,6 +38,18 @@ public:
 
     EVENT_CLASS_TYPE(EventType::NetConnectResponse)
 };
+
+class NetJoinedEvent : public NetEvent
+{
+public:
+    NetJoinedEvent(ServerLayer::User user)
+        : user(user) {}
+    
+    const ServerLayer::User user;
+
+    EVENT_CLASS_TYPE(EventType::NetJoined)
+};
+
 
 class NetDisconnectEvent : public NetEvent
 {

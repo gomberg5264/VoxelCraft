@@ -6,8 +6,6 @@
 class Player
 {
 public:
-    Player();
-
     unsigned m_id;
 
     Transform m_transform;

@@ -36,6 +36,8 @@ private:
     GameModel m_model;
     GameView m_view;
 
+    unsigned m_id;
+
     std::thread m_console;
 };
 
