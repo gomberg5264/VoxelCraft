@@ -3,7 +3,8 @@
 
 #include <Shinobu/Renderer/Renderer.h>
 
-Player::Player()
+Player::Player(/*unsigned id*/)
+    //: id(id)
     : m_shader(sh::Shader::Create("res/shaders/Face.glsl"))
 {
     m_mesh = sh::VertexArray::Create();

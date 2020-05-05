@@ -1,4 +1,5 @@
 #pragma once
+#include "Client/PlayerInput.h"
 #include "Common/Player.h"
 
 #include <Shinobu/Common.h>
@@ -18,8 +19,10 @@ public:
     virtual void OnGuiRender() override final;
 
 private:
-    sh::PerspectiveCameraController m_camera;
+    sh::PerspectiveCamera m_camera;
 
     sh::TextureRef m_texture;
+
+    PlayerInput m_input;
     std::vector<Player> m_players;
 };

@@ -10,7 +10,7 @@ add_executable(Application
     src/Common/GameLayer.cpp
     
     "src/Client/Primitive.cpp"
-      "src/Common/Player.cpp")
+      "src/Common/Player.cpp"  "src/Client/PlayerInput.cpp")
 
 target_include_directories(Shinobu PUBLIC
     src

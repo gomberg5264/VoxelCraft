@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Common/Command.h"
+
 #include <Shinobu/Core/Transform.h>
 #include <Shinobu/Renderer/VertexArray.h>
 #include <Shinobu/Renderer/VertexBuffer.h>
@@ -7,11 +10,13 @@
 class Player
 {
 public:
-    Player();
+    Player(/*unsigned id*/);
 
     void Draw() const;
 
 public:
+    //const unsigned id;
+    
     sh::Transform transform;
 
 private:
