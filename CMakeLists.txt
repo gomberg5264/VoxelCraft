@@ -5,8 +5,12 @@ project(VoxelCraft)
 add_subdirectory(thirdParty/Shinobu-Engine/Shinobu)
 
 add_executable(Application
-    "src/Entry.cpp"
-    "src/GameLayer.cpp")
+    src/Entry.cpp
+    
+    src/Common/GameLayer.cpp
+    
+    src/Client/Face.cpp
+     )
 
 target_include_directories(Shinobu PUBLIC
     src
