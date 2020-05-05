@@ -1,0 +1,3 @@
+[submodule "thirdParty/Shinobu-Engine"]
+	path = thirdParty/Shinobu-Engine
+	url = https://github.com/antjowie/Shinobu-Engine
