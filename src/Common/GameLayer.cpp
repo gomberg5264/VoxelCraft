@@ -1,5 +1,5 @@
 #include "Common/GameLayer.h"
-#include "Client/Face.h"
+#include "Client/Primitive.h"
 
 GameLayer::GameLayer()
     : sh::Layer("Example Layer")
@@ -13,9 +13,15 @@ void GameLayer::OnAttach()
     ImGui::SetCurrentContext(sh::ImGuiLayer::GetContext());
 
     m_shader = sh::Shader::Create("res/shaders/Face.glsl");
+    
     m_cube = sh::VertexArray::Create();
-    m_cube->AddVertexBuffer(Face::CreateVertexBuffer(BlockFace::Front, 0, 0, -10.f, 0));
-    m_cube->SetIndexBuffer(Face::CreateIndexBuffer(1));
+    //m_cube->AddVertexBuffer(Face::CreateVertexBuffer(BlockFace::Front, 0, 0, -10.f, 0));
+    m_cube->SetIndexBuffer(Cube::CreateIndexBuffer());
+    auto vertices = Cube::CreateVertices(0, 0, -10.f, 0);
+    auto buffer = Cube::CreateVertexBuffer();
+    buffer->SetData(vertices.data(), vertices.size() * sizeof(vertices.front()));
+    m_cube->AddVertexBuffer(buffer);
+
     m_texture = sh::Texture2D::Create("res/texture.png");
     m_texture->Bind();
 }

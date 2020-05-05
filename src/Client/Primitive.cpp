@@ -1,33 +1,16 @@
-#include "Client/Face.h"
+#include "Client/Primitive.h"
 #include "Common/BlockData.h"
 
 #include <vector>
 
-sh::VertexBufferRef Face::CreateVertexBuffer(BlockFace dir, float x, float y, float z, unsigned texIndex)
+Face::Vertices Face::CreateVertices(BlockFace dir, float x, float y, float z, unsigned texIndex)
 {
-    struct Vertex
-    {
-        Vertex(
-            float x, float y, float z,
-            float nx, float ny, float nz,
-            float u, float v, float tIndex)
-                : x(x),y(y),z(z)
-                , nx(nx), ny(ny), nz(nz)
-                , u(u), v(v), 
-                tIndex(tIndex)
-        {}
-
-        float x, y, z;
-        float nx, ny, nz;
-        float u, v;
-        float tIndex;
-    };
-    std::vector<Vertex> buffer;
 
     // Top left
     // Bottom left
     // Bottom right
     // Top right
+    Face::Vertices buffer;
 
     switch (dir)
     {
@@ -76,11 +59,17 @@ sh::VertexBufferRef Face::CreateVertexBuffer(BlockFace dir, float x, float y, fl
         break;
     }
 
-    auto vbo = sh::VertexBuffer::Create(&buffer[0].x, buffer.size() * sizeof(Vertex));
-    
+    return buffer;
+    //auto vbo = sh::VertexBuffer::Create(&buffer[0].x, buffer.size() * sizeof(Vertex));
+}
+
+sh::VertexBufferRef Face::CreateVertexBuffer()
+{
+    auto vbo = sh::VertexBuffer::Create(0);
+
     vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float3, "aPos"));
-    vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float3, "aNormal",true));
-    vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float2, "aUV",true));
+    vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float3, "aNormal", true));
+    vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float2, "aUV", true));
     vbo->AddElement(sh::BufferElement(sh::ShaderDataType::Float, "aTexIndex"));
 
     return vbo;
@@ -101,4 +90,27 @@ sh::IndexBufferRef Face::CreateIndexBuffer(unsigned faceCount)
     }
 
     return sh::IndexBuffer::Create(ebo.data(),ebo.size());
+}
+
+Face::Vertices Cube::CreateVertices(float x, float y, float z, unsigned texIndex)
+{
+    Face::Vertices ret;
+
+    for (unsigned i = 0; i < 6; i++)
+    {
+        auto vertices = Face::CreateVertices(BlockFace(i), x, y, z, texIndex);
+        ret.insert(ret.end(), vertices.begin(), vertices.end());
+    }
+
+    return ret;
+}
+
+sh::VertexBufferRef Cube::CreateVertexBuffer()
+{
+    return Face::CreateVertexBuffer();
+}
+
+sh::IndexBufferRef Cube::CreateIndexBuffer()
+{
+    return Face::CreateIndexBuffer(6);
 }
