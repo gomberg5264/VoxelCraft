@@ -5,9 +5,12 @@ project(VoxelCraft)
 add_subdirectory(thirdParty/Shinobu-Engine/Shinobu)
 
 add_executable(Application
-    src/Sandbox.cpp
-)
+    "src/Entry.cpp"
+    "src/GameLayer.cpp")
 
+target_include_directories(Shinobu PUBLIC
+    src
+)
 target_link_libraries(Application PUBLIC Shinobu)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/thirdParty/Shinobu-Engine/Shinobu/res)
