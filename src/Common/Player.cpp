@@ -8,7 +8,7 @@ Player::Player()
 {
     m_mesh = sh::VertexArray::Create();
     m_mesh->SetIndexBuffer(Cube::CreateIndexBuffer());
-    auto vertices = Cube::CreateVertices(0, 0, -10.f, 0);
+    auto vertices = Cube::CreateVertices(0, 0, 0, 0);
     auto buffer = Cube::CreateVertexBuffer();
     buffer->SetData(vertices.data(), vertices.size() * sizeof(vertices.front()));
     m_mesh->AddVertexBuffer(buffer);
