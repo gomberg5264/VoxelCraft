@@ -12,18 +12,13 @@ void GameLayer::OnAttach()
     // This has to be called when attaching a new layer. See the function for more details
     ImGui::SetCurrentContext(sh::ImGuiLayer::GetContext());
 
-    m_shader = sh::Shader::Create("res/shaders/Face.glsl");
-    
-    m_cube = sh::VertexArray::Create();
-    //m_cube->AddVertexBuffer(Face::CreateVertexBuffer(BlockFace::Front, 0, 0, -10.f, 0));
-    m_cube->SetIndexBuffer(Cube::CreateIndexBuffer());
-    auto vertices = Cube::CreateVertices(0, 0, -10.f, 0);
-    auto buffer = Cube::CreateVertexBuffer();
-    buffer->SetData(vertices.data(), vertices.size() * sizeof(vertices.front()));
-    m_cube->AddVertexBuffer(buffer);
-
     m_texture = sh::Texture2D::Create("res/texture.png");
     m_texture->Bind();
+
+
+    m_players.emplace_back();
+    m_players.emplace_back();
+    m_players.back().transform.Move(sh::Transform::GetWorldRight() * 4.f);
 }
 
 void GameLayer::OnEvent(sh::Event& event)
@@ -45,7 +40,8 @@ void GameLayer::OnUpdate(sh::Timestep ts)
     m_camera.OnUpdate(ts);
 
     sh::Renderer::BeginScene(m_camera.GetCamera());
-    sh::Renderer::Submit(m_shader, m_cube, m_transform.GetWorldMatrix());
+    for(const auto& p : m_players)
+        p.Draw();
     sh::Renderer::EndScene();
 }
 

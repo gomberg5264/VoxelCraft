@@ -1,4 +1,6 @@
 #pragma once
+#include "Common/Player.h"
+
 #include <Shinobu/Common.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,9 +20,6 @@ public:
 private:
     sh::PerspectiveCameraController m_camera;
 
-    sh::Transform m_transform;
-    std::shared_ptr<sh::VertexArray> m_cube;
-    std::shared_ptr<sh::Shader> m_shader;
-
-    std::shared_ptr<sh::Texture2D> m_texture;
+    sh::TextureRef m_texture;
+    std::vector<Player> m_players;
 };
