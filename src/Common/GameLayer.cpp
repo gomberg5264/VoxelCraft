@@ -1,6 +1,8 @@
 #include "Common/GameLayer.h"
 #include "Client/Primitive.h"
 
+#include <enet/enet.h>
+
 std::vector<Player> GameLayer::m_players;
 static bool look = false;
 
@@ -12,6 +14,7 @@ GameLayer::GameLayer()
 
 void GameLayer::OnAttach()
 {
+    enet_initialize();
     // This has to be called when attaching a new layer. See the function for more details
     ImGui::SetCurrentContext(sh::ImGuiLayer::GetContext());
 
@@ -32,6 +35,11 @@ void GameLayer::OnAttach()
     {
         command.Execute();
     };
+}
+
+void GameLayer::OnDetach()
+{
+    enet_deinitialize();
 }
 
 void GameLayer::OnEvent(sh::Event& event)

@@ -10,12 +10,15 @@ add_executable(Application
     
     src/Common/GameLayer.cpp
     
-    "src/Client/Primitive.cpp"
-      "src/Common/Player.cpp"  "src/Client/PlayerInput.cpp")
+    src/Client/Primitive.cpp
+    src/Common/Player.cpp  
+    src/Client/PlayerInput.cpp
+    )
 
-target_include_directories(Shinobu PUBLIC
+target_include_directories(Application PUBLIC
     src
 )
+
 target_link_libraries(Application PUBLIC Shinobu enet)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/thirdParty/Shinobu-Engine/Shinobu/res)

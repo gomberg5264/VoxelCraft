@@ -3,4 +3,4 @@
 	url = https://github.com/antjowie/Shinobu-Engine
 [submodule "thirdParty/enet"]
 	path = thirdParty/enet
-	url = https://github.com/lsalzman/enet
+	url = https://github.com/antjowie/enet
