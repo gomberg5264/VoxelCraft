@@ -6,6 +6,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <vector>
+
 class GameLayer : public sh::Layer
 {
 public:
@@ -18,11 +20,20 @@ public:
     virtual void OnUpdate(sh::Timestep ts) override final;
     virtual void OnGuiRender() override final;
 
+public:
+    // TODO: I'm not sure if static is the way to go
+    // But we need some way to access this via commands
+    // since they need to execute logic on the player vector
+    //
+    // We could pass the vector in the command constructor
+    // or add a callback that the input calls to push it commands 
+    // to, but this is simplest for now.
+    static std::vector<Player> m_players;
+
 private:
     sh::PerspectiveCamera m_camera;
 
     sh::TextureRef m_texture;
 
     PlayerInput m_input;
-    std::vector<Player> m_players;
 };

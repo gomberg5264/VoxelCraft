@@ -1,13 +1,14 @@
 #include "Common/GameLayer.h"
 #include "Client/Primitive.h"
 
+std::vector<Player> GameLayer::m_players;
+static bool look = false;
+
 GameLayer::GameLayer()
     : sh::Layer("Example Layer")
     , m_camera(glm::radians(45.f), 16.f / 9.f, 0.1f, 1000.f)
 {
 }
-
-static bool look = false;
 
 void GameLayer::OnAttach()
 {
@@ -19,13 +20,18 @@ void GameLayer::OnAttach()
 
     m_players.reserve(3);
 
-    m_players.emplace_back();
-    m_input.player = &m_players.back();
+    m_players.emplace_back(0);
+    m_input.playerID = m_players.back().id;
 
-    m_players.emplace_back();
+    m_players.emplace_back(1);
     m_players.back().transform.Move(sh::Transform::GetWorldRight() * 4.f);
-    m_players.emplace_back();
+    m_players.emplace_back(2);
     m_players.back().transform.Move(sh::Transform::GetWorldRight() * 8.f);
+
+    m_input.callback = [](Command& command)
+    {
+        command.Execute();
+    };
 }
 
 void GameLayer::OnEvent(sh::Event& event)
@@ -50,7 +56,7 @@ void GameLayer::OnUpdate(sh::Timestep ts)
 
     for (auto& p : m_players)
     {
-        if (&p == m_input.player)
+        if (p.id == m_input.playerID)
             continue;
 
         if (look)
@@ -58,7 +64,9 @@ void GameLayer::OnUpdate(sh::Timestep ts)
         else
             p.transform.SetRotation(glm::vec3(0));
     }
-    m_camera.transform = m_input.player->transform;
+    m_camera.transform = 
+        std::find_if(std::begin(m_players), std::end(m_players), [&](const Player& p)
+        { return p.id == m_input.playerID;} )->transform;
     
     sh::Renderer::BeginScene(m_camera);
     for (auto& p : m_players)
@@ -84,7 +92,7 @@ void GameLayer::OnGuiRender()
 
     for (int i = 0; i < m_players.size(); i++)
     {
-        std::string label = "player ";
+        std::string label = "playerID ";
         label += std::to_string(i);
 
         if (ImGui::TreeNode(label.c_str()))

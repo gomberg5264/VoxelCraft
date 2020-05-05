@@ -1,4 +1,5 @@
-#include "PlayerInput.h"
+#include "Client/PlayerInput.h"
+#include "Common/GameLayer.h"
 
 #include <Shinobu/Event/MouseEvent.h>
 #include <Shinobu/Core/Input/Input.h>
@@ -9,9 +10,10 @@ void PlayerInput::OnUpdate(sh::Timestep ts)
 {
     glm::vec3 offset(0);
 
-    const glm::vec3 forward(player->transform.GetForward());
-    const glm::vec3 right(player->transform.GetRight());
-    const glm::vec3 up(player->transform.GetUp());
+    auto& player = GameLayer::m_players[playerID];
+    const glm::vec3 forward(player.transform.GetForward());
+    const glm::vec3 right(player.transform.GetRight());
+    const glm::vec3 up(player.transform.GetUp());
 
     // NOTE: I flipped the forward for the camera. This is because OpenGL by default 'looks' into the -z
     // direction. Since I reuse the transform class and don't want to modify too many things, I change 
@@ -23,10 +25,9 @@ void PlayerInput::OnUpdate(sh::Timestep ts)
     if (sh::Input::IsKeyPressed(sh::KeyCode::D)) offset += right;
     if (sh::Input::IsKeyPressed(sh::KeyCode::E)) offset += up;
     if (sh::Input::IsKeyPressed(sh::KeyCode::Q)) offset += -up;
-
-
-    // TODO: Change this to move packet
-    player->transform.SetPosition(player->transform.GetPosition() + offset * ts.Seconds() * 5.f);
+    
+    offset = offset * ts.Seconds() * 5.f;
+    callback(MoveCommand(playerID, GameLayer::m_players[playerID].transform.GetPosition() + offset));
 }
 
 void PlayerInput::OnEvent(sh::Event& event)
@@ -67,7 +68,7 @@ void PlayerInput::OnEvent(sh::Event& event)
 
 
                 // TODO: Change this to rotate packet
-                player->transform.Rotate(sh::Radians(glm::vec3(-offset.y, -offset.x, 0)));
+                GameLayer::m_players[playerID].transform.Rotate(sh::Radians(glm::vec3(-offset.y, -offset.x, 0)));
                 return false;
             });
     }

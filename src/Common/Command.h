@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 /**
  * The command is a very important class in this project
  * It allows us to save and defer an operation. Since it is an object
@@ -18,3 +21,28 @@ public:
     virtual void Execute() = 0;
     virtual void Undo() = 0;
 };
+
+///**
+// * The command buffer is something that will probably be moved to the net code.
+// * The design that I'm thinking of right now is that the user submits commands to the buffer.
+// * On a set interval, we will flush this buffer to the server. I do this to save on bandwitdh tho
+// * it may be redundant. 
+// *
+// * We are also only are concerned with the last command of any type but we need to store older commands
+// * so that we can reconciliate our client prediction with the actual server state.
+// */
+//template <typename CommandType>
+//class CommandBuffer
+//{
+//public:
+//    void Push(CommandType command);
+//
+//    // Send the last command to the server
+//    void Flush();
+//
+//
+//
+//private:
+//    
+//    std::vector<std::pair<unsigned, CommandType>> m_commands;
+//};

@@ -4,12 +4,17 @@
 #include <Shinobu/Core/Timestep.h>
 #include <Shinobu/Event/Event.h>
 
+#include <functional>
+
 class PlayerInput
 {
 public:
-    // TODO: Create some id system since we have to serialize which entity we referring to
-    Player* player;
+    unsigned playerID;
 
     void OnUpdate(sh::Timestep ts);
     void OnEvent(sh::Event& event);
+
+    using CommandCB = std::function<void(Command&)>;
+
+    CommandCB callback;
 };
