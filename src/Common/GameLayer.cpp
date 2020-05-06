@@ -1,6 +1,7 @@
 #include "Common/GameLayer.h"
 #include "Client/Primitive.h"
 
+
 std::vector<Player> GameLayer::m_players;
 static bool look = false;
 
@@ -78,26 +79,7 @@ void GameLayer::OnUpdate(sh::Timestep ts)
             }
         }
     }
-    if (m_server.IsHosting())
-    {
-        ENetEvent event;
-        while (m_server.Poll(event) > 0)
-        { 
-            switch (event.type)
-            {
-            case ENET_EVENT_TYPE_CONNECT:
-                SH_TRACE("Client connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-                break;
-            case ENET_EVENT_TYPE_DISCONNECT:
-                SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-                break;
-            case ENET_EVENT_TYPE_RECEIVE:
-                SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
-                enet_packet_destroy(event.packet);
-                break;
-            }
-        }
-    }
+
 
     for (auto& p : m_players)
     {
@@ -139,10 +121,35 @@ void GameLayer::OnGuiRender()
                 if (server)
                 {
                     server = m_server.Host(25565);
+
+                    m_serverThread.swap(std::thread([&]()
+                        {
+                            while (m_server.IsHosting())
+                            {
+                                ENetEvent event;
+                                while (m_server.Poll(event) > 0)
+                                {
+                                    switch (event.type)
+                                    {
+                                    case ENET_EVENT_TYPE_CONNECT:
+                                        SH_TRACE("Client connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                                        break;
+                                    case ENET_EVENT_TYPE_DISCONNECT:
+                                        SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                                        break;
+                                    case ENET_EVENT_TYPE_RECEIVE:
+                                        SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
+                                        enet_packet_destroy(event.packet);
+                                        break;
+                                    }
+                                }
+                            }
+                        }));
                 }
                 else
                 {
                     m_server.Close();
+                    m_serverThread.join();
                 }
 
             }

@@ -31,7 +31,7 @@ bool Server::Host(unsigned port)
 void Server::Close()
 {
     // TODO: Gracefully disconnect clients
-
+    SH_WARN("Server forcibly shut down!");
     enet_host_destroy(m_host);
 }
 

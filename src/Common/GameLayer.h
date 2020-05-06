@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
+#include <future>
+
 class GameLayer : public sh::Layer
 {
 public:
@@ -38,7 +40,8 @@ private:
 
     PlayerInput m_input;
 
-
     Client m_client;
     Server m_server;
+
+    std::thread m_serverThread;
 };
