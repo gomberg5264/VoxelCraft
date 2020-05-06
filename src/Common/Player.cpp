@@ -21,19 +21,19 @@ void Player::Draw() const
     sh::Renderer::Submit(m_shader, m_mesh, transform.GetWorldMatrix());
 }
 
-MoveCommand::MoveCommand(unsigned playerID, const glm::vec3& movement)
-    : m_playerID(playerID)
-    , m_pos(movement) 
-    , m_oldPos(GameLayer::m_players[m_playerID].transform.GetPosition())
+MoveCommand::MoveCommand(Player& player, const glm::vec3& pos)
+    : m_player(player)
+    , m_pos(pos) 
+    , m_oldPos(player.transform.GetPosition())
 {}
 
 void MoveCommand::Execute()
 {
     // TODO: Make this some kind interface that we access
-    GameLayer::m_players[m_playerID].transform.SetPosition(m_pos);
+    m_player.transform.SetPosition(m_pos);
 }
 
 void MoveCommand::Undo()
 {
-    GameLayer::m_players[m_playerID].transform.SetPosition(m_oldPos);
+    m_player.transform.SetPosition(m_oldPos);
 }

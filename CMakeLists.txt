@@ -13,7 +13,7 @@ add_executable(Application
     src/Client/Primitive.cpp
     src/Common/Player.cpp  
     src/Client/PlayerInput.cpp
-      "src/Net/Client.cpp" "src/Net/Server.cpp")
+      "src/Net/Client.cpp" "src/Net/Server.cpp" "src/Net/Packet.cpp")
 
 target_include_directories(Application PUBLIC
     src

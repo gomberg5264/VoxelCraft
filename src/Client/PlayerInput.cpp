@@ -8,9 +8,9 @@
 
 void PlayerInput::OnUpdate(sh::Timestep ts)
 {
+    Player& player = GameLayer::m_players[playerID];
     glm::vec3 offset(0);
 
-    auto& player = GameLayer::m_players[playerID];
     const glm::vec3 forward(player.transform.GetForward());
     const glm::vec3 right(player.transform.GetRight());
     const glm::vec3 up(player.transform.GetUp());
@@ -27,7 +27,7 @@ void PlayerInput::OnUpdate(sh::Timestep ts)
     if (sh::Input::IsKeyPressed(sh::KeyCode::Q)) offset += -up;
     
     offset = offset * ts.Seconds() * 5.f;
-    callback(MoveCommand(playerID, GameLayer::m_players[playerID].transform.GetPosition() + offset));
+    callback(std::make_unique<MoveCommand>(player, player.transform.GetPosition() + offset));
 }
 
 void PlayerInput::OnEvent(sh::Event& event)

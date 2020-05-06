@@ -1,10 +1,14 @@
 #include "Common/GameLayer.h"
 #include "Client/Primitive.h"
 
+#include "Net/Packet.h"
+
+#include "Player.h"
 
 std::vector<Player> GameLayer::m_players;
 static bool look = false;
 
+static std::vector<std::unique_ptr<Command>> m_commands;
 
 // TODO: Find a better way to do the server update loop
 static bool serverLoop = false;
@@ -33,9 +37,10 @@ void GameLayer::OnAttach()
     m_players.emplace_back(2);
     m_players.back().transform.Move(sh::Transform::GetWorldRight() * 8.f);
 
-    m_input.callback = [](Command& command)
+    m_input.callback = [](std::unique_ptr<Command>&& command)
     {
-        command.Execute();
+        m_commands.emplace_back(std::move(command));
+        //command->Execute();
     };
 }
 
@@ -66,8 +71,35 @@ void GameLayer::OnUpdate(sh::Timestep ts)
     //m_camera.OnUpdate(ts);
     m_input.OnUpdate(ts);
 
+
     if (m_client.IsConnected())
     {
+        // Send all the packets
+        // Gotta figure out how to serialize dem commands
+        for (const auto& command : m_commands)
+        {
+            // Get command
+            // Serialize command
+            // Send command to server
+            // Verify command
+            // Send authorative command back
+
+            sf::Packet data;
+
+            // TODO: Make a nice interface such as this one
+            // I think that I can use Cereal
+            //data << command;
+
+
+            auto c = static_cast<MoveCommand*>(command.get());
+            data << c->m_player.id << c->m_pos << c->m_oldPos;
+
+            auto* pck = enet_packet_create(data.getData(), data.getDataSize(), ENET_PACKET_FLAG_RELIABLE);
+            m_client.SendPacket(pck);
+        }
+        m_commands.clear();
+
+        // Handle events
         ENetEvent event;
         while(m_client.Poll(event) > 0)
         { 
@@ -147,6 +179,9 @@ void GameLayer::OnGuiRender()
                                         break;
                                     case ENET_EVENT_TYPE_RECEIVE:
                                         SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
+                                        
+                                        
+                                        
                                         enet_packet_destroy(event.packet);
                                         break;
                                     }
