@@ -4,6 +4,8 @@
 
 #include <Shinobu/Common.h>
 
+#include <enet/enet.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
@@ -36,4 +38,8 @@ private:
     sh::TextureRef m_texture;
 
     PlayerInput m_input;
+
+    ENetHost* m_client;
+    ENetPeer* m_peer;
+    ENetHost* m_server;
 };
