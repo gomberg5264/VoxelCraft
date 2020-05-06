@@ -5,6 +5,10 @@
 std::vector<Player> GameLayer::m_players;
 static bool look = false;
 
+
+// TODO: Find a better way to do the server update loop
+static bool serverLoop = false;
+
 GameLayer::GameLayer()
     : sh::Layer("Example Layer")
     , m_camera(glm::radians(45.f), 16.f / 9.f, 0.1f, 1000.f)
@@ -37,6 +41,9 @@ void GameLayer::OnAttach()
 
 void GameLayer::OnDetach()
 {
+    // TODO: Gracefully shut down server instead of forcing
+    serverLoop = false;
+    if(m_serverThread.joinable()) m_serverThread.join();
 }
 
 void GameLayer::OnEvent(sh::Event& event)
@@ -118,13 +125,14 @@ void GameLayer::OnGuiRender()
             static bool server = false;
             if (ImGui::Checkbox("server", &server))
             {
+                serverLoop = true;
                 if (server)
                 {
                     server = m_server.Host(25565);
 
                     m_serverThread.swap(std::thread([&]()
                         {
-                            while (m_server.IsHosting())
+                            while (serverLoop)
                             {
                                 ENetEvent event;
                                 while (m_server.Poll(event) > 0)
@@ -148,8 +156,9 @@ void GameLayer::OnGuiRender()
                 }
                 else
                 {
-                    m_server.Close();
+                    serverLoop = false;
                     m_serverThread.join();
+                    m_server.Close();
                 }
 
             }
