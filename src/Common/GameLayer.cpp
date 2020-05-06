@@ -178,9 +178,37 @@ void GameLayer::OnGuiRender()
                                         SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
                                         break;
                                     case ENET_EVENT_TYPE_RECEIVE:
-                                        SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
+                                        //SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
                                         
+                                        // Steps...
+                                        // Extract command
+                                        // Verify command
+                                        // Apply command
+                                        // Send command to all clients
                                         
+                                        // Extract command
+                                        sf::Packet data;
+                                        for (uint8_t i = 0; i < event.packet->dataLength; i++)
+                                        {
+                                            data << event.packet->data[i];
+                                        }
+                                        sf::Packet dataBack(data);
+                                        //event.packet->data
+
+                                        unsigned playerID;
+                                        glm::vec3 pos;
+                                        glm::vec3 oldPos;
+                                        data >> playerID >> pos >> oldPos;
+                                        MoveCommand command(m_players[playerID], pos);
+
+
+                                        // Verify command
+                                        // Apply command
+                                        command.Execute();
+
+                                        // Send command to all clients
+                                        auto* pck = enet_packet_create(dataBack.getData(), dataBack.getDataSize(), ENET_PACKET_FLAG_RELIABLE);
+                                        m_server.Broadcast(pck);
                                         
                                         enet_packet_destroy(event.packet);
                                         break;
