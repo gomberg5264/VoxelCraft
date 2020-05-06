@@ -1,6 +1,16 @@
 #include "Server.h"
 
-void Server::Host(unsigned port)
+Server::Server()
+    : m_host(nullptr)
+{
+}
+
+bool Server::IsHosting() const
+{
+    return m_host;
+}
+
+bool Server::Host(unsigned port)
 {
     ENetAddress address;
     enet_address_set_host(&address, "localhost");
@@ -11,7 +21,18 @@ void Server::Host(unsigned port)
     if (m_host == nullptr)
     {
         SH_ERROR("An error occurred while trying to create an ENet server host");
+        return false;
     }
+
+    SH_INFO("Hosting! Listening on {0}:{1}", address.host, port);
+    return true;
+}
+
+void Server::Close()
+{
+    // TODO: Gracefully disconnect clients
+
+    enet_host_destroy(m_host);
 }
 
 void Server::Broadcast(ENetPacket* packet)

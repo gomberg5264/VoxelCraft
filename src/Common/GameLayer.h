@@ -3,11 +3,10 @@
 #include "Common/Player.h"
 
 #include <Shinobu/Common.h>
-
-#include <enet/enet.h>
+#include <Net/Client.h>
+#include <Net/Server.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <vector>
 
 class GameLayer : public sh::Layer
@@ -39,7 +38,7 @@ private:
 
     PlayerInput m_input;
 
-    ENetHost* m_client;
-    ENetPeer* m_peer;
-    ENetHost* m_server;
+
+    Client m_client;
+    Server m_server;
 };

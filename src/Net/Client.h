@@ -9,7 +9,9 @@ class Client
 public:
     Client();
 
-    void Connect(const std::string& host, unsigned port);
+    bool IsConnected() const;
+
+    bool Connect(const std::string& host, unsigned port);
     void Disconnect();
 
     void SendPacket(ENetPacket* packet);

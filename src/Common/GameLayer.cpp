@@ -1,13 +1,8 @@
 #include "Common/GameLayer.h"
 #include "Client/Primitive.h"
 
-
 std::vector<Player> GameLayer::m_players;
 static bool look = false;
-
-static bool server = false;
-static bool client = false;
-
 
 GameLayer::GameLayer()
     : sh::Layer("Example Layer")
@@ -17,7 +12,6 @@ GameLayer::GameLayer()
 
 void GameLayer::OnAttach()
 {
-    enet_initialize();
     // This has to be called when attaching a new layer. See the function for more details
     ImGui::SetCurrentContext(sh::ImGuiLayer::GetContext());
 
@@ -42,11 +36,6 @@ void GameLayer::OnAttach()
 
 void GameLayer::OnDetach()
 {
-    if (client) enet_host_destroy(m_client);
-    if (server) enet_host_destroy(m_server);
-    if (m_peer) enet_peer_reset(m_peer);
-
-    enet_deinitialize();
 }
 
 void GameLayer::OnEvent(sh::Event& event)
@@ -68,6 +57,47 @@ void GameLayer::OnUpdate(sh::Timestep ts)
 {
     //m_camera.OnUpdate(ts);
     m_input.OnUpdate(ts);
+
+    if (m_client.IsConnected())
+    {
+        ENetEvent event;
+        while(m_client.Poll(event) > 0)
+        { 
+            switch (event.type)
+            {
+            case ENET_EVENT_TYPE_CONNECT:
+                SH_TRACE("Connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                SH_TRACE("Disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                break;
+            case ENET_EVENT_TYPE_RECEIVE:
+                SH_TRACE("Received packet from server {0}:{1}", event.peer->address.host, event.peer->address.port);
+                enet_packet_destroy(event.packet);
+                break;
+            }
+        }
+    }
+    if (m_server.IsHosting())
+    {
+        ENetEvent event;
+        while (m_server.Poll(event) > 0)
+        { 
+            switch (event.type)
+            {
+            case ENET_EVENT_TYPE_CONNECT:
+                SH_TRACE("Client connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+                break;
+            case ENET_EVENT_TYPE_RECEIVE:
+                SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
+                enet_packet_destroy(event.packet);
+                break;
+            }
+        }
+    }
 
     for (auto& p : m_players)
     {
@@ -101,68 +131,37 @@ void GameLayer::OnGuiRender()
         if (!ImGui::Begin("Network"))
             ImGui::End();
 
-        ENetAddress address;
-        address.host = ENET_HOST_ANY;
-        address.port = 25565;
-
-        //enet_address_get_host(const ENetAddress * address, char* name, size_t nameLength)
-
-        static char buf[64]; 
-        enet_address_get_host_ip(&address, buf, 64u);
-        ImGui::InputText("server", buf, 64);// , ImGuiInputTextFlags_CharsDecimal);
-        ImGui::SameLine();
-        if (ImGui::Checkbox("server", &server))
+        // Server
         {
-            if (server)
+            static bool server = false;
+            if (ImGui::Checkbox("server", &server))
             {
-                m_server = enet_host_create(&address, 10, 1, 0, 0);
-            }
-            else
-            {
-                enet_host_destroy(m_server);
-            }
-
-        }
-
-        static char buf2[64] = ""; 
-        ImGui::InputText("client", buf2, 64, ImGuiInputTextFlags_CharsDecimal);
-        ImGui::SameLine();
-        if (ImGui::Checkbox("client", &client))
-        {
-            if (client)
-            {
-                ENetAddress address;
-                address.host = ENET_HOST_ANY;
-                address.port = ENET_PORT_ANY;
-
-                m_client = enet_host_create(nullptr, 1, 1, 0, 0);
-                m_peer = enet_host_connect(m_client, &address, 1, 0);
-
-                if (!m_peer)
+                if (server)
                 {
-                    SH_ERROR("No available peers for initiating an ENet connection");
-                    client = false;
-                    enet_host_destroy(m_client);
+                    server = m_server.Host(25565);
                 }
                 else
                 {
-                    ENetEvent event;
-                    /* Wait up to 5 seconds for the connection attempt to succeed. */
-                    if (enet_host_service(m_client, &event, 5000) > 0 &&
-                        event.type == ENET_EVENT_TYPE_CONNECT)
-                    {
-                        SH_TRACE("Connection succeeded.");
-                        //puts("Connection to some.server.net:1234 succeeded.");
+                    m_server.Close();
+                }
 
-                    }
+            }
+        }
+
+        // Client
+        {
+            static bool client = false;
+            if (ImGui::Checkbox("client", &client))
+            {
+                if (client)
+                {
+                    client = m_client.Connect("localhost", 25565);
+                }
+                else
+                {
+                    m_client.Disconnect();
                 }
             }
-            else
-            {
-                enet_host_destroy(m_client);
-                enet_peer_reset(m_peer);
-            }
-
         }
 
         ImGui::End();
@@ -205,5 +204,4 @@ void GameLayer::OnGuiRender()
         ImGui::End();
     }
     */
-
 }

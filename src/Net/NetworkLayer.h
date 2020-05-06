@@ -86,6 +86,11 @@ public:
                 break;
             }
         }
+
+        unsigned code = 10;
+        auto pck = enet_packet_create(&code, sizeof(code), ENET_PACKET_FLAG_RELIABLE);
+
+        m_client.SendPacket(pck);
     }
     
 private:

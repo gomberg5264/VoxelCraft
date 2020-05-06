@@ -5,7 +5,11 @@
 class Server
 {
 public:
-    void Host(unsigned port);
+    Server();
+
+    bool IsHosting() const;
+
+    bool Host(unsigned port);
     void Close();
 
     void Broadcast(ENetPacket* packet);
