@@ -10,7 +10,10 @@
 class PlayerInput
 {
 public:
-    unsigned playerID;
+    PlayerInput(unsigned playerID)
+        : playerID(playerID) {}
+
+    const unsigned playerID;
 
     void OnUpdate(sh::Timestep ts);
     void OnEvent(sh::Event& event);

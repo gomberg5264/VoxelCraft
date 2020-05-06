@@ -11,6 +11,12 @@
 
 #include <future>
 
+enum CommandType : unsigned
+{
+    COMMAND_TYPE_MOVE,
+    COMMAND_TYPE_JOIN
+};
+
 class GameLayer : public sh::Layer
 {
 public:
@@ -38,10 +44,16 @@ private:
 
     sh::TextureRef m_texture;
 
-    PlayerInput m_input;
+    std::unique_ptr<PlayerInput> m_input;
 
     Client m_client;
     Server m_server;
 
     std::thread m_serverThread;
+};
+
+struct JoinMessage
+{
+    unsigned type;
+    unsigned id;
 };
