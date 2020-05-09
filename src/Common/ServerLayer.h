@@ -13,8 +13,8 @@ public:
             {
                 SH_TRACE("Client connected from {0}:{1}", user.host, user.port);
                 static unsigned unique = 0;
-                JoinResponse response;
-                response.userID = unique++;
+                auto response = std::make_unique<JoinResponse>();
+                response->userID = unique++;
 
                 server.Broadcast(response);
             });

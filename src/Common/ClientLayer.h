@@ -34,6 +34,8 @@ public:
             SH_TRACE("Got packet");
             switch (packet->GetType())
             {
+            case PacketType::JoinResponse:
+                SH_INFO("Joined with ID {0}", static_cast<JoinResponse*>(packet.get())->userID);
             }
         }
     }

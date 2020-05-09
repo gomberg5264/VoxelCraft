@@ -44,17 +44,6 @@ void Server::Close()
     enet_host_destroy(m_host);
 }
 
-void Server::Broadcast(Packet& packet)
-{
-    auto stream = PacketToBinary(packet);
-
-    stream.seekg(0, std::ios::end);
-    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(), ENET_PACKET_FLAG_RELIABLE);
-
-    enet_host_broadcast(m_host, 0, pck);
-    enet_host_flush(m_host);
-}
-
 bool Server::Poll(std::shared_ptr<Packet>& packet)
 {
     ENetEvent event;

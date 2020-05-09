@@ -17,10 +17,25 @@ public:
     bool Connect(const std::string& host, unsigned port);
     void Disconnect();
 
-    void SendPacket(Packet& packet);
+    template <typename T>
+    void SendPacket(const T& packet);
     bool Poll(std::shared_ptr<Packet>& packet);
 
 private:
     ENetHost* m_host;
     ENetPeer* m_client;
 };
+
+template<typename T>
+inline void Client::SendPacket(const T& packet)
+{
+    // Serialze the archive to binary
+    //auto stream = PacketToBinary(packet);
+    auto stream = PacketToBinary(static_cast<Packet*>(packet.get()));
+
+    stream.seekg(0, std::ios::end);
+    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(), ENET_PACKET_FLAG_RELIABLE);
+
+    enet_peer_send(m_client, 0, pck);
+    enet_host_flush(m_host);
+}

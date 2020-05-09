@@ -3,6 +3,8 @@
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/memory.hpp>
+#include <cereal/types/base_class.hpp>
+
 
 #include <sstream>
 #include <memory>
@@ -26,10 +28,6 @@ public:
     }
 };
 
-std::stringstream PacketToBinary(Packet& packet);
-std::unique_ptr<Packet> PacketFromBinary(std::stringstream& binary);
-std::unique_ptr<Packet> PacketFromBinary(unsigned char* binary, unsigned count);
-
 struct JoinResponse : public Packet
 {
 public:
@@ -46,3 +44,22 @@ public:
 };
 
 CEREAL_REGISTER_TYPE(JoinResponse)
+
+
+// Must be a smart pointer
+template <typename T>
+std::stringstream PacketToBinary(const T& packet)
+{
+    static_assert(
+        std::is_base_of<std::unique_ptr<Packet>::element_type,
+        T::element_type>::value, "T has to be derived from Packet");
+    std::stringstream stream;
+    {
+        cereal::PortableBinaryOutputArchive out(stream);
+        out(packet);
+    }
+
+    return stream;
+}
+std::unique_ptr<Packet> PacketFromBinary(std::stringstream& binary);
+std::unique_ptr<Packet> PacketFromBinary(unsigned char* binary, unsigned count);

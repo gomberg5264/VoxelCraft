@@ -20,7 +20,8 @@ public:
     bool Host(unsigned port);
     void Close();
 
-    void Broadcast(Packet& packet);
+    template <typename T>
+    void Broadcast(const T& packet);
     // Returns true if a packet has been received
     bool Poll(std::shared_ptr<Packet>& packet);
 
@@ -33,3 +34,15 @@ private:
     ConnectCB m_connectCB;
     ConnectCB m_disconnectCB;
 };
+
+template<typename T>
+inline void Server::Broadcast(const T& packet)
+{
+    auto stream = PacketToBinary(packet);
+
+    stream.seekg(0, std::ios::end);
+    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(), ENET_PACKET_FLAG_RELIABLE);
+
+    enet_host_broadcast(m_host, 0, pck);
+    enet_host_flush(m_host);
+}

@@ -84,18 +84,6 @@ void Client::Disconnect()
     enet_peer_reset(m_client);
 }
 
-void Client::SendPacket(Packet& packet)
-{
-    // Serialze the archive to binary
-    auto stream = PacketToBinary(packet);
-
-    stream.seekg(0, std::ios::end);
-    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(),ENET_PACKET_FLAG_RELIABLE);
-
-    enet_peer_send(m_client, 0, pck);
-    enet_host_flush(m_host);
-}
-
 bool Client::Poll(std::shared_ptr<Packet>& packet)
 {
     ENetEvent event;
