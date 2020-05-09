@@ -31,17 +31,17 @@ std::unique_ptr<sh::Application> sh::CreateApplication()
         //    std::cout << static_cast<JoinResponse*>(packet.get())->userID;
         //}
 
-        {
-            auto response = std::make_unique<JoinResponse>();
-            response->userID = 199;
+        //{
+        //    auto response = std::make_unique<JoinResponse>();
+        //    response->userID = 199;
 
-            auto binary = PacketToBinary(response);
-            auto point = PacketFromBinary(binary);
+        //    auto binary = PacketToBinary(response);
+        //    auto point = PacketFromBinary(binary);
 
-            std::cout << static_cast<JoinResponse*>(point.get())->userID;
-        }
+        //    std::cout << static_cast<JoinResponse*>(point.get())->userID;
+        //}
 
-        std::cin.get();
+        //std::cin.get();
     }
 
     int i;

@@ -109,7 +109,7 @@ bool Client::Poll(std::shared_ptr<Packet>& packet)
         auto* data = event.packet->data;
         auto length = event.packet->dataLength;
 
-        packet = std::shared_ptr<Packet>(PacketFromBinary(data,length).release());
+        packet = PacketFromBinary(data, length);
 
         enet_packet_destroy(event.packet);
         return true;

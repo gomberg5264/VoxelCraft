@@ -39,9 +39,17 @@ template<typename T>
 inline void Server::Broadcast(const T& packet)
 {
     auto stream = PacketToBinary(packet);
+    
+    //std::stringstream copy;
+    //copy << stream.str();
+    //
+    //auto val = PacketFromBinary(copy);
 
-    stream.seekg(0, std::ios::end);
-    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(), ENET_PACKET_FLAG_RELIABLE);
+    //SH_CORE_TRACE("Gave ID {0}", static_cast<JoinResponse*>(val.get())->userID);
+
+    //stream.seekg(0, std::ios::end);
+    auto buffer = stream.str();
+    ENetPacket* pck = enet_packet_create(buffer.data(), buffer.size(), ENET_PACKET_FLAG_RELIABLE);
 
     enet_host_broadcast(m_host, 0, pck);
     enet_host_flush(m_host);
