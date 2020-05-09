@@ -45,7 +45,7 @@ inline void Server::Broadcast(const T& packet)
     //
     //auto val = PacketFromBinary(copy);
 
-    //SH_CORE_TRACE("Gave ID {0}", static_cast<JoinResponse*>(val.get())->userID);
+    //SH_CORE_TRACE("Gave ID {0}", static_cast<JoinResponsePacket*>(val.get())->userID);
 
     //stream.seekg(0, std::ios::end);
     auto buffer = stream.str();

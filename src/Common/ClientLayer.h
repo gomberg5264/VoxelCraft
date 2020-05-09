@@ -1,8 +1,11 @@
 #pragma once
 #include "Common/World.h"
+#include "Common/GamePacket.h"
+#include "Common/Entity/Entity.h"
+#include "Common/Entity/EntityCommand.h"
+#include "Net/Client.h"
 
 #include <Shinobu/Common.h>
-#include <Net/Client.h>
 
 class ClientLayer : public sh::Layer
 {
@@ -31,11 +34,23 @@ public:
         std::shared_ptr<Packet> packet;
         while (m_client.Poll(packet))
         {
-            SH_TRACE("Got packet");
             switch (packet->GetType())
             {
             case PacketType::JoinResponse:
-                SH_INFO("Joined with ID {0}", static_cast<JoinResponse*>(packet.get())->userID);
+                SH_INFO("Joined with ID {0}", static_cast<JoinResponsePacket*>(packet.get())->userID);
+                break;
+            case PacketType::EntityCommand:
+            {
+                auto* cast = static_cast<EntityCommandPacket*>(packet.get());
+
+                cast->command->Execute(m_world.entities);
+                
+                SH_INFO("Player count {0}", m_world.entities.size());
+
+                //SH_INFO("Joined with ID {0}", static_cast<JoinResponsePacket*>(packet.get())->userID);
+                break;
+            }
+
             }
         }
     }

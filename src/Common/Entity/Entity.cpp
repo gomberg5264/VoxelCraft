@@ -1,10 +1,9 @@
-#include "Common/Player.h"
-#include "Common/GameLayer.h"
+#include "Common/Entity/Entity.h"
 #include "Client/Primitive.h"
 
 #include <Shinobu/Renderer/Renderer.h>
 
-Player::Player(unsigned id)
+Entity::Entity()
     : id(id)
     , m_shader(sh::Shader::Create("res/shaders/Face.glsl"))
 {
@@ -16,24 +15,7 @@ Player::Player(unsigned id)
     m_mesh->AddVertexBuffer(buffer);
 }
 
-void Player::Draw() const
+void Entity::Draw() const
 {
     sh::Renderer::Submit(m_shader, m_mesh, transform.GetWorldMatrix());
-}
-
-MoveCommand::MoveCommand(Player& player, const glm::vec3& pos)
-    : m_player(player)
-    , m_pos(pos) 
-    , m_oldPos(player.transform.GetPosition())
-{}
-
-void MoveCommand::Execute()
-{
-    // TODO: Make this some kind interface that we access
-    m_player.transform.SetPosition(m_pos);
-}
-
-void MoveCommand::Undo()
-{
-    m_player.transform.SetPosition(m_oldPos);
 }

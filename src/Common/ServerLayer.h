@@ -1,5 +1,6 @@
 #pragma once
 #include "Common/World.h"
+#include "Common/GamePacket.h"
 
 #include <Shinobu/Common.h>
 #include <Net/Server.h>
@@ -13,10 +14,16 @@ public:
             {
                 SH_TRACE("Client connected from {0}:{1}", user.host, user.port);
                 static unsigned unique = 0;
-                auto response = std::make_unique<JoinResponse>();
+                auto response = std::make_unique<JoinResponsePacket>();
                 response->userID = unique++;
 
                 server.Broadcast(response);
+
+                auto make = std::make_unique<EntityCommandPacket>();
+                make->command = std::make_unique<EntitySpawnCommand>();
+                make->command->entityID = unique - 1;
+
+                server.Broadcast(make);
             });
 
         m_server.SetDisconnectCB([](Server& server, ENetAddress user)

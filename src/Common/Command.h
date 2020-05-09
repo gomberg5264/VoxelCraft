@@ -1,5 +1,9 @@
 #pragma once
 
+// We include this header because we need to include Cereal archives before registration
+#include "Net/Packet.h"
+//#include "Common/Entity/Entity.h"
+
 #include <memory>
 #include <vector>
 
@@ -20,6 +24,23 @@ class Command
 public:
     virtual void Execute() = 0;
     virtual void Undo() = 0;
+};
+
+class Entity;
+
+class EntityCommand
+{
+public:
+    unsigned entityID;
+
+    virtual void Execute(std::vector<std::unique_ptr<Entity>>& entities) = 0;
+    virtual void Undo(std::vector<std::unique_ptr<Entity>>& entities) = 0;
+
+    template <typename T>
+    void serialize(T& archive)
+    {
+        archive(entityID);
+    }
 };
 
 ///**

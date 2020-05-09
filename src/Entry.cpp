@@ -1,7 +1,6 @@
 #include "Common/ClientLayer.h"
 #include "Common/ServerLayer.h"
 
-#include <cereal/archives/json.hpp>
 #include "Net/Packet.h"
 
 #include <Shinobu/Common.h>

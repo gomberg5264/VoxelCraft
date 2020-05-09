@@ -14,9 +14,11 @@ add_executable(Application
     src/Client/Primitive.h
     src/Client/Primitive.cpp
 
+    src/Common/Entity/Entity.h
+    src/Common/Entity/Entity.cpp
+    src/Common/Entity/Player.h
+    src/Common/Entity/Player.cpp
     src/Common/ClientLayer.h
-    src/Common/Player.h
-    src/Common/Player.cpp
     src/Common/ServerLayer.h
     src/Common/World.h
     
