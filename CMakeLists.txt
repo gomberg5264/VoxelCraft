@@ -11,12 +11,17 @@ add_subdirectory(thirdParty/cereal)
 add_executable(Application
     src/Entry.cpp
     
-    src/Common/GameLayer.cpp
-    
-    src/Client/Primitive.cpp
-    src/Common/Player.cpp  
-    src/Client/PlayerInput.cpp
-      "src/Net/Client.cpp" "src/Net/Server.cpp" "src/Net/Packet.cpp")
+    src/Net/Packet.h
+
+    # src/Common/GameLayer.cpp
+    # 
+    # src/Client/Primitive.cpp
+    # src/Common/Player.cpp  
+    # src/Client/PlayerInput.cpp
+    # src/Net/Client.cpp 
+    # src/Net/Server.cpp  
+    # src/Common/ServerLayer.cpp
+    )
 
 target_include_directories(Application PUBLIC
     src
