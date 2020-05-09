@@ -56,7 +56,12 @@ std::stringstream PacketToBinary(const T& packet)
     std::stringstream stream;
     {
         cereal::PortableBinaryOutputArchive out(stream);
-        out(packet);
+
+        // NOTE: Cereal needs a pointer of base type
+        // since it is too much of a hassle imo to convert all pointers to that type
+        // I just convert it here. There may be some overhead by doing that
+        std::unique_ptr<Packet> data(new T::element_type(*packet));
+        out(data);
     }
 
     return stream;

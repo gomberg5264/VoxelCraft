@@ -14,26 +14,32 @@ std::unique_ptr<sh::Application> sh::CreateApplication()
     enet_initialize();
 
     {
-        std::stringstream stream;
-        {     
-            std::unique_ptr<Packet> response = std::make_unique<JoinResponse>();
-            static_cast<JoinResponse*>(response.get())->userID = 199;
+        //std::stringstream stream;
+        //{     
+        //    std::unique_ptr<Packet> response = std::make_unique<JoinResponse>();
+        //    static_cast<JoinResponse*>(response.get())->userID = 199;
 
-            cereal::PortableBinaryOutputArchive out(stream);
-            out(response);
-        }
+        //    cereal::PortableBinaryOutputArchive out(stream);
+        //    out(response);
+        //}
+
+        //{
+        //    cereal::PortableBinaryInputArchive in(stream);
+
+        //    std::unique_ptr<Packet> packet;
+        //    in(packet);
+        //    std::cout << static_cast<JoinResponse*>(packet.get())->userID;
+        //}
 
         {
-            cereal::PortableBinaryInputArchive in(stream);
+            auto response = std::make_unique<JoinResponse>();
+            response->userID = 199;
 
-            std::unique_ptr<Packet> packet;
-            in(packet);
-            std::cout << static_cast<JoinResponse*>(packet.get())->userID;
+            auto binary = PacketToBinary(response);
+            auto point = PacketFromBinary(binary);
+
+            std::cout << static_cast<JoinResponse*>(point.get())->userID;
         }
-
-
-        //auto binary = PacketToBinary(response);
-        //auto point = PacketFromBinary(binary);
 
         std::cin.get();
     }
