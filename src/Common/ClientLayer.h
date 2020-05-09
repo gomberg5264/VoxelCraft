@@ -31,9 +31,9 @@ public:
         std::shared_ptr<Packet> packet;
         while (m_client.Poll(packet))
         {
-            //switch (packet->GetType())
-            //{
-            //}
+            switch (packet->GetType())
+            {
+            }
         }
     }
 

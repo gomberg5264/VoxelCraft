@@ -9,14 +9,21 @@ class ServerLayer : public sh::Layer
 public:
     virtual void OnAttach() override
     {
-        m_server.SetConnectCB([](Server& server)
+        m_server.SetConnectCB([](Server& server, ENetAddress user)
             {
+                SH_TRACE("Client connected from {0}:{1}", user.host, user.port);
                 static unsigned unique = 0;
                 JoinResponse response;
                 response.userID = unique++;
 
                 server.Broadcast(response);
             });
+
+        m_server.SetDisconnectCB([](Server& server, ENetAddress user)
+            {
+                SH_TRACE("Client disconnected from {0}:{1}", user.host, user.port);
+            });
+
         m_server.Host(25565);
     }
     //virtual void OnDetach() override;
@@ -36,9 +43,9 @@ public:
         std::shared_ptr<Packet> packet;
         while (m_server.Poll(packet))
         {
-            //switch (packet->GetType())
-            //{
-            //}
+            switch (packet->GetType())
+            {
+            }
         }
     }
 

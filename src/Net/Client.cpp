@@ -110,9 +110,12 @@ bool Client::Poll(std::shared_ptr<Packet>& packet)
     {
     case ENET_EVENT_TYPE_CONNECT:
         SH_TRACE("Connected to {0}:{1}", event.peer->address.host, event.peer->address.port);
+        // We do this since connecting and disconnecting don't actually return a packet
+        return Poll(packet); 
         break;
     case ENET_EVENT_TYPE_DISCONNECT:
         SH_TRACE("Disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        return Poll(packet);
         break;
     case ENET_EVENT_TYPE_RECEIVE:
         SH_TRACE("Retrieved packet from {0}:{1}", event.peer->address.host, event.peer->address.port);

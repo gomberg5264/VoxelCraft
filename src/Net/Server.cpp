@@ -3,6 +3,7 @@
 Server::Server()
     : m_host(nullptr)
     , m_connectCB(nullptr)
+    , m_disconnectCB(nullptr)
 {
 }
 
@@ -68,14 +69,13 @@ bool Server::Poll(std::shared_ptr<Packet>& packet)
     {
     case ENET_EVENT_TYPE_CONNECT:
     {
-        SH_TRACE("Client connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-
-        if(m_connectCB) m_connectCB(*this);
+        if(m_connectCB) m_connectCB(*this, event.peer->address);
+        return Poll(packet);
     }
     break;
     case ENET_EVENT_TYPE_DISCONNECT:
-        // TODO: Remove player from users
-        SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        if (m_disconnectCB) m_disconnectCB(*this, event.peer->address);
+        return Poll(packet);
         break;
 
     case ENET_EVENT_TYPE_RECEIVE:
