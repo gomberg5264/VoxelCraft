@@ -31,6 +31,7 @@ public:
         std::shared_ptr<Packet> packet;
         while (m_client.Poll(packet))
         {
+            SH_TRACE("Got packet");
             switch (packet->GetType())
             {
             }

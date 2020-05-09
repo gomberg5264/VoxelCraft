@@ -79,42 +79,13 @@ bool Server::Poll(std::shared_ptr<Packet>& packet)
         break;
 
     case ENET_EVENT_TYPE_RECEIVE:
-        SH_TRACE("Retrieved packet from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        auto* data = event.packet->data;
+        auto length = event.packet->dataLength;
+
+        packet = std::shared_ptr<Packet>(PacketFromBinary(data, length).release());
+
         enet_packet_destroy(event.packet);
-        // TODO: Create a package and set it
-
-        // Steps...
-        // Extract command
-        // Verify command
-        // Apply command
-        // Send command to all clients
-
-        // Extract command
-        //sf::Packet data;
-        //for (uint8_t i = 0; i < event.packet->dataLength; i++)
-        //{
-        //    data << event.packet->data[i];
-        //}
-        //sf::Packet dataBack(data);
-        ////event.packet->data
-        //
-        //unsigned playerID;
-        //glm::vec3 pos;
-        //glm::vec3 oldPos;
-        //data >> playerID >> pos >> oldPos;
-        //MoveCommand command(m_players[playerID], pos);
-        //
-        //
-        //// Verify command
-        //// Apply command
-        //command.Execute();
-        //
-        //// Send command to all clients
-        //auto* pck = enet_packet_create(dataBack.getData(), dataBack.getDataSize(), ENET_PACKET_FLAG_RELIABLE);
-        //m_server.Broadcast(pck);
-        //
-        //enet_packet_destroy(event.packet);
-        //break;
+        return true;
+        break;
     }
-    return true;
 }

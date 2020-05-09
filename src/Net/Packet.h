@@ -28,6 +28,7 @@ public:
 
 std::stringstream PacketToBinary(Packet& packet);
 std::unique_ptr<Packet> PacketFromBinary(std::stringstream& binary);
+std::unique_ptr<Packet> PacketFromBinary(unsigned char* binary, unsigned count);
 
 struct JoinResponse : public Packet
 {

@@ -11,6 +11,19 @@ std::stringstream PacketToBinary(Packet& packet)
     return stream;
 }
 
+std::unique_ptr<Packet> PacketFromBinary(unsigned char* binary, unsigned count)
+{
+    // TODO: Find a way to make a stream use an existing buffer
+    // instead of copying it
+    std::stringstream stream;
+    for (size_t i = 0; i < count; i++)
+    {
+        stream << binary[i];
+    }
+
+    return std::move(PacketFromBinary(stream));
+}
+
 std::unique_ptr<Packet> PacketFromBinary(std::stringstream& binary)
 {
     std::unique_ptr<Packet> packet;

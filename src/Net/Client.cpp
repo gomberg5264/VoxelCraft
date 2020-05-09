@@ -118,59 +118,13 @@ bool Client::Poll(std::shared_ptr<Packet>& packet)
         return Poll(packet);
         break;
     case ENET_EVENT_TYPE_RECEIVE:
-        SH_TRACE("Retrieved packet from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        auto* data = event.packet->data;
+        auto length = event.packet->dataLength;
+
+        packet = std::shared_ptr<Packet>(PacketFromBinary(data,length).release());
+
         enet_packet_destroy(event.packet);
-        // TODO: Create a package and set it
-
-        //SH_TRACE("Received packet from server {0}:{1}", event.peer->address.host, event.peer->address.port);
-
-        // Steps...
-        // Extract command
-        // Apply command
-
-        // Extract command
-        //sf::Packet data;
-        //for (uint8_t i = 0; i < event.packet->dataLength; i++)
-        //{
-        //    data << event.packet->data[i];
-        //}
-        //unsigned type;
-        //data >> type;
-
-        //switch (type)
-        //{
-        //case COMMAND_TYPE_JOIN:
-        //{
-
-        //    unsigned playerID;
-        //    data >> playerID;
-        //    m_input = std::make_unique<PlayerInput>(playerID);
-        //    m_input->callback = [](std::unique_ptr<Command>&& command)
-        //    {
-        //        m_commands.emplace_back(std::move(command));
-        //        //command->Execute();
-        //    };
-        //}
-        //break;
-        //case COMMAND_TYPE_MOVE:
-        //{
-
-        //    unsigned playerID;
-        //    glm::vec3 pos;
-        //    glm::vec3 oldPos;
-        //    data >> playerID >> pos >> oldPos;
-        //    MoveCommand command(m_players[playerID], pos);
-
-        //    // Verify command
-        //    // Apply command
-        //    command.Execute();
-        //}
-        //break;
-
-        //}
-
-        //enet_packet_destroy(event.packet);
-        //break;
+        return true;
+        break;
     }
-    return true;
 }
