@@ -5,6 +5,9 @@ project(VoxelCraft)
 add_subdirectory(thirdParty/Shinobu-Engine/Shinobu)
 add_subdirectory(thirdParty/enet)
 
+set(JUST_INSTALL_CEREAL ON)
+add_subdirectory(thirdParty/cereal)
+
 add_executable(Application
     src/Entry.cpp
     
@@ -19,7 +22,7 @@ target_include_directories(Application PUBLIC
     src
 )
 
-target_link_libraries(Application PUBLIC Shinobu enet)
+target_link_libraries(Application PUBLIC Shinobu enet cereal)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/thirdParty/Shinobu-Engine/Shinobu/res)
     add_custom_target(CopyEngineAssets
