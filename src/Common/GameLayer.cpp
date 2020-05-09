@@ -57,7 +57,6 @@ void GameLayer::OnEvent(sh::Event& event)
         });
 }
 
-
 void GameLayer::OnUpdate(sh::Timestep ts)
 {
     //m_camera.OnUpdate(ts);
@@ -95,66 +94,6 @@ void GameLayer::OnUpdate(sh::Timestep ts)
         ENetEvent event;
         while(m_client.Poll(event) > 0)
         { 
-            switch (event.type)
-            {
-            case ENET_EVENT_TYPE_CONNECT:
-                SH_TRACE("Connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-                break;
-            case ENET_EVENT_TYPE_DISCONNECT:
-                SH_TRACE("Disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-                m_input.release();
-                break;
-            case ENET_EVENT_TYPE_RECEIVE:
-                //SH_TRACE("Received packet from server {0}:{1}", event.peer->address.host, event.peer->address.port);
-
-                // Steps...
-                // Extract command
-                // Apply command
-                
-                // Extract command
-                sf::Packet data;
-                for (uint8_t i = 0; i < event.packet->dataLength; i++)
-                {
-                    data << event.packet->data[i];
-                }
-                unsigned type;
-                data >> type;
-
-                switch (type)
-                {
-                case COMMAND_TYPE_JOIN:
-                {
-
-                    unsigned playerID;
-                    data >> playerID;
-                    m_input = std::make_unique<PlayerInput>(playerID);
-                    m_input->callback = [](std::unique_ptr<Command>&& command)
-                    {
-                        m_commands.emplace_back(std::move(command));
-                        //command->Execute();
-                    };
-                }
-                    break;
-                case COMMAND_TYPE_MOVE:
-                {
-
-                    unsigned playerID;
-                    glm::vec3 pos;
-                    glm::vec3 oldPos;
-                    data >> playerID >> pos >> oldPos;
-                    MoveCommand command(m_players[playerID], pos);
-
-                    // Verify command
-                    // Apply command
-                    command.Execute();
-                }
-                    break;
-
-                }
-
-                enet_packet_destroy(event.packet);
-                break;
-            }
         }
     }
 
@@ -188,116 +127,6 @@ void GameLayer::OnGuiRender()
 {
     static bool showDemo = true;
     ImGui::ShowDemoWindow(&showDemo);
-
-    // Net widget
-    {
-        if (!ImGui::Begin("Network"))
-            ImGui::End();
-
-        // Server
-        {
-            static bool server = false;
-            if (ImGui::Checkbox("server", &server))
-            {
-                serverLoop = true;
-                if (server)
-                {
-                    server = m_server.Host(25565);
-
-                    m_serverThread.swap(std::thread([&]()
-                        {
-                            while (serverLoop)
-                            {
-                                ENetEvent event;
-                                while (m_server.Poll(event) > 0)
-                                {
-                                    switch (event.type)
-                                    {
-                                    case ENET_EVENT_TYPE_CONNECT:
-                                        {
-                                            SH_TRACE("Client connected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-
-                                            sf::Packet data;
-                                            data << COMMAND_TYPE_JOIN;
-                                            static unsigned count = 0;
-                                            data << count++;
-
-                                            enet_peer_send(event.peer, 0,
-                                                enet_packet_create(data.getData(), data.getDataSize(), ENET_PACKET_FLAG_RELIABLE));
-                                        }
-                                        break;
-                                    case ENET_EVENT_TYPE_DISCONNECT:
-                                        SH_TRACE("Client disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
-                                        break;
-                                    case ENET_EVENT_TYPE_RECEIVE:
-                                        //SH_TRACE("Received packet from client {0}:{1}", event.peer->address.host, event.peer->address.port);
-                                        
-                                        // Steps...
-                                        // Extract command
-                                        // Verify command
-                                        // Apply command
-                                        // Send command to all clients
-                                        
-                                        // Extract command
-                                        sf::Packet data;
-                                        for (uint8_t i = 0; i < event.packet->dataLength; i++)
-                                        {
-                                            data << event.packet->data[i];
-                                        }
-                                        sf::Packet dataBack(data);
-                                        //event.packet->data
-
-                                        unsigned playerID;
-                                        glm::vec3 pos;
-                                        glm::vec3 oldPos;
-                                        data >> playerID >> pos >> oldPos;
-                                        MoveCommand command(m_players[playerID], pos);
-
-
-                                        // Verify command
-                                        // Apply command
-                                        command.Execute();
-
-                                        // Send command to all clients
-                                        auto* pck = enet_packet_create(dataBack.getData(), dataBack.getDataSize(), ENET_PACKET_FLAG_RELIABLE);
-                                        m_server.Broadcast(pck);
-                                        
-                                        enet_packet_destroy(event.packet);
-                                        break;
-                                    }
-                                }
-                            }
-                        }));
-                }
-                else
-                {
-                    serverLoop = false;
-                    m_serverThread.join();
-                    m_server.Close();
-                }
-
-            }
-        }
-
-        // Client
-        {
-            static bool client = false;
-            if (ImGui::Checkbox("client", &client))
-            {
-                if (client)
-                {
-                    client = m_client.Connect("localhost", 25565);
-                }
-                else
-                {
-                    m_client.Disconnect();
-                }
-            }
-        }
-
-        ImGui::End();
-    }
-
     // Camera widget
     /*
     {

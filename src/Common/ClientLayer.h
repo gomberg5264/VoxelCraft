@@ -2,22 +2,17 @@
 #include "Common/World.h"
 
 #include <Shinobu/Common.h>
-#include <Net/Server.h>
+#include <Net/Client.h>
 
-class ServerLayer : public sh::Layer
+class ClientLayer : public sh::Layer
 {
 public:
     virtual void OnAttach() override
     {
-        m_server.SetConnectCB([](Server& server)
-            {
-                static unsigned unique = 0;
-                JoinResponse response;
-                response.userID = unique++;
-
-                server.Broadcast(response);
-            });
-        m_server.Host(25565);
+        while (!m_client.IsConnected())
+        {
+            m_client.Connect("localhost", 25565);
+        }
     }
     //virtual void OnDetach() override;
 
@@ -34,7 +29,7 @@ public:
     virtual void OnUpdate(sh::Timestep ts) override final
     {
         std::shared_ptr<Packet> packet;
-        while (m_server.Poll(packet))
+        while (m_client.Poll(packet))
         {
             //switch (packet->GetType())
             //{
@@ -44,5 +39,5 @@ public:
 
 private:
     World m_world;
-    Server m_server;
+    Client m_client;
 };

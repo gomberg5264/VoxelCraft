@@ -12,6 +12,12 @@ Client::Client()
     }
 }
 
+Client::~Client()
+{
+    if(IsConnected()) Disconnect();
+}
+
+
 bool Client::IsConnected() const
 {
     return m_host->connectedPeers == 1;
@@ -52,6 +58,8 @@ bool Client::Connect(const std::string& host, unsigned port)
 
 void Client::Disconnect()
 {
+    SH_ASSERT(IsConnected(), "Client can't disconnect if they are not connected!");
+
     // Attempt graceful disconnect
     enet_peer_disconnect(m_client, 0);
 
@@ -60,7 +68,7 @@ void Client::Disconnect()
     while (timer.Seconds() < 5.f)
     {
         ENetEvent event;
-        while (Poll(event) > 0)
+        while (enet_host_service(m_host, &event, 0) > 0)
         {
             if (event.type == ENET_EVENT_TYPE_RECEIVE)
                 enet_packet_destroy(event.packet);
@@ -71,22 +79,95 @@ void Client::Disconnect()
             }
         }
     }
-
     
     SH_WARN("Forcefully disconnected form the server");
     enet_peer_reset(m_client);
 }
 
-void Client::SendPacket(ENetPacket* packet)
+void Client::SendPacket(Packet& packet)
 {
-    enet_peer_send(m_client, 0, packet);
+    // Serialze the archive to binary
+    auto stream = PacketToBinary(packet);
 
-    // We may want to let Poll handle this 
-    // because now we send events every time this is called
+    stream.seekg(0, std::ios::end);
+    ENetPacket* pck = enet_packet_create(stream.rdbuf(), stream.tellg(),ENET_PACKET_FLAG_RELIABLE);
+
+    enet_peer_send(m_client, 0, pck);
     enet_host_flush(m_host);
 }
 
-int Client::Poll(ENetEvent& event)
+bool Client::Poll(std::shared_ptr<Packet>& packet)
 {
-    return enet_host_service(m_host, &event, 0);
+    ENetEvent event;
+
+    int status = enet_host_service(m_host, &event, 0);
+    SH_ASSERT(status >= 0, "Client returned with error");
+
+    if (status == 0)
+        return false;
+
+    switch (event.type)
+    {
+    case ENET_EVENT_TYPE_CONNECT:
+        SH_TRACE("Connected to {0}:{1}", event.peer->address.host, event.peer->address.port);
+        break;
+    case ENET_EVENT_TYPE_DISCONNECT:
+        SH_TRACE("Disconnected from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        break;
+    case ENET_EVENT_TYPE_RECEIVE:
+        SH_TRACE("Retrieved packet from {0}:{1}", event.peer->address.host, event.peer->address.port);
+        enet_packet_destroy(event.packet);
+        // TODO: Create a package and set it
+
+        //SH_TRACE("Received packet from server {0}:{1}", event.peer->address.host, event.peer->address.port);
+
+        // Steps...
+        // Extract command
+        // Apply command
+
+        // Extract command
+        //sf::Packet data;
+        //for (uint8_t i = 0; i < event.packet->dataLength; i++)
+        //{
+        //    data << event.packet->data[i];
+        //}
+        //unsigned type;
+        //data >> type;
+
+        //switch (type)
+        //{
+        //case COMMAND_TYPE_JOIN:
+        //{
+
+        //    unsigned playerID;
+        //    data >> playerID;
+        //    m_input = std::make_unique<PlayerInput>(playerID);
+        //    m_input->callback = [](std::unique_ptr<Command>&& command)
+        //    {
+        //        m_commands.emplace_back(std::move(command));
+        //        //command->Execute();
+        //    };
+        //}
+        //break;
+        //case COMMAND_TYPE_MOVE:
+        //{
+
+        //    unsigned playerID;
+        //    glm::vec3 pos;
+        //    glm::vec3 oldPos;
+        //    data >> playerID >> pos >> oldPos;
+        //    MoveCommand command(m_players[playerID], pos);
+
+        //    // Verify command
+        //    // Apply command
+        //    command.Execute();
+        //}
+        //break;
+
+        //}
+
+        //enet_packet_destroy(event.packet);
+        //break;
+    }
+    return true;
 }

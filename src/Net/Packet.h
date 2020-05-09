@@ -4,15 +4,18 @@
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/memory.hpp>
 
+#include <sstream>
+#include <memory>
+
 enum class PacketType
 {
-    JoinPacket
+    JoinResponse
 };
 
 struct Packet
 {
 public:
-    virtual PacketType GetType() = 0;
+    virtual PacketType GetType() const = 0;
 
     unsigned packetID = 1;
 
@@ -23,19 +26,22 @@ public:
     }
 };
 
-struct JoinPacket : public Packet
+std::stringstream PacketToBinary(Packet& packet);
+std::unique_ptr<Packet> PacketFromBinary(std::stringstream& binary);
+
+struct JoinResponse : public Packet
 {
 public:
-    virtual PacketType GetType() { return PacketType::JoinPacket; }
+    virtual PacketType GetType() const { return PacketType::JoinResponse; }
 
-    unsigned userCount;
+    unsigned userID;
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
         ar(cereal::base_class<Packet>(this));
-        ar(userCount);
+        ar(userID);
     }
 };
 
-CEREAL_REGISTER_TYPE(JoinPacket)
+CEREAL_REGISTER_TYPE(JoinResponse)

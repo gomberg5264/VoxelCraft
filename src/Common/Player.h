@@ -39,15 +39,3 @@ public:
     const glm::vec3 m_pos;
     const glm::vec3 m_oldPos;
 };
-
-inline sf::Packet& operator<<(sf::Packet& packet, const glm::vec3& vec)
-{
-    packet << vec.x << vec.y << vec.z;
-    return packet;
-}
-
-inline sf::Packet& operator>>(sf::Packet& packet, glm::vec3& vec)
-{
-    packet >> vec.x >> vec.y >> vec.z;
-    return packet;
-}
