@@ -1,1 +1,6 @@
-out
+/bin/
+/bin-int/
+*.user
+
+.vs
+.vscode
