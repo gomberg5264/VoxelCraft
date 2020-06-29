@@ -8,27 +8,40 @@ The justification/research of the core design can be found [here](#Explanation-o
 ## Architecture
 ### Netcode protocol
 The netcode protocol will handle communication between client and server. It allows connection and communication. 
-- Netcode layer
+- Netcode layer  
 Responsible for handling communication between client and server. The netcode layer sends and received packets. It makes sure that packets are acknowledged, verifies server timeout and contains some data for us such as ping, rtt, packet loss or whatever we need. We can call this system to send packets as well as set up a callback for received packets.
 
 ### User protocol
 The user protocol is what handles the players intention.
-- Input layer
+- Input layer  
 Creates input data that is send to the netcode protocol. We abstract it here so that we can bind different keys to different actions. This means that only the input layer needs access to the input devices.  
     - For client side prediction, this data would also be send to the game master layer.
-- Input prediction layer
-This layer is needed for client side prediction. It will generate commands 
 
 ### Gameplay protocol
 Notice how both the user and netcode protocol generate commands that act on the gameplay protocol.
-- Game administrator layer `invoker`
-Responsible for invoking commands on the game world layer. Depending on our needs, there is a lot more that the game master will do:
+- Commands  
+Commands drive our game. They are callables that get called on the game world. Positions will be handled differently from events such as hitting. We differentiate between how a command is stored, predicted as well as corrected. In our game we will need 2 different kinds of commands:
+    - Snapshot  
+    A snapshot is linear data such as movement. This data can get interpolated and is generally unreliable. Prediction wise, we roll back if the server and client disagree. 
+    - Event  
+    An event is something that happens once. This can be hitting or shooting. Events are predicted and saved on the client. It then awaits verification by the server.
+
+All state changes are commands, so all state is modified through commands (unless that data does not need to be shared). 
+
+- Game master layer `invoker/mediator`  
+Responsible for invoking commands on the game world layer. The game master stores our commands.  
+Depending on our needs, there is a lot more that the game master will do:
     - To implement client side prediction, the game master will need to be able to differentiate between authoritative commands and predicted commands.
     - To implement server reconciliation, the game master needs to store older commands and be able to rollback mispredicted ones.
 
-- Game world layer `receiver`
+- Game world layer `receiver`  
 Calls commands on the game world layer. The game world layer is our interface into the gameplay world.
     - To implement lag compensation, the game world needs to store older states of entities and be able to rollback to execute 
+
+## Implementation notes
+### Packet serialization
+A packet contains commands. Commands are identified with a unique ID which we generate during compile time. When deserializing the command from the packet, we will create it from a factory (tho in my case, Cereal handles this. But I'd make a global linked list in which I'd register all classes).  
+Commands are stored in a buffer. This can be done using a hashmap where the key is the unique ID.
 
 ## Explanation of the core design
 Why do we use the command pattern? Let's first see how the game would work if it was on the client only utilizing the command pattern:
