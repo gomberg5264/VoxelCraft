@@ -1,3 +1,5 @@
+> NOTE: This project is further being developed alongside my custom engine called [Aphelion Engine](https://github.com/antjowie/Aphelion-engine). This repository will no longer be updated
+
 ## VoxelCraft
 > This project serves as a learning opportunity, API breaking changes will be made most of the times. I will most likely reject all pull requests.
 
